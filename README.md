@@ -14,4 +14,4 @@ Consiste en una página de eventos con los siguientes requisitos:
 Por favor mantener la organización, estar pendientes de los commits y asumiendo que todos sabemos usar git SIEMPRE hacer
 un pull antes de intentar subir cualquier cosa para evitar conflictos, tambien evitar trabajar dos personas al tiempo en una misma rama
 
-no se q mas se pone acá bais 676767676 la bati señal
+
