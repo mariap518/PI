@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>6ixEvent · Encuentra tu próximo evento corporativo</title>
+  <meta name="description" content="Plataforma líder de venta de boletas y gestión de eventos corporativos en Colombia. Congresos, conferencias y foros empresariales en toda Colombia.">
+  <link rel="icon" href="assets/img/logo.png" type="image/png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <a class="skip-link" href="#contenido">Saltar al contenido</a>
+
+  <!-- ============ SPRITE DE ÍCONOS (oculto) ============ -->
+  <svg class="icon-sprite" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <symbol id="icon-search" viewBox="0 0 24 24"><path d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/></symbol>
+      <symbol id="icon-calendar" viewBox="0 0 24 24"><path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/></symbol>
+      <symbol id="icon-location" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></symbol>
+      <symbol id="icon-chevron-down" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+      <symbol id="icon-arrow" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></symbol>
+      <symbol id="icon-star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></symbol>
+      <symbol id="icon-phone" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.84 11.5a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.77 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.64a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></symbol>
+      <symbol id="icon-mail" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2zM22 6l-10 7L2 6"/></symbol>
+      <symbol id="icon-linkedin" viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z M4 6a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/></symbol>
+      <symbol id="icon-twitter" viewBox="0 0 24 24"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/></symbol>
+      <symbol id="icon-instagram" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069z M12 6.865a5.135 5.135 0 1 0 0 10.27 5.135 5.135 0 0 0 0-10.27zm0 8.468a3.333 3.333 0 1 1 0-6.666 3.333 3.333 0 0 1 0 6.666z M17.338 5.674a1.2 1.2 0 1 0 0 2.4 1.2 1.2 0 0 0 0-2.4z"/></symbol>
+      <symbol id="icon-menu" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></symbol>
+      <symbol id="icon-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+    </defs>
+  </svg>
+
+  <!-- ============ NAVBAR ============ -->
+  <header class="navbar">
+    <div class="container navbar__inner">
+      <a href="#top" class="navbar__brand" aria-label="6ixEvent, ir al inicio">
+        <img src="sixseven.jpeg" alt="6ixEvent" class="navbar__logo">
+      </a>
+
+      <button class="navbar__toggle" id="navToggle" aria-expanded="false" aria-controls="navMenu" aria-label="Abrir menú de navegación">
+        <svg class="icon" aria-hidden="true"><use href="#icon-menu"></use></svg>
+      </button>
+
+      <nav class="nav-menu" id="navMenu" aria-label="Navegación principal">
+        <a href="#eventos" class="nav-menu__link">Eventos</a>
+        <a href="#como-funciona" class="nav-menu__link">Cómo funciona</a>
+        <div class="nav-menu__divider" role="separator"></div>
+        <a href="#iniciar-sesion" class="nav-menu__link">Iniciar sesión</a>
+        <a href="#registrarse" class="btn btn--cream nav-menu__cta">Registrarse</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="contenido">
+    <!-- ============ HERO ============ -->
+    <section class="hero" id="top">
+      <div class="hero__media">
+        <img
+          src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1400&h=500&fit=crop&auto=format"
+          alt="Auditorio corporativo con público asistiendo a una conferencia"
+          class="hero__image"
+          loading="eager">
+        <div class="hero__overlay"></div>
+
+        <div class="hero__content">
+          <p class="hero__eyebrow">
+            <span class="hero__dot" aria-hidden="true"></span>
+            Plataforma corporativa · Colombia
+          </p>
+          <h1 class="hero__title">Encuentra tu próximo evento</h1>
+          <p class="hero__subtitle">
+            Congresos, conferencias y foros empresariales en toda Colombia. Boletas seguras en minutos.
+          </p>
+        </div>
+      </div>
+
+      <div class="container">
+        <form class="searchbar" role="search" id="searchForm">
+          <div class="searchbar__field searchbar__field--text">
+            <svg class="icon searchbar__icon" aria-hidden="true"><use href="#icon-search"></use></svg>
+            <label class="sr-only" for="searchQuery">Nombre del evento o ponente</label>
+            <input type="text" id="searchQuery" name="q" placeholder="Nombre del evento o ponente…" autocomplete="off">
+          </div>
+
+          <div class="searchbar__field searchbar__field--select">
+            <svg class="icon searchbar__icon" aria-hidden="true"><use href="#icon-location"></use></svg>
+            <label class="sr-only" for="searchCity">Ciudad</label>
+            <select id="searchCity" name="city">
+              <option>Todas las ciudades</option>
+              <option>Bogotá</option>
+              <option>Medellín</option>
+              <option>Cali</option>
+              <option>Barranquilla</option>
+              <option>Cartagena</option>
+            </select>
+            <svg class="icon searchbar__caret" aria-hidden="true"><use href="#icon-chevron-down"></use></svg>
+          </div>
+
+          <div class="searchbar__field searchbar__field--select">
+            <svg class="icon searchbar__icon" aria-hidden="true"><use href="#icon-calendar"></use></svg>
+            <label class="sr-only" for="searchDate">Fecha</label>
+            <select id="searchDate" name="date">
+              <option>Cualquier fecha</option>
+              <option>Esta semana</option>
+              <option>Este mes</option>
+              <option>Octubre 2026</option>
+              <option>Noviembre 2026</option>
+              <option>Diciembre 2026</option>
+            </select>
+            <svg class="icon searchbar__caret" aria-hidden="true"><use href="#icon-chevron-down"></use></svg>
+          </div>
+
+          <button type="submit" class="btn btn--primary searchbar__submit">
+            <svg class="icon" aria-hidden="true"><use href="#icon-search"></use></svg>
+            Buscar eventos
+          </button>
+        </form>
+
+        <div class="filters">
+          <span class="filters__label">Categorías populares:</span>
+          <div class="filters__scroller">
+            <button type="button" class="chip" data-category="Conferencia">Conferencias</button>
+            <button type="button" class="chip" data-category="Congreso">Congresos</button>
+            <button type="button" class="chip" data-category="Exposición">Exposiciones</button>
+            <button type="button" class="chip" data-category="Gala">Galas</button>
+            <button type="button" class="chip" data-category="Foro">Foros</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ TRUST STRIP ============ -->
+    <section class="trust" aria-label="Cifras de la plataforma">
+      <div class="container trust__grid">
+        <div class="trust__stat">
+          <span class="trust__value">1.8M+</span>
+          <span class="trust__label">Boletas vendidas</span>
+        </div>
+        <div class="trust__stat">
+          <span class="trust__value">4.200+</span>
+          <span class="trust__label">Eventos gestionados</span>
+        </div>
+        <div class="trust__stat">
+          <span class="trust__value">620</span>
+          <span class="trust__label">Organizadores activos</span>
+        </div>
+        <div class="trust__stat">
+          <span class="trust__value">38</span>
+          <span class="trust__label">Ciudades en Colombia</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ EVENTOS DESTACADOS ============ -->
+    <section class="events" id="eventos">
+      <div class="container">
+        <div class="events__header">
+          <div>
+            <p class="eyebrow eyebrow--light">Próximas fechas</p>
+            <h2 class="events__title">Eventos destacados</h2>
+          </div>
+          <a href="#eventos" class="events__viewall">
+            Ver todos los eventos
+            <svg class="icon" aria-hidden="true"><use href="#icon-arrow"></use></svg>
+          </a>
+        </div>
+
+        <div class="events__grid" id="eventsGrid">
+
+          <a href="#" class="event-card" data-category="Conferencia">
+            <div class="event-card__media">
+              <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&h=380&fit=crop&auto=format" alt="Cumbre Empresarial Latinoamérica 2026" loading="lazy">
+              <span class="badge badge--category">Conferencia</span>
+              <span class="badge badge--rating"><svg class="icon" aria-hidden="true"><use href="#icon-star"></use></svg>4.9</span>
+            </div>
+            <div class="event-card__body">
+              <h3 class="event-card__title">Cumbre Empresarial Latinoamérica 2026</h3>
+              <ul class="event-card__meta">
+                <li><svg class="icon" aria-hidden="true"><use href="#icon-location"></use></svg>Medellín</li>
+                <li><svg class="icon" aria-hidden="true"><use href="#icon-calendar"></use></svg>15 Oct 2026</li>
+              </ul>
+              <div class="event-card__footer">
+                <span class="event-card__price-label">Precio desde</span>
+                <span class="event-card__price">$ 320.000</span>
+              </div>
+            </div>
+          </a>
+
+          <a href="#" class="event-card" data-category="Foro">
+            <div class="event-card__media">
+              <img src="https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=600&h=380&fit=crop&auto=format" alt="Foro Internacional de Innovación y Tecnología" loading="lazy">
+              <span class="badge badge--category">Foro</span>
+              <span class="badge badge--rating"><svg class="icon" aria-hidden="true"><use href="#icon-star"></use></svg>4.7</span>
+            </div>
+            <div class="event-card__body">
+              <h3 class="event-card__title">Foro Internacional de Innovación y Tecnología</h3>
+              <ul class="event-card__meta">
+                <li><svg class="icon" aria-hidden="true"><use href="#icon-location"></use></svg>Bogotá</li>
+                <li><svg class="icon" aria-hidden="true"><use href="#icon-calendar"></use></svg>22 Oct 2026</li>
+              </ul>
+              <div class="event-card__footer">
+                <span class="event-card__price-label">Precio desde</span>
+                <span class="event-card__price">$ 180.000</span>
+              </div>
+            </div>
+          </a>
+
+          <a href="#" class="event-card" data-category="Congreso">
+            <div class="event-card__media">
+              <img src="https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?w=600&h=380&fit=crop&auto=format" alt="Congreso Nacional de Finanzas Corporativas" loading="lazy">
+              <span class="badge badge--category">Congreso</span>
+              <span class="badge badge--rating"><svg class="icon" aria-hidden="true"><use href="#icon-star"></use></svg>4.8</span>
+            </div>
+            <div class="event-card__body">
+              <h3 class="event-card__title">Congreso Nacional de Finanzas Corporativas</h3>
+              <ul class="event-card__meta">
+                <li><svg class="icon" aria-hidden="true"><use href="#icon-location"></use></svg>Cali</li>
+                <li><svg class="icon" aria-hidden="true"><use href="#icon-calendar"></use></svg>3 Nov 2026</li>
+              </ul>
+              <div class="event-card__footer">
+                <span class="event-card__price-label">Precio desde</span>
+                <span class="event-card__price">$ 250.000</span>
+              </div>
+            </div>
+          </a>
+
+          <a href="#" class="event-card" data-category="Simposio">
+            <div class="event-card__media">
+              <img src="https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=600&h=380&fit=crop&auto=format" alt="Simposio de Derecho Corporativo 2026" loading="lazy">
+              <span class="badge badge--category">Simposio</span>
+              <span class="badge badge--rating"><svg class="icon" aria-hidden="true"><use href="#icon-star"></use></svg>4.6</span>
+            </div>
+            <div class="event-card__body">
+              <h3 class="event-card__title">Simposio de Derecho Corporativo 2026</h3>
+              <ul class="event-card__meta">
+                <li><svg class="icon" aria-hidden="true"><use href="#icon-location"></use></svg>Bogotá</li>
+                <li><svg class="icon" aria-hidden="true"><use href="#icon-calendar"></use></svg>10 Nov 2026</li>
+              </ul>
+              <div class="event-card__footer">
+                <span class="event-card__price-label">Precio desde</span>
+                <span class="event-card__price">$ 90.000</span>
+              </div>
+            </div>
+          </a>
+
+          <a href="#" class="event-card" data-category="Exposición">
+            <div class="event-card__media">
+              <img src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&h=380&fit=crop&auto=format" alt="Expo Construcción e Infraestructura 2026" loading="lazy">
+              <span class="badge badge--category">Exposición</span>
+              <span class="badge badge--rating"><svg class="icon" aria-hidden="true"><use href="#icon-star"></use></svg>4.5</span>
+            </div>
+            <div class="event-card__body">
+              <h3 class="event-card__title">Expo Construcción e Infraestructura 2026</h3>
+              <ul class="event-card__meta">
+                <li><svg class="icon" aria-hidden="true"><use href="#icon-location"></use></svg>Bogotá</li>
+                <li><svg class="icon" aria-hidden="true"><use href="#icon-calendar"></use></svg>18 Nov 2026</li>
+              </ul>
+              <div class="event-card__footer">
+                <span class="event-card__price-label">Precio desde</span>
+                <span class="event-card__price">$ 60.000</span>
+              </div>
+            </div>
+          </a>
+
+          <a href="#" class="event-card" data-category="Gala">
+            <div class="event-card__media">
+              <img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=600&h=380&fit=crop&auto=format" alt="Gala Anual de Responsabilidad Social Empresarial" loading="lazy">
+              <span class="badge badge--category">Gala</span>
+              <span class="badge badge--rating"><svg class="icon" aria-hidden="true"><use href="#icon-star"></use></svg>4.9</span>
+            </div>
+            <div class="event-card__body">
+              <h3 class="event-card__title">Gala Anual de Responsabilidad Social Empresarial</h3>
+              <ul class="event-card__meta">
+                <li><svg class="icon" aria-hidden="true"><use href="#icon-location"></use></svg>Bogotá</li>
+                <li><svg class="icon" aria-hidden="true"><use href="#icon-calendar"></use></svg>25 Nov 2026</li>
+              </ul>
+              <div class="event-card__footer">
+                <span class="event-card__price-label">Precio desde</span>
+                <span class="event-card__price">$ 450.000</span>
+              </div>
+            </div>
+          </a>
+
+          <a href="#" class="event-card event-card--extra" data-category="Seminario" hidden>
+            <div class="event-card__media">
+              <img src="https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=600&h=380&fit=crop&auto=format" alt="Seminario de Inteligencia Artificial" loading="lazy">
+              <span class="badge badge--category">Seminario</span>
+              <span class="badge badge--rating"><svg class="icon" aria-hidden="true"><use href="#icon-star"></use></svg>4.8</span>
+            </div>
+            <div class="event-card__body">
+              <h3 class="event-card__title">Seminario de Inteligencia Artificial</h3>
+              <ul class="event-card__meta">
+                <li><svg class="icon" aria-hidden="true"><use href="#icon-location"></use></svg>Medellín</li>
+                <li><svg class="icon" aria-hidden="true"><use href="#icon-calendar"></use></svg>5 Dic 2026</li>
+              </ul>
+              <div class="event-card__footer">
+                <span class="event-card__price-label">Precio desde</span>
+                <span class="event-card__price">$ 120.000</span>
+              </div>
+            </div>
+          </a>
+
+          <a href="#" class="event-card event-card--extra" data-category="Feria" hidden>
+            <div class="event-card__media">
+              <img src="https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=600&h=380&fit=crop&auto=format" alt="Feria de Emprendimiento Universitario" loading="lazy">
+              <span class="badge badge--category">Feria</span>
+              <span class="badge badge--rating"><svg class="icon" aria-hidden="true"><use href="#icon-star"></use></svg>4.4</span>
+            </div>
+            <div class="event-card__body">
+              <h3 class="event-card__title">Feria de Emprendimiento Universitario</h3>
+              <ul class="event-card__meta">
+                <li><svg class="icon" aria-hidden="true"><use href="#icon-location"></use></svg>Cali</li>
+                <li><svg class="icon" aria-hidden="true"><use href="#icon-calendar"></use></svg>12 Dic 2026</li>
+              </ul>
+              <div class="event-card__footer">
+                <span class="event-card__price-label">Precio desde</span>
+                <span class="event-card__price">$ 45.000</span>
+              </div>
+            </div>
+          </a>
+
+          <a href="#" class="event-card event-card--extra" data-category="Taller" hidden>
+            <div class="event-card__media">
+              <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=600&h=380&fit=crop&auto=format" alt="Taller de Liderazgo Ejecutivo" loading="lazy">
+              <span class="badge badge--category">Taller</span>
+              <span class="badge badge--rating"><svg class="icon" aria-hidden="true"><use href="#icon-star"></use></svg>4.9</span>
+            </div>
+            <div class="event-card__body">
+              <h3 class="event-card__title">Taller de Liderazgo Ejecutivo</h3>
+              <ul class="event-card__meta">
+                <li><svg class="icon" aria-hidden="true"><use href="#icon-location"></use></svg>Bogotá</li>
+                <li><svg class="icon" aria-hidden="true"><use href="#icon-calendar"></use></svg>15 Dic 2026</li>
+              </ul>
+              <div class="event-card__footer">
+                <span class="event-card__price-label">Precio desde</span>
+                <span class="event-card__price">$ 210.000</span>
+              </div>
+            </div>
+          </a>
+
+          <a href="#" class="event-card event-card--extra" data-category="Congreso" hidden>
+            <div class="event-card__media">
+              <img src="https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?w=600&h=380&fit=crop&auto=format" alt="Congreso de Marketing Digital" loading="lazy">
+              <span class="badge badge--category">Congreso</span>
+              <span class="badge badge--rating"><svg class="icon" aria-hidden="true"><use href="#icon-star"></use></svg>4.7</span>
+            </div>
+            <div class="event-card__body">
+              <h3 class="event-card__title">Congreso de Marketing Digital</h3>
+              <ul class="event-card__meta">
+                <li><svg class="icon" aria-hidden="true"><use href="#icon-location"></use></svg>Barranquilla</li>
+                <li><svg class="icon" aria-hidden="true"><use href="#icon-calendar"></use></svg>20 Ene 2027</li>
+              </ul>
+              <div class="event-card__footer">
+                <span class="event-card__price-label">Precio desde</span>
+                <span class="event-card__price">$ 150.000</span>
+              </div>
+            </div>
+          </a>
+
+          <a href="#" class="event-card event-card--extra" data-category="Encuentro" hidden>
+            <div class="event-card__media">
+              <img src="https://images.unsplash.com/photo-1573164713988-8665fc963095?w=600&h=380&fit=crop&auto=format" alt="Encuentro de Mujeres Líderes" loading="lazy">
+              <span class="badge badge--category">Encuentro</span>
+              <span class="badge badge--rating"><svg class="icon" aria-hidden="true"><use href="#icon-star"></use></svg>4.9</span>
+            </div>
+            <div class="event-card__body">
+              <h3 class="event-card__title">Encuentro de Mujeres Líderes</h3>
+              <ul class="event-card__meta">
+                <li><svg class="icon" aria-hidden="true"><use href="#icon-location"></use></svg>Cartagena</li>
+                <li><svg class="icon" aria-hidden="true"><use href="#icon-calendar"></use></svg>10 Feb 2027</li>
+              </ul>
+              <div class="event-card__footer">
+                <span class="event-card__price-label">Precio desde</span>
+                <span class="event-card__price">$ 130.000</span>
+              </div>
+            </div>
+          </a>
+
+          <a href="#" class="event-card event-card--extra" data-category="Foro" hidden>
+            <div class="event-card__media">
+              <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=600&h=380&fit=crop&auto=format" alt="Foro de Sostenibilidad Ambiental" loading="lazy">
+              <span class="badge badge--category">Foro</span>
+              <span class="badge badge--rating"><svg class="icon" aria-hidden="true"><use href="#icon-star"></use></svg>4.6</span>
+            </div>
+            <div class="event-card__body">
+              <h3 class="event-card__title">Foro de Sostenibilidad Ambiental</h3>
+              <ul class="event-card__meta">
+                <li><svg class="icon" aria-hidden="true"><use href="#icon-location"></use></svg>Bogotá</li>
+                <li><svg class="icon" aria-hidden="true"><use href="#icon-calendar"></use></svg>18 Feb 2027</li>
+              </ul>
+              <div class="event-card__footer">
+                <span class="event-card__price-label">Precio desde</span>
+                <span class="event-card__price">$ 80.000</span>
+              </div>
+            </div>
+          </a>
+
+        </div>
+
+        <div class="events__actions">
+          <button type="button" class="btn btn--outline" id="loadMoreBtn">Ver más eventos</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="footer" id="como-funciona">
+    <div class="container">
+      <div class="footer__top">
+        <div class="footer__brand">
+          <img src="sixseven.jpeg" alt="6ixEvent" class="footer__logo">
+          <p class="footer__tagline">
+            Plataforma líder de venta de boletas y gestión de eventos corporativos en Colombia.
+          </p>
+          <div class="footer__contact">
+            <a href="tel:+5716074400">
+              <svg class="icon" aria-hidden="true"><use href="#icon-phone"></use></svg>
+              +57 601 744 0000
+            </a>
+            <a href="mailto:contacto@sixevent.co">
+              <svg class="icon" aria-hidden="true"><use href="#icon-mail"></use></svg>
+              contacto@sixevent.co
+            </a>
+          </div>
+        </div>
+
+        <div class="footer__col">
+          <h3 class="footer__heading">Plataforma</h3>
+          <ul class="footer__list">
+            <li><a href="#">Buscar eventos</a></li>
+            <li><a href="#">Mis boletas</a></li>
+            <li><a href="#">Crear evento</a></li>
+            <li><a href="#">Precios</a></li>
+          </ul>
+        </div>
+
+        <div class="footer__col">
+          <h3 class="footer__heading">Empresa</h3>
+          <ul class="footer__list">
+            <li><a href="#">Acerca de nosotros</a></li>
+            <li><a href="#">Prensa</a></li>
+            <li><a href="#">Alianzas</a></li>
+            <li><a href="#">Trabaja con nosotros</a></li>
+          </ul>
+        </div>
+
+        <div class="footer__col">
+          <h3 class="footer__heading">Legal</h3>
+          <ul class="footer__list">
+            <li><a href="#">Términos y condiciones</a></li>
+            <li><a href="#">Política de privacidad</a></li>
+            <li><a href="#">Política de reembolsos</a></li>
+            <li><a href="#">Cookies</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer__divider" role="separator"></div>
+
+      <div class="footer__bottom">
+        <p class="footer__copy">© 2026 SIX EVENT S.A.S. · NIT 900.123.456-7 · Bogotá, Colombia</p>
+
+        <div class="footer__meta">
+          <div class="social-icons">
+            <a href="#" class="social-icons__item" aria-label="LinkedIn">
+              <svg class="icon" aria-hidden="true"><use href="#icon-linkedin"></use></svg>
+            </a>
+            <a href="#" class="social-icons__item" aria-label="Twitter/X">
+              <svg class="icon" aria-hidden="true"><use href="#icon-twitter"></use></svg>
+            </a>
+            <a href="#" class="social-icons__item" aria-label="Instagram">
+              <svg class="icon" aria-hidden="true"><use href="#icon-instagram"></use></svg>
+            </a>
+          </div>
+          <div class="payment-badges">
+            <span>Visa</span>
+            <span>Mastercard</span>
+            <span>PSE</span>
+            <span>Nequi</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
