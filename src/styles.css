@@ -2060,7 +2060,149 @@ td {
   color: var(--muted);
   font-size: 12px;
 }
+.dash {
+  background: #F3F4F6;
+  min-height: 100vh;
+  color: var(--ink);
+}
+.dash .top {
+  position: static;
+}
+.dash__in {
+  padding-top: 32px;
+  padding-bottom: 60px;
+}
+.dash h1 {
+  font-size: 26px;
+  color: var(--navy);
+}
+.kpi b {
+  font-size: 26px !important;
+}
+.dgrid2 {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 960px) {
+  .dgrid2 {
+    grid-template-columns: 1.4fr 1fr;
+  }
+}
+.hb {
+  display: grid;
+  grid-template-columns: 150px 1fr 70px;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 13px;
+}
+.hb > span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.hb > div {
+  height: 14px;
+  background: #EEF2F7;
+  border-radius: 7px;
+  overflow: hidden;
+}
+.hb i {
+  display: block;
+  height: 100%;
+  background:
+    linear-gradient(
+      90deg,
+      var(--navy),
+      var(--navy-l));
+  border-radius: 7px;
+}
+.hb b {
+  text-align: right;
+  color: var(--navy);
+}
+.donut {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.donut svg {
+  width: 180px;
+  height: 180px;
+  flex: none;
+}
+.donut ul {
+  list-style: none;
+  padding: 0;
+  flex: 1;
+  min-width: 140px;
+}
+.donut li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+.donut li i {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+}
+.donut li b {
+  margin-left: auto;
+  color: var(--navy);
+}
+.vb {
+  display: flex;
+  gap: 16px;
+  align-items: flex-end;
+  height: 220px;
+  padding-top: 10px;
+}
+.vb > div {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  font-size: 12px;
+}
+.vb i {
+  width: 70%;
+  max-width: 56px;
+  background: linear-gradient(var(--navy-l), var(--navy));
+  border-radius: 6px 6px 0 0;
+}
+.vb b {
+  color: var(--navy);
+}
+.vb span {
+  color: var(--muted);
+  text-align: center;
+}
+.occ {
+  display: inline-block;
+  width: 80px;
+  height: 8px;
+  background: #EEF2F7;
+  border-radius: 4px;
+  overflow: hidden;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+.occ i {
+  display: block;
+  height: 100%;
+  background: var(--navy-l);
+}
 @media (max-width: 600px) {
+  .hb {
+    grid-template-columns: 100px 1fr 60px;
+  }
   .tier {
     grid-template-columns: 18px 80px 1fr;
   }

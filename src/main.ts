@@ -5,6 +5,7 @@ import { getCurrentUser, updateUser } from "./services/auth";
 import { renderLogin } from "./views/login";
 import { renderEventDetail, renderCheckout } from "./views/screens";
 import { renderProfile } from "./views/profile";
+import { renderDashboard } from "./views/dashboard";
 import { renderCreateEvent, renderEditEvent, renderHowItWorks, renderStatic } from "./views/pages";
 
 /* ── Utilidades ── */
@@ -52,7 +53,7 @@ function navbar() {
   return `<header class="nav"><div class="container nav__in">
     <a href="#" data-go="home"><img src="${logo}" alt="6ix Event logo" height="40"></a>
     <nav class="nav__links"><a class="hide-sm" href="#eventos">Eventos</a>
-      <button class="link hide-sm" data-go="how">Cómo funciona</button>${right}</nav></div></header>`;
+      <button class="link hide-sm" data-go="how">Cómo funciona</button>${u && u.role !== "cliente" ? `<button class="link" data-go="dashboard">Panel</button>` : ""}${right}</nav></div></header>`;
 }
 
 const select = (id: string, ico: string, opts: string[], val: string, cls = "") =>
@@ -134,7 +135,7 @@ function paintGrid() {
 }
 
 /* ── Navegación ── */
-type Page = "edit-event" | "home" | "login" | "register" | "how" | "profile" | "event" | "checkout" | "create-event" | "static";
+type Page = "dashboard" | "edit-event" | "home" | "login" | "register" | "how" | "profile" | "event" | "checkout" | "create-event" | "static";
 
 function render(page: Page, title?: string) {
   window.scrollTo({ top: 0 });
@@ -152,6 +153,10 @@ function render(page: Page, title?: string) {
     if (page === "edit-event") return current ? renderEditEvent(root, current, done) : go("home");
     return renderCreateEvent(root, done);
   }
+  if (page === "dashboard") {
+    app.innerHTML = `<main id="dash-root" style="flex:1"></main>${footer()}`;
+    return renderDashboard($("#dash-root")!, () => go("home"));
+  }
   if (page === "profile") {
     app.innerHTML = `<main id="prof-root" style="flex:1"></main>${footer()}`;
     return renderProfile($("#prof-root")!, () => go("home"));
@@ -168,7 +173,7 @@ function render(page: Page, title?: string) {
   app.innerHTML = `${navbar()}<main><section class="placeholder"><h1>${esc(name)}</h1><p>Esta pantalla está pendiente de migrar.</p><button class="btn btn--cream" data-go="home">Volver al inicio</button></section></main>${footer()}`;
 }
 
-const HASH: Partial<Record<Page, string>> = { home: "#/", login: "#/login", register: "#/registro", how: "#/como-funciona", profile: "#/perfil", "create-event": "#/crear-evento" };
+const HASH: Partial<Record<Page, string>> = { home: "#/", login: "#/login", register: "#/registro", how: "#/como-funciona", profile: "#/perfil", "create-event": "#/crear-evento", dashboard: "#/panel" };
 function hashFor(page: Page, title?: string) {
   if (page === "event") return `#/evento/${current?.id}`;
   if (page === "edit-event") return `#/editar-evento/${current?.id}`;
@@ -192,6 +197,7 @@ function route() {
     case "info": return render("static", decodeURIComponent(b));
     case "perfil": return u ? render("profile") : go("login");
     case "crear-evento": return u ? render("create-event") : go("login");
+    case "panel": return u && u.role !== "cliente" ? render("dashboard") : go("home");
     case "editar-evento": current = ev; return u && ev ? render("edit-event") : go(u ? "home" : "login");
     case "evento": current = ev; return ev ? render("event") : go("home");
     case "checkout": current = ev; return !ev ? go("home") : u ? render("checkout") : go("login");
