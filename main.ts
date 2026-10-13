@@ -1,12 +1,6 @@
 import "./styles.css";
 import logo from "./assets/logo-new.png";
-import { getEvents, deleteEvent, formatDateString, placeLabel, type EventItem } from "./db";
-import { getCurrentUser, updateUser } from "./auth";
-import { renderLogin } from "./login";
-import { renderEventDetail, renderCheckout } from "./screens";
-import { renderProfile } from "./profile";
-import { renderDashboard } from "./dashboard";
-import { renderCreateEvent, renderEditEvent, renderHowItWorks, renderStatic } from "./pages";
+import { getEvents, formatDateString, placeLabel, type EventItem } from "./db";
 
 /* ── Utilidades ── */
 const esc = (s: string) =>
@@ -14,7 +8,6 @@ const esc = (s: string) =>
 const cop = (n: number) => "$ " + n.toLocaleString("es-CO");
 const $ = <T extends HTMLElement>(sel: string) => document.querySelector<T>(sel);
 const app = $("#app")!;
-let current: EventItem | null = null;
 
 const ic = {
   search: "M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z",
@@ -46,14 +39,9 @@ const state = {
 
 /* ── Vistas ── */
 function navbar() {
-  const u = getCurrentUser();
-  const right = u
-    ? `<button class="user-chip" data-go="profile"><span class="avatar">${esc(u.name.charAt(0).toUpperCase())}</span><span class="hide-sm">${esc(u.name.split(" ")[0])}</span></button>`
-    : `<button class="link" data-go="login">Entrar</button><button class="btn btn--cream" data-go="register">Registro</button>`;
   return `<header class="nav"><div class="container nav__in">
-    <a href="#" data-go="home"><img src="${logo}" alt="6ix Event logo" height="40"></a>
-    <nav class="nav__links"><a class="hide-sm" href="#eventos">Eventos</a>
-      <button class="link hide-sm" data-go="how">Cómo funciona</button>${u && u.role !== "cliente" ? `<button class="link" data-go="dashboard">Panel</button>` : ""}${right}</nav></div></header>`;
+    <a href="#"><img src="${logo}" alt="6ix Event logo" height="40"></a>
+    <nav class="nav__links"><a class="hide-sm" href="#eventos">Eventos</a></nav></div></header>`;
 }
 
 const select = (id: string, ico: string, opts: string[], val: string, cls = "") =>
@@ -78,15 +66,10 @@ function hero() {
 }
 
 function card(e: EventItem) {
-  const u = getCurrentUser();
-  const fav = !!u?.favorites?.includes(e.id);
-  const canDel = u?.role === "admin" || (u?.role === "agente" && e.createdBy === u.id);
   return `<div class="card-wrap">
-    ${canDel ? `<button class="card__edit" data-editev="${e.id}" title="Editar evento" aria-label="Editar evento">✎</button><button class="card__del" data-del="${e.id}" title="Eliminar evento" aria-label="Eliminar evento">✕</button>` : ""}
     <article class="card" tabindex="0" role="button" data-event="${e.id}" aria-label="Ver detalles de ${esc(e.title)}">
       <div class="card__img"><img src="${esc(e.img)}" alt="${esc(e.title)}" loading="lazy"><span class="badge">${esc(e.category)}</span>
-        <div class="card__tr"><button class="fav${fav ? " is-on" : ""}" data-fav="${e.id}" aria-pressed="${fav}" aria-label="${fav ? "Quitar de favoritos" : "Agregar a favoritos"}">${icon(ic.heart, 16, fav ? "currentColor" : "none")}</button>
-        <span class="rating">${icon(ic.star, 12)}${e.rating}</span></div></div>
+        <div class="card__tr"><span class="rating">${icon(ic.star, 12)}${e.rating}</span></div></div>
       <div class="card__body"><h3>${esc(e.title)}</h3>
         <p class="meta">${icon(ic.location, 14)}${esc(placeLabel(e))}</p><p class="meta">${icon(ic.calendar, 14)}${formatDateString(e.date)}</p><hr>
         <div class="price"><small>Precio desde</small><strong>${cop(e.price)}</strong></div></div></article></div>`;
@@ -127,82 +110,8 @@ function paintGrid() {
   $("#grid-root")!.innerHTML = state.filtered.length
     ? `<div class="grid">${list.map(card).join("")}</div>`
     : `<div class="empty">No se encontraron eventos con los filtros seleccionados.</div>`;
-  const u = getCurrentUser();
-  const canCreate = u?.role === "admin" || u?.role === "agente";
   $("#more")!.innerHTML =
-    (state.visible < state.filtered.length ? `<button class="btn btn--ghost" id="btn-more">Ver más eventos</button>` : "") +
-    (canCreate ? `<button class="btn btn--cream" data-go="create-event">Crear nuevo evento</button>` : "");
-}
-
-/* ── Navegación ── */
-type Page = "dashboard" | "edit-event" | "home" | "login" | "register" | "how" | "profile" | "event" | "checkout" | "create-event" | "static";
-
-function render(page: Page, title?: string) {
-  window.scrollTo({ top: 0 });
-  if (page === "home") return renderHome();
-  if (page === "login" || page === "register") {
-    app.innerHTML = `<main id="auth-root" style="flex:1"></main>${footer()}`;
-    return renderLogin($("#auth-root")!, page, () => go("home"), () => go("home"));
-  }
-  if (page === "how" || page === "create-event" || page === "edit-event" || page === "static") {
-    app.innerHTML = `<main id="pg-root" style="flex:1"></main>${footer()}`;
-    const root = $("#pg-root")!;
-    if (page === "how") return renderHowItWorks(root, () => go("home"));
-    if (page === "static") return renderStatic(root, title ?? "", () => go("home"));
-    const done = () => { state.all = state.filtered = getEvents(); state.category = null; state.visible = PAGE_SIZE; go("home"); };
-    if (page === "edit-event") return current ? renderEditEvent(root, current, done) : go("home");
-    return renderCreateEvent(root, done);
-  }
-  if (page === "dashboard") {
-    app.innerHTML = `<main id="dash-root" style="flex:1"></main>${footer()}`;
-    return renderDashboard($("#dash-root")!, () => go("home"));
-  }
-  if (page === "profile") {
-    app.innerHTML = `<main id="prof-root" style="flex:1"></main>${footer()}`;
-    return renderProfile($("#prof-root")!, () => go("home"));
-  }
-  if ((page === "event" || page === "checkout") && current) {
-    app.innerHTML = `<main id="scr" style="flex:1;background:linear-gradient(135deg,#1E3A5F,#3B6EA5)"></main>${footer()}`;
-    const root = $("#scr")!;
-    return page === "event"
-      ? renderEventDetail(root, current, () => go("home"), () => go("checkout"), () => go("login"))
-      : renderCheckout(root, current, () => go("event"), () => go("profile"));
-  }
-  // TODO: migrar estas pantallas ( EventDetail, Checkout, ClientProfile, CreateEvent, HowItWorks, StaticPage)
-  const name = title ?? ({ login: "Iniciar sesión", register: "Registro", how: "Cómo funciona", profile: "Mi perfil", event: "Detalle del evento", checkout: "Pago", "create-event": "Crear evento", static: "Información" } as Record<string, string>)[page];
-  app.innerHTML = `${navbar()}<main><section class="placeholder"><h1>${esc(name)}</h1><p>Esta pantalla está pendiente de migrar.</p><button class="btn btn--cream" data-go="home">Volver al inicio</button></section></main>${footer()}`;
-}
-
-const HASH: Partial<Record<Page, string>> = { home: "#/", login: "#/login", register: "#/registro", how: "#/como-funciona", profile: "#/perfil", "create-event": "#/crear-evento", dashboard: "#/panel" };
-function hashFor(page: Page, title?: string) {
-  if (page === "event") return `#/evento/${current?.id}`;
-  if (page === "edit-event") return `#/editar-evento/${current?.id}`;
-  if (page === "checkout") return `#/checkout/${current?.id}`;
-  if (page === "static") return `#/info/${encodeURIComponent(title ?? "")}`;
-  return HASH[page] ?? "#/";
-}
-/** Navega cambiando la URL (así funciona el botón "atrás" y los enlaces compartidos) */
-function go(page: Page, title?: string) {
-  const h = hashFor(page, title);
-  if (location.hash === h || (h === "#/" && !location.hash)) render(page, title); else location.hash = h;
-}
-function route() {
-  const [a = "", b = ""] = location.hash.replace(/^#\/?/, "").split("/");
-  const u = getCurrentUser();
-  const ev = state.all.find(e => String(e.id) === b) ?? null;
-  switch (a) {
-    case "login": return render("login");
-    case "registro": return render("register");
-    case "como-funciona": return render("how");
-    case "info": return render("static", decodeURIComponent(b));
-    case "perfil": return u ? render("profile") : go("login");
-    case "crear-evento": return u ? render("create-event") : go("login");
-    case "panel": return u && u.role !== "cliente" ? render("dashboard") : go("home");
-    case "editar-evento": current = ev; return u && ev ? render("edit-event") : go(u ? "home" : "login");
-    case "evento": current = ev; return ev ? render("event") : go("home");
-    case "checkout": current = ev; return !ev ? go("home") : u ? render("checkout") : go("login");
-    default: return render("home");
-  }
+    (state.visible < state.filtered.length ? `<button class="btn btn--ghost" id="btn-more">Ver más eventos</button>` : "");
 }
 
 function renderHome() {
@@ -229,23 +138,6 @@ function applyFilters() {
 /* ── Eventos de usuario (delegación) ── */
 document.addEventListener("click", ev => {
   const t = ev.target as HTMLElement;
-  const fav = t.closest<HTMLElement>("#grid-root [data-fav]");
-  if (fav) {
-    const u = getCurrentUser();
-    if (!u) return go("login");
-    const id = Number(fav.dataset.fav), favs = u.favorites ?? [];
-    updateUser({ favorites: favs.includes(id) ? favs.filter(f => f !== id) : [...favs, id] });
-    return paintGrid();
-  }
-  const del = t.closest<HTMLElement>("#grid-root [data-del]");
-  if (del) {
-    if (confirm("¿Estás seguro de eliminar este evento?")) {
-      deleteEvent(Number(del.dataset.del));
-      state.all = state.filtered = getEvents();
-      paintGrid();
-    }
-    return;
-  }
   const cat = t.closest<HTMLElement>("#chips [data-cat]");
   if (cat) {
     const c = cat.dataset.cat!;
@@ -254,23 +146,8 @@ document.addEventListener("click", ev => {
     state.filtered = state.category ? state.all.filter(e => e.category.startsWith(state.category!)) : state.all;
     paintChips(); return paintGrid();
   }
-  const edit = t.closest<HTMLElement>("#grid-root [data-editev]");
-  if (edit) { current = state.all.find(e => e.id === Number(edit.dataset.editev)) ?? null; return go("edit-event"); }
-  const card = t.closest<HTMLElement>("#grid-root [data-event]");
-  if (card) { current = state.all.find(e => e.id === Number(card.dataset.event)) ?? null; return go("event"); }
-  const nav = t.closest<HTMLElement>("[data-go]");
-  if (nav) { ev.preventDefault(); return go(nav.dataset.go as Page); }
   const foot = t.closest<HTMLElement>("[data-footer]")?.dataset.footer;
-  if (foot) {
-    const u = getCurrentUser();
-    if (foot === "Buscar eventos") { go("home"); return void setTimeout(() => $("#eventos")?.scrollIntoView({ behavior: "smooth" }), 60); }
-    if (foot === "Mis boletas") return go(u ? "profile" : "login");
-    if (foot === "Crear evento") {
-      if (!u) return go("login");
-      return u.role === "cliente" ? alert("Necesitas permisos de administrador o agente para crear un evento.") : go("create-event");
-    }
-    return go("static", foot);
-  }
+  if (foot === "Buscar eventos") return void $("#eventos")?.scrollIntoView({ behavior: "smooth" });
   if (t.closest("#btn-search")) return applyFilters();
   if (t.closest("#btn-more")) { state.visible += PAGE_SIZE; paintGrid(); }
 });
@@ -310,6 +187,5 @@ function cookieBanner() {
   });
 }
 
-window.addEventListener("hashchange", route);
-route();
+renderHome();
 cookieBanner();

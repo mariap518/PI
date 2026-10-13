@@ -1,5 +1,3 @@
-import { locate } from "./geo";
-
 export interface EventItem {
   id: number;
   title: string;
@@ -54,8 +52,6 @@ const DESC: Record<number, string> = {
 /** Eventos antiguos: completa país, departamento y descripción */
 function normalize(e: EventItem): EventItem {
   let r = e;
-  if (r.department === "Bogotá D.C.") r = { ...r, department: "Cundinamarca" }; // Bogotá pertenece a Cundinamarca
-  if (!r.country || !r.department) { const g = locate(r.city); r = { ...r, country: r.country ?? g?.country ?? "Colombia", department: r.department ?? g?.department ?? "" }; }
   if (!r.description) r = { ...r, description: DESC[r.id] ?? `${r.title} es un evento de ${r.category.toLowerCase()} que se realizará en ${r.city}. Reúne a profesionales y organizaciones del sector para compartir experiencias, conocimiento y oportunidades de negocio.` };
   return r;
 }
@@ -94,40 +90,9 @@ const initialEvents: EventItem[] = [
 ];
 
 let eventsDB: EventItem[] = loadEvents();
-let nextId = eventsDB.length > 0 ? Math.max(...eventsDB.map(e => e.id)) + 1 : 17;
 
 export function getEvents() {
   return [...eventsDB];
-}
-
-export function addEvent(event: Omit<EventItem, "id" | "rating">) {
-  const newEvent: EventItem = {
-    ...event,
-    id: nextId++,
-    rating: 5.0,
-  };
-  eventsDB = [newEvent, ...eventsDB];
-  saveEvents(eventsDB);
-  return newEvent;
-}
-
-export function updateEvent(id: number, patch: Partial<EventItem>) {
-  eventsDB = eventsDB.map(e => (e.id === id ? { ...e, ...patch, id } : e));
-  saveEvents(eventsDB);
-}
-
-export function deleteEvent(id: number) {
-  eventsDB = eventsDB.filter(e => e.id !== id);
-  saveEvents(eventsDB);
-}
-
-export function consumeTickets(id: number, qty: number, category?: string) {
-  const e = eventsDB.find(x => x.id === id);
-  if (!e || e.availableTickets === undefined) return;
-  e.availableTickets = Math.max(0, e.availableTickets - qty);
-  const c = e.ticketCategories?.find(x => x.name === category);
-  if (c && c.available !== undefined) c.available = Math.max(0, c.available - qty);
-  saveEvents(eventsDB);
 }
 
 export function formatDateString(dateStr: string) {
