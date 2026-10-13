@@ -1,6 +1,8 @@
 import "./styles.css";
 import logo from "./assets/logo-new.png";
 import { getEvents, formatDateString, placeLabel, type EventItem } from "./services/db";
+import { getCurrentUser, updateUser, logout } from "./services/auth";
+import { renderLogin } from "./views/login";
 import { renderHowItWorks, renderStatic } from "./views/pages";
 
 /* ── Utilidades ── */
@@ -40,10 +42,14 @@ const state = {
 
 /* ── Vistas ── */
 function navbar() {
+  const u = getCurrentUser();
+  const right = u
+    ? `<button class="user-chip" data-go="profile"><span class="avatar">${esc(u.name.charAt(0).toUpperCase())}</span><span class="hide-sm">${esc(u.name.split(" ")[0])}</span></button><button class="link" data-logout>Salir</button>`
+    : `<button class="link" data-go="login">Entrar</button><button class="btn btn--cream" data-go="register">Registro</button>`;
   return `<header class="nav"><div class="container nav__in">
     <a href="#" data-go="home"><img src="${logo}" alt="6ix Event logo" height="40"></a>
     <nav class="nav__links"><a class="hide-sm" href="#eventos">Eventos</a>
-      <button class="link hide-sm" data-go="how">Cómo funciona</button></nav></div></header>`;
+      <button class="link hide-sm" data-go="how">Cómo funciona</button>${right}</nav></div></header>`;
 }
 
 const select = (id: string, ico: string, opts: string[], val: string, cls = "") =>
@@ -68,10 +74,13 @@ function hero() {
 }
 
 function card(e: EventItem) {
+  const u = getCurrentUser();
+  const fav = !!u?.favorites?.includes(e.id);
   return `<div class="card-wrap">
     <article class="card" tabindex="0" role="button" data-event="${e.id}" aria-label="Ver detalles de ${esc(e.title)}">
       <div class="card__img"><img src="${esc(e.img)}" alt="${esc(e.title)}" loading="lazy"><span class="badge">${esc(e.category)}</span>
-        <div class="card__tr"><span class="rating">${icon(ic.star, 12)}${e.rating}</span></div></div>
+        <div class="card__tr"><button class="fav${fav ? " is-on" : ""}" data-fav="${e.id}" aria-pressed="${fav}" aria-label="${fav ? "Quitar de favoritos" : "Agregar a favoritos"}">${icon(ic.heart, 16, fav ? "currentColor" : "none")}</button>
+        <span class="rating">${icon(ic.star, 12)}${e.rating}</span></div></div>
       <div class="card__body"><h3>${esc(e.title)}</h3>
         <p class="meta">${icon(ic.location, 14)}${esc(placeLabel(e))}</p><p class="meta">${icon(ic.calendar, 14)}${formatDateString(e.date)}</p><hr>
         <div class="price"><small>Precio desde</small><strong>${cop(e.price)}</strong></div></div></article></div>`;
@@ -117,20 +126,27 @@ function paintGrid() {
 }
 
 /* ── Navegación ── */
-type Page = "home" | "how" | "static";
+type Page = "home" | "login" | "register" | "how" | "profile" | "static";
 
 function render(page: Page, title?: string) {
   window.scrollTo({ top: 0 });
   if (page === "home") return renderHome();
+  if (page === "login" || page === "register") {
+    app.innerHTML = `<main id="auth-root" style="flex:1"></main>${footer()}`;
+    return renderLogin($("#auth-root")!, page, () => go("home"), () => go("home"));
+  }
   if (page === "how" || page === "static") {
     app.innerHTML = `<main id="pg-root" style="flex:1"></main>${footer()}`;
     const root = $("#pg-root")!;
     if (page === "how") return renderHowItWorks(root, () => go("home"));
     return renderStatic(root, title ?? "", () => go("home"));
   }
+  // TODO: migrar estas pantallas ( EventDetail, Checkout, ClientProfile, CreateEvent, HowItWorks, StaticPage)
+  const name = title ?? ({ login: "Iniciar sesión", register: "Registro", how: "Cómo funciona", profile: "Mi perfil", event: "Detalle del evento", checkout: "Pago", "create-event": "Crear evento", static: "Información" } as Record<string, string>)[page];
+  app.innerHTML = `${navbar()}<main><section class="placeholder"><h1>${esc(name)}</h1><p>Esta pantalla está pendiente de migrar.</p><button class="btn btn--cream" data-go="home">Volver al inicio</button></section></main>${footer()}`;
 }
 
-const HASH: Partial<Record<Page, string>> = { home: "#/", how: "#/como-funciona" };
+const HASH: Partial<Record<Page, string>> = { home: "#/", login: "#/login", register: "#/registro", how: "#/como-funciona", profile: "#/perfil" };
 function hashFor(page: Page, title?: string) {
   if (page === "static") return `#/info/${encodeURIComponent(title ?? "")}`;
   return HASH[page] ?? "#/";
@@ -142,9 +158,13 @@ function go(page: Page, title?: string) {
 }
 function route() {
   const [a = "", b = ""] = location.hash.replace(/^#\/?/, "").split("/");
+  const u = getCurrentUser();
   switch (a) {
+    case "login": return render("login");
+    case "registro": return render("register");
     case "como-funciona": return render("how");
     case "info": return render("static", decodeURIComponent(b));
+    case "perfil": return u ? render("profile") : go("login");
     default: return render("home");
   }
 }
@@ -173,6 +193,14 @@ function applyFilters() {
 /* ── Eventos de usuario (delegación) ── */
 document.addEventListener("click", ev => {
   const t = ev.target as HTMLElement;
+  const fav = t.closest<HTMLElement>("#grid-root [data-fav]");
+  if (fav) {
+    const u = getCurrentUser();
+    if (!u) return go("login");
+    const id = Number(fav.dataset.fav), favs = u.favorites ?? [];
+    updateUser({ favorites: favs.includes(id) ? favs.filter(f => f !== id) : [...favs, id] });
+    return paintGrid();
+  }
   const cat = t.closest<HTMLElement>("#chips [data-cat]");
   if (cat) {
     const c = cat.dataset.cat!;
@@ -181,11 +209,14 @@ document.addEventListener("click", ev => {
     state.filtered = state.category ? state.all.filter(e => e.category.startsWith(state.category!)) : state.all;
     paintChips(); return paintGrid();
   }
+  if (t.closest("[data-logout]")) { logout(); return go("home"); }
   const nav = t.closest<HTMLElement>("[data-go]");
   if (nav) { ev.preventDefault(); return go(nav.dataset.go as Page); }
   const foot = t.closest<HTMLElement>("[data-footer]")?.dataset.footer;
   if (foot) {
+    const u = getCurrentUser();
     if (foot === "Buscar eventos") { go("home"); return void setTimeout(() => $("#eventos")?.scrollIntoView({ behavior: "smooth" }), 60); }
+    if (foot === "Mis boletas") return go(u ? "profile" : "login");
     return go("static", foot);
   }
   if (t.closest("#btn-search")) return applyFilters();

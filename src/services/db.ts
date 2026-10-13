@@ -1,3 +1,5 @@
+import { locate } from "./geo";
+
 export interface EventItem {
   id: number;
   title: string;
@@ -52,6 +54,8 @@ const DESC: Record<number, string> = {
 /** Eventos antiguos: completa país, departamento y descripción */
 function normalize(e: EventItem): EventItem {
   let r = e;
+  if (r.department === "Bogotá D.C.") r = { ...r, department: "Cundinamarca" }; // Bogotá pertenece a Cundinamarca
+  if (!r.country || !r.department) { const g = locate(r.city); r = { ...r, country: r.country ?? g?.country ?? "Colombia", department: r.department ?? g?.department ?? "" }; }
   if (!r.description) r = { ...r, description: DESC[r.id] ?? `${r.title} es un evento de ${r.category.toLowerCase()} que se realizará en ${r.city}. Reúne a profesionales y organizaciones del sector para compartir experiencias, conocimiento y oportunidades de negocio.` };
   return r;
 }
