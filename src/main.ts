@@ -3,6 +3,7 @@ import logo from "./assets/logo-new.png";
 import { getEvents, formatDateString, placeLabel, type EventItem } from "./services/db";
 import { getCurrentUser, updateUser, logout } from "./services/auth";
 import { renderLogin } from "./views/login";
+import { renderEventDetail, renderCheckout } from "./views/screens";
 import { renderHowItWorks, renderStatic } from "./views/pages";
 
 /* ── Utilidades ── */
@@ -11,6 +12,7 @@ const esc = (s: string) =>
 const cop = (n: number) => "$ " + n.toLocaleString("es-CO");
 const $ = <T extends HTMLElement>(sel: string) => document.querySelector<T>(sel);
 const app = $("#app")!;
+let current: EventItem | null = null;
 
 const ic = {
   search: "M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z",
@@ -126,7 +128,7 @@ function paintGrid() {
 }
 
 /* ── Navegación ── */
-type Page = "home" | "login" | "register" | "how" | "profile" | "static";
+type Page = "home" | "login" | "register" | "how" | "profile" | "event" | "checkout" | "static";
 
 function render(page: Page, title?: string) {
   window.scrollTo({ top: 0 });
@@ -141,6 +143,13 @@ function render(page: Page, title?: string) {
     if (page === "how") return renderHowItWorks(root, () => go("home"));
     return renderStatic(root, title ?? "", () => go("home"));
   }
+  if ((page === "event" || page === "checkout") && current) {
+    app.innerHTML = `<main id="scr" style="flex:1;background:linear-gradient(135deg,#1E3A5F,#3B6EA5)"></main>${footer()}`;
+    const root = $("#scr")!;
+    return page === "event"
+      ? renderEventDetail(root, current, () => go("home"), () => go("checkout"), () => go("login"))
+      : renderCheckout(root, current, () => go("event"), () => { alert("¡Reserva confirmada! Pronto podrás ver tus boletas en tu perfil."); go("home"); });
+  }
   // TODO: migrar estas pantallas ( EventDetail, Checkout, ClientProfile, CreateEvent, HowItWorks, StaticPage)
   const name = title ?? ({ login: "Iniciar sesión", register: "Registro", how: "Cómo funciona", profile: "Mi perfil", event: "Detalle del evento", checkout: "Pago", "create-event": "Crear evento", static: "Información" } as Record<string, string>)[page];
   app.innerHTML = `${navbar()}<main><section class="placeholder"><h1>${esc(name)}</h1><p>Esta pantalla está pendiente de migrar.</p><button class="btn btn--cream" data-go="home">Volver al inicio</button></section></main>${footer()}`;
@@ -148,6 +157,8 @@ function render(page: Page, title?: string) {
 
 const HASH: Partial<Record<Page, string>> = { home: "#/", login: "#/login", register: "#/registro", how: "#/como-funciona", profile: "#/perfil" };
 function hashFor(page: Page, title?: string) {
+  if (page === "event") return `#/evento/${current?.id}`;
+  if (page === "checkout") return `#/checkout/${current?.id}`;
   if (page === "static") return `#/info/${encodeURIComponent(title ?? "")}`;
   return HASH[page] ?? "#/";
 }
@@ -159,12 +170,15 @@ function go(page: Page, title?: string) {
 function route() {
   const [a = "", b = ""] = location.hash.replace(/^#\/?/, "").split("/");
   const u = getCurrentUser();
+  const ev = state.all.find(e => String(e.id) === b) ?? null;
   switch (a) {
     case "login": return render("login");
     case "registro": return render("register");
     case "como-funciona": return render("how");
     case "info": return render("static", decodeURIComponent(b));
     case "perfil": return u ? render("profile") : go("login");
+    case "evento": current = ev; return ev ? render("event") : go("home");
+    case "checkout": current = ev; return !ev ? go("home") : u ? render("checkout") : go("login");
     default: return render("home");
   }
 }
@@ -209,6 +223,8 @@ document.addEventListener("click", ev => {
     state.filtered = state.category ? state.all.filter(e => e.category.startsWith(state.category!)) : state.all;
     paintChips(); return paintGrid();
   }
+  const card = t.closest<HTMLElement>("#grid-root [data-event]");
+  if (card) { current = state.all.find(e => e.id === Number(card.dataset.event)) ?? null; return go("event"); }
   if (t.closest("[data-logout]")) { logout(); return go("home"); }
   const nav = t.closest<HTMLElement>("[data-go]");
   if (nav) { ev.preventDefault(); return go(nav.dataset.go as Page); }

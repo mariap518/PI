@@ -99,6 +99,15 @@ export function getEvents() {
   return [...eventsDB];
 }
 
+export function consumeTickets(id: number, qty: number, category?: string) {
+  const e = eventsDB.find(x => x.id === id);
+  if (!e || e.availableTickets === undefined) return;
+  e.availableTickets = Math.max(0, e.availableTickets - qty);
+  const c = e.ticketCategories?.find(x => x.name === category);
+  if (c && c.available !== undefined) c.available = Math.max(0, c.available - qty);
+  saveEvents(eventsDB);
+}
+
 export function formatDateString(dateStr: string) {
   if (!dateStr) return "";
   const parts = dateStr.split('-');
