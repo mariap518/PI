@@ -1,6 +1,7 @@
 import "./styles.css";
 import logo from "./assets/logo-new.png";
 import { getEvents, formatDateString, placeLabel, type EventItem } from "./services/db";
+import { renderHowItWorks, renderStatic } from "./views/pages";
 
 /* ── Utilidades ── */
 const esc = (s: string) =>
@@ -40,8 +41,9 @@ const state = {
 /* ── Vistas ── */
 function navbar() {
   return `<header class="nav"><div class="container nav__in">
-    <a href="#"><img src="${logo}" alt="6ix Event logo" height="40"></a>
-    <nav class="nav__links"><a class="hide-sm" href="#eventos">Eventos</a></nav></div></header>`;
+    <a href="#" data-go="home"><img src="${logo}" alt="6ix Event logo" height="40"></a>
+    <nav class="nav__links"><a class="hide-sm" href="#eventos">Eventos</a>
+      <button class="link hide-sm" data-go="how">Cómo funciona</button></nav></div></header>`;
 }
 
 const select = (id: string, ico: string, opts: string[], val: string, cls = "") =>
@@ -114,6 +116,39 @@ function paintGrid() {
     (state.visible < state.filtered.length ? `<button class="btn btn--ghost" id="btn-more">Ver más eventos</button>` : "");
 }
 
+/* ── Navegación ── */
+type Page = "home" | "how" | "static";
+
+function render(page: Page, title?: string) {
+  window.scrollTo({ top: 0 });
+  if (page === "home") return renderHome();
+  if (page === "how" || page === "static") {
+    app.innerHTML = `<main id="pg-root" style="flex:1"></main>${footer()}`;
+    const root = $("#pg-root")!;
+    if (page === "how") return renderHowItWorks(root, () => go("home"));
+    return renderStatic(root, title ?? "", () => go("home"));
+  }
+}
+
+const HASH: Partial<Record<Page, string>> = { home: "#/", how: "#/como-funciona" };
+function hashFor(page: Page, title?: string) {
+  if (page === "static") return `#/info/${encodeURIComponent(title ?? "")}`;
+  return HASH[page] ?? "#/";
+}
+/** Navega cambiando la URL (así funciona el botón "atrás" y los enlaces compartidos) */
+function go(page: Page, title?: string) {
+  const h = hashFor(page, title);
+  if (location.hash === h || (h === "#/" && !location.hash)) render(page, title); else location.hash = h;
+}
+function route() {
+  const [a = "", b = ""] = location.hash.replace(/^#\/?/, "").split("/");
+  switch (a) {
+    case "como-funciona": return render("how");
+    case "info": return render("static", decodeURIComponent(b));
+    default: return render("home");
+  }
+}
+
 function renderHome() {
   app.innerHTML = `${navbar()}<main>${hero()}${eventsSection()}</main>${footer()}`;
   paintChips(); paintGrid();
@@ -146,8 +181,13 @@ document.addEventListener("click", ev => {
     state.filtered = state.category ? state.all.filter(e => e.category.startsWith(state.category!)) : state.all;
     paintChips(); return paintGrid();
   }
+  const nav = t.closest<HTMLElement>("[data-go]");
+  if (nav) { ev.preventDefault(); return go(nav.dataset.go as Page); }
   const foot = t.closest<HTMLElement>("[data-footer]")?.dataset.footer;
-  if (foot === "Buscar eventos") return void $("#eventos")?.scrollIntoView({ behavior: "smooth" });
+  if (foot) {
+    if (foot === "Buscar eventos") { go("home"); return void setTimeout(() => $("#eventos")?.scrollIntoView({ behavior: "smooth" }), 60); }
+    return go("static", foot);
+  }
   if (t.closest("#btn-search")) return applyFilters();
   if (t.closest("#btn-more")) { state.visible += PAGE_SIZE; paintGrid(); }
 });
@@ -187,5 +227,6 @@ function cookieBanner() {
   });
 }
 
-renderHome();
+window.addEventListener("hashchange", route);
+route();
 cookieBanner();
