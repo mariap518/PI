@@ -7,6 +7,14 @@ const esc = (s: string) => s.replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt
 const eye = "M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8zM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z";
 const eyeOff = "M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24M1 1l22 22";
 const svg = (d: string) => `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="${d}"/></svg>`;
+const LOGO_COLOR = "#1E3A5F";
+
+/** Filtro SVG que pinta el logo del color indicado conservando sus detalles */
+function logoTint(hex: string) {
+  const n = parseInt(hex.replace("#", ""), 16), k = 1.08;
+  const row = (c: number) => [0.2126, 0.7152, 0.0722].map(w => ((c / 255) * k * w).toFixed(4)).join(" ") + " 0 0";
+  return `<svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="logo-tint" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="${row((n >> 16) & 255)} ${row((n >> 8) & 255)} ${row(n & 255)} 0 0 0 1 0"/></filter></svg>`;
+}
 
 export function renderLogin(root: HTMLElement, startMode: "login" | "register", onBack: () => void, onSuccess: () => void) {
   const s = {
@@ -68,7 +76,7 @@ export function renderLogin(root: HTMLElement, startMode: "login" | "register", 
 
   function draw() {
     root.innerHTML = `<div class="auth"><div class="auth__l"><button class="back" id="back">← Volver al inicio</button>
-      <img src="${logo}" alt="6ixEvent logo" height="64" style="mix-blend-mode:multiply"><h1>Bienvenido a SIX EVENT</h1>
+      ${logoTint(LOGO_COLOR)}<img src="${logo}" alt="6ixEvent logo" height="120" style="filter:url(#logo-tint)"><h1>Bienvenido a SIX EVENT</h1>
       <p>La plataforma corporativa de gestión de eventos y venta de boletas más confiable de Colombia.</p>
       <div class="badges">${["1.8M+ boletas vendidas", "4.200+ eventos", "38 ciudades"].map(b => `<span>${b}</span>`).join("")}</div></div>
       <div class="auth__r"><div class="auth__box">${form()}</div></div></div>${modal()}`;

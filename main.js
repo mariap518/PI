@@ -3,6 +3,33 @@
   // src/assets/logo-new.png
   var logo_new_default = "./assets/logo-new.png";
 
+  // src/geo.ts
+  var RAW = {
+    "Colombia": "Amazonas: Leticia, Puerto Nari\xF1o | Antioquia: Medell\xEDn, Envigado, Bello, Itag\xFC\xED, Sabaneta, Rionegro, Apartad\xF3, Turbo | Arauca: Arauca, Saravena, Tame | Atl\xE1ntico: Barranquilla, Soledad, Malambo, Puerto Colombia | Bol\xEDvar: Cartagena, Magangu\xE9, Turbaco, Mompox | Boyac\xE1: Tunja, Duitama, Sogamoso, Paipa, Villa de Leyva | Caldas: Manizales, La Dorada, Chinchin\xE1 | Caquet\xE1: Florencia, San Vicente del Cagu\xE1n | Casanare: Yopal, Aguazul | Cauca: Popay\xE1n, Santander de Quilichao | Cesar: Valledupar, Aguachica | Choc\xF3: Quibd\xF3, Istmina | C\xF3rdoba: Monter\xEDa, Sahag\xFAn, Lorica | Cundinamarca: Bogot\xE1, Soacha, Zipaquir\xE1, Ch\xEDa, Fusagasug\xE1, Girardot, Facatativ\xE1 | Guain\xEDa: In\xEDrida | Guaviare: San Jos\xE9 del Guaviare | Huila: Neiva, Pitalito, Garz\xF3n | La Guajira: Riohacha, Maicao, Uribia | Magdalena: Santa Marta, Ci\xE9naga | Meta: Villavicencio, Acac\xEDas | Nari\xF1o: Pasto, Tumaco, Ipiales | Norte de Santander: C\xFAcuta, Oca\xF1a, Pamplona | Putumayo: Mocoa, Puerto As\xEDs | Quind\xEDo: Armenia, Calarc\xE1, Salento | Risaralda: Pereira, Dosquebradas | San Andr\xE9s y Providencia: San Andr\xE9s, Providencia | Santander: Bucaramanga, Floridablanca, Gir\xF3n, Piedecuesta, San Gil | Sucre: Sincelejo, Corozal | Tolima: Ibagu\xE9, Espinal, Honda | Valle del Cauca: Cali, Palmira, Buenaventura, Tulu\xE1, Buga, Cartago, Yumbo | Vaup\xE9s: Mit\xFA | Vichada: Puerto Carre\xF1o",
+    "Argentina": "Buenos Aires (CABA): Buenos Aires | C\xF3rdoba: C\xF3rdoba | Mendoza: Mendoza | Santa Fe: Rosario, Santa Fe",
+    "Chile": "Biob\xEDo: Concepci\xF3n | Regi\xF3n Metropolitana: Santiago | Valpara\xEDso: Valpara\xEDso, Vi\xF1a del Mar",
+    "Ecuador": "Azuay: Cuenca | Guayas: Guayaquil | Pichincha: Quito",
+    "Espa\xF1a": "Andaluc\xEDa: Sevilla, M\xE1laga | Catalu\xF1a: Barcelona | Comunidad de Madrid: Madrid | Comunidad Valenciana: Valencia",
+    "Estados Unidos": "California: Los \xC1ngeles, San Francisco | Florida: Miami, Orlando | Nueva York: Nueva York | Texas: Austin, Houston",
+    "M\xE9xico": "Ciudad de M\xE9xico: Ciudad de M\xE9xico | Jalisco: Guadalajara, Zapopan | Nuevo Le\xF3n: Monterrey, San Pedro Garza Garc\xEDa | Quintana Roo: Canc\xFAn, Playa del Carmen",
+    "Panam\xE1": "Chiriqu\xED: David | Panam\xE1: Ciudad de Panam\xE1",
+    "Per\xFA": "Arequipa: Arequipa | Cusco: Cusco | Lima: Lima, Miraflores"
+  };
+  var GEO = {};
+  for (const [country, deps] of Object.entries(RAW)) {
+    GEO[country] = {};
+    for (const d of deps.split("|")) {
+      const [name, list] = d.split(":");
+      GEO[country][name.trim()] = list.split(",").map((c) => c.trim());
+    }
+  }
+  var COUNTRIES = Object.keys(GEO);
+  function locate(city) {
+    for (const country of COUNTRIES) for (const [department, list] of Object.entries(GEO[country])) if (list.includes(city)) return { country, department };
+    return null;
+  }
+  var allCities = () => Array.from(new Set(COUNTRIES.flatMap((c) => Object.values(GEO[c]).flat()))).sort((a, b) => a.localeCompare(b, "es"));
+
   // src/db.ts
   function loadEvents() {
     try {
@@ -32,6 +59,11 @@
   };
   function normalize(e) {
     let r = e;
+    if (r.department === "Bogot\xE1 D.C.") r = { ...r, department: "Cundinamarca" };
+    if (!r.country || !r.department) {
+      const g = locate(r.city);
+      r = { ...r, country: r.country ?? g?.country ?? "Colombia", department: r.department ?? g?.department ?? "" };
+    }
     if (!r.description) r = { ...r, description: DESC[r.id] ?? `${r.title} es un evento de ${r.category.toLowerCase()} que se realizar\xE1 en ${r.city}. Re\xFAne a profesionales y organizaciones del sector para compartir experiencias, conocimiento y oportunidades de negocio.` };
     return r;
   }
@@ -74,9 +106,289 @@
     return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
   }
 
+  // src/auth.ts
+  var ADMIN_CREDENTIALS = { username: "admin78", password: "op98rtUcev" };
+  var ADMIN_CODES = {
+    "007": "Samuel Garcia Vinasco",
+    "008": "Maria Paula Gamboa Rengifo",
+    "009": "Juan Jose Ariza Londo\xF1o",
+    "010": "Alejandro Garcia Reyes"
+  };
+  var AGENT_CODES = {
+    "Uceva": "900",
+    "SENA": "567"
+  };
+  function loadUsers() {
+    try {
+      const data = localStorage.getItem("sixevent_users");
+      return data ? JSON.parse(data) : [];
+    } catch (e) {
+      return [];
+    }
+  }
+  function saveUsers(users) {
+    localStorage.setItem("sixevent_users", JSON.stringify(users));
+  }
+  var usersDB = loadUsers();
+  var currentUser = null;
+  try {
+    const session = localStorage.getItem("sixevent_session");
+    if (session) {
+      const sessionUser = JSON.parse(session);
+      const u = usersDB.find((u2) => u2.id === sessionUser.id);
+      if (u) currentUser = u;
+      else currentUser = sessionUser;
+    }
+  } catch (e) {
+  }
+  function saveSession(user) {
+    if (user) {
+      localStorage.setItem("sixevent_session", JSON.stringify(user));
+    } else {
+      localStorage.removeItem("sixevent_session");
+    }
+  }
+  function registerUser(user) {
+    user.points = 0;
+    user.lifetimePoints = 0;
+    user.coupons = [];
+    user.reservations = [];
+    user.favorites = [];
+    usersDB.push(user);
+    saveUsers(usersDB);
+  }
+  function loginUser(emailOrUser, pass) {
+    const u = usersDB.find((u2) => (u2.email === emailOrUser || u2.username === emailOrUser) && u2.password === pass);
+    if (u) {
+      currentUser = u;
+      saveSession(u);
+      return u;
+    }
+    return null;
+  }
+  function setAdminSession(code) {
+    const name = ADMIN_CODES[code];
+    if (!name) return null;
+    const id = "admin-" + code;
+    let adminUser = usersDB.find((u) => u.id === id);
+    if (!adminUser) {
+      adminUser = { id, name, email: "admin@sixevent.co", username: "admin78", role: "admin", points: 0, reservations: [], favorites: [] };
+      usersDB.push(adminUser);
+      saveUsers(usersDB);
+    }
+    currentUser = adminUser;
+    saveSession(adminUser);
+    return adminUser;
+  }
+  function getCurrentUser() {
+    return currentUser;
+  }
+  function logout() {
+    currentUser = null;
+    saveSession(null);
+  }
+  function updateUser(updatedData) {
+    if (!currentUser) return false;
+    try {
+      const index = usersDB.findIndex((u) => u.id === currentUser.id);
+      if (index !== -1) {
+        usersDB[index] = { ...usersDB[index], ...updatedData };
+        currentUser = usersDB[index];
+      } else {
+        currentUser = { ...currentUser, ...updatedData };
+        usersDB.push(currentUser);
+      }
+      saveUsers(usersDB);
+      saveSession(currentUser);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  // src/login.ts
+  var esc = (s) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+  var eye = "M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8zM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z";
+  var eyeOff = "M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24M1 1l22 22";
+  var svg = (d) => `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="${d}"/></svg>`;
+  var LOGO_COLOR = "#1E3A5F";
+  function logoTint(hex) {
+    const n = parseInt(hex.replace("#", ""), 16), k = 1.08;
+    const row = (c) => [0.2126, 0.7152, 0.0722].map((w) => (c / 255 * k * w).toFixed(4)).join(" ") + " 0 0";
+    return `<svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="logo-tint" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="${row(n >> 16 & 255)} ${row(n >> 8 & 255)} ${row(n & 255)} 0 0 0 1 0"/></filter></svg>`;
+  }
+  function renderLogin(root, startMode, onBack, onSuccess) {
+    const s = {
+      mode: startMode,
+      role: "cliente",
+      email: "",
+      name: "",
+      username: "",
+      password: "",
+      empresa: "Uceva",
+      cc: "",
+      phone: "",
+      city: "",
+      show: false,
+      remember: false,
+      loading: false,
+      modal: null,
+      code: "",
+      codeErr: "",
+      errs: {},
+      pending: null
+    };
+    function validate() {
+      const e = {};
+      const reg = s.mode === "register";
+      if (reg && s.role === "agente" && s.name.trim().length < 2) e.name = "Ingresa tu nombre completo.";
+      if (s.mode === "login" && !s.email.trim()) e.email = "Ingresa tu correo o usuario.";
+      if (s.mode !== "login" && !s.email.includes("@")) e.email = "Ingresa un correo v\xE1lido.";
+      if (reg && s.role === "cliente" && s.username.trim().length < 3) e.username = "Nombre de usuario debe tener m\xEDnimo 3 caracteres.";
+      if (reg && s.role === "agente" && s.cc.trim().length < 6) e.cc = "Ingresa una c\xE9dula v\xE1lida.";
+      if (reg) {
+        if (s.phone.replace(/\D/g, "").length < 10) e.phone = "Ingresa un celular v\xE1lido (m\xEDnimo 10 d\xEDgitos).";
+        if (s.city.trim().length < 2) e.city = "Ingresa tu ciudad.";
+      }
+      if (s.mode !== "forgot" && s.password.length < 6) e.password = "La contrase\xF1a debe tener al menos 6 caracteres.";
+      return e;
+    }
+    const input = (id, label, type, ph) => `<div class="fg"><label for="${id}">${label}</label><input id="${id}" type="${type}" placeholder="${ph}" value="${esc(s[id])}" class="${s.errs[id] ? "err" : ""}">${s.errs[id] ? `<small class="errtxt">${s.errs[id]}</small>` : ""}</div>`;
+    const cityInput = () => `<div class="fg"><label for="city">Ciudad</label><input id="city" type="text" list="cities-list" placeholder="Ej: Bogot\xE1" value="${esc(s.city)}" class="${s.errs.city ? "err" : ""}" autocomplete="off"><datalist id="cities-list">${allCities().map((c) => `<option value="${esc(c)}">`).join("")}</datalist>${s.errs.city ? `<small class="errtxt">${s.errs.city}</small>` : ""}</div>`;
+    function form() {
+      const reg = s.mode === "register", cli = s.role === "cliente";
+      const titles = { login: ["Iniciar sesi\xF3n", "Ingresa tus credenciales para continuar."], forgot: ["Recuperar contrase\xF1a", "Ingresa tu correo para recibir un c\xF3digo de recuperaci\xF3n."], register: ["Crear cuenta", "Reg\xEDstrate en la plataforma."] }[s.mode];
+      return `<h2>${titles[0]}</h2><p class="sub">${titles[1]}</p>
+    <form id="auth-form" novalidate>
+      ${reg ? `<div class="fg"><label>Rol</label><div class="roles">${["cliente", "agente"].map((r) => `<button type="button" data-role="${r}" class="${s.role === r ? "is-on" : ""}">${r}</button>`).join("")}</div></div>` : ""}
+      ${reg && !cli ? input("name", "Nombre completo", "text", "Tu nombre") : ""}
+      ${reg && cli ? input("username", "Nombre de usuario", "text", "Ej. jperez99") : ""}
+      ${input("email", s.mode === "login" ? "Correo o usuario" : "Correo electr\xF3nico", "text", "correo@empresa.com")}
+      ${reg ? input("phone", "Celular", "tel", "3001234567") + cityInput() : ""}
+      ${reg && !cli ? `<div class="fg"><label for="empresa">Empresa</label><select id="empresa">${Object.keys(AGENT_CODES).map((e) => `<option${e === s.empresa ? " selected" : ""}>${e}</option>`).join("")}</select></div>${input("cc", "C\xE9dula", "text", "N\xFAmero de c\xE9dula")}` : ""}
+      ${s.mode !== "forgot" ? `<div class="fg"><label for="password">Contrase\xF1a</label><div class="pw"><input id="password" type="${s.show ? "text" : "password"}" placeholder="M\xEDnimo 6 caracteres" value="${esc(s.password)}" class="${s.errs.password ? "err" : ""}"><button type="button" id="toggle-pw" aria-label="Mostrar contrase\xF1a">${svg(s.show ? eyeOff : eye)}</button></div>${s.errs.password ? `<small class="errtxt">${s.errs.password}</small>` : ""}</div>` : ""}
+      ${s.mode === "login" ? `<div class="row"><label class="chk"><input type="checkbox" id="remember"${s.remember ? " checked" : ""}> Recordarme</label><button type="button" class="lnk" data-mode="forgot">\xBFOlvidaste tu contrase\xF1a?</button></div>` : ""}
+      <button class="btn btn--navy full" type="submit"${s.loading ? " disabled" : ""}>${s.loading ? "Procesando\u2026" : s.mode === "login" ? "Entrar" : s.mode === "forgot" ? "Enviar c\xF3digo" : "Crear cuenta"}</button>
+    </form>
+    <p class="switch">${s.mode === "login" ? `\xBFNo tienes cuenta? <button class="lnk" data-mode="register">Reg\xEDstrate</button>` : `<button class="lnk" data-mode="login">Volver a iniciar sesi\xF3n</button>`}</p>`;
+    }
+    function modal() {
+      if (!s.modal) return "";
+      const admin = s.modal === "admin";
+      return `<div class="modal"><div class="modal__box"><h3>${admin ? "Acceso de administrador" : "Verificaci\xF3n de agente"}</h3>
+      <p class="sub">Ingresa tu c\xF3digo de acceso${admin ? "" : ` de ${esc(s.pending?.empresa ?? "tu empresa")}`}.</p>
+      <input id="code" type="password" placeholder="C\xF3digo" value="${esc(s.code)}" class="${s.codeErr ? "err" : ""}">${s.codeErr ? `<small class="errtxt">${s.codeErr}</small>` : ""}
+      <div class="row" style="margin-top:16px"><button class="btn btn--ghost2" id="m-cancel">Cancelar</button><button class="btn btn--navy" id="m-ok">Confirmar</button></div></div></div>`;
+    }
+    function draw() {
+      root.innerHTML = `<div class="auth"><div class="auth__l"><button class="back" id="back">\u2190 Volver al inicio</button>
+      ${logoTint(LOGO_COLOR)}<img src="${logo_new_default}" alt="6ixEvent logo" height="120" style="filter:url(#logo-tint)"><h1>Bienvenido a SIX EVENT</h1>
+      <p>La plataforma corporativa de gesti\xF3n de eventos y venta de boletas m\xE1s confiable de Colombia.</p>
+      <div class="badges">${["1.8M+ boletas vendidas", "4.200+ eventos", "38 ciudades"].map((b) => `<span>${b}</span>`).join("")}</div></div>
+      <div class="auth__r"><div class="auth__box">${form()}</div></div></div>${modal()}`;
+    }
+    function submit() {
+      s.errs = validate();
+      if (Object.keys(s.errs).length) return draw();
+      if (s.mode === "login" && s.email === ADMIN_CREDENTIALS.username && s.password === ADMIN_CREDENTIALS.password) {
+        s.modal = "admin";
+        s.code = "";
+        return draw();
+      }
+      s.loading = true;
+      draw();
+      setTimeout(() => {
+        s.loading = false;
+        if (s.mode === "forgot") {
+          alert("\xA1C\xF3digo enviado al correo! (PR\xD3XIMAMENTE)");
+          s.mode = "login";
+          return draw();
+        }
+        if (s.mode === "register") {
+          registerUser({
+            id: Date.now().toString(),
+            name: s.role === "cliente" ? s.username.trim() : s.name.trim(),
+            email: s.email,
+            username: s.username,
+            password: s.password,
+            role: s.role,
+            empresa: s.role === "agente" ? s.empresa : void 0,
+            cc: s.role === "agente" ? s.cc : void 0,
+            phone: s.phone.trim(),
+            city: s.city.trim()
+          });
+        }
+        const u = loginUser(s.email, s.password);
+        if (!u) {
+          s.errs = { password: "Credenciales incorrectas o cuenta no registrada." };
+          return draw();
+        }
+        if (u.role === "agente") {
+          s.pending = u;
+          s.modal = "agent";
+          s.code = "";
+          return draw();
+        }
+        onSuccess();
+      }, 800);
+    }
+    function confirmCode() {
+      if (s.modal === "admin") {
+        if (setAdminSession(s.code)) return onSuccess();
+        s.codeErr = "C\xF3digo de acceso inv\xE1lido.";
+      } else {
+        const need = s.pending?.empresa ? AGENT_CODES[s.pending.empresa] : void 0;
+        if (need && s.code === need) return onSuccess();
+        s.codeErr = "C\xF3digo de acceso inv\xE1lido para tu empresa.";
+      }
+      draw();
+    }
+    root.onclick = (e) => {
+      const t = e.target;
+      const mode = t.closest("[data-mode]")?.dataset.mode;
+      const role = t.closest("[data-role]")?.dataset.role;
+      if (t.closest("#back")) return onBack();
+      if (mode) {
+        s.mode = mode;
+        s.errs = {};
+        return draw();
+      }
+      if (role) {
+        s.role = role;
+        s.errs = {};
+        return draw();
+      }
+      if (t.closest("#toggle-pw")) {
+        s.show = !s.show;
+        return draw();
+      }
+      if (t.closest("#m-cancel")) {
+        logout();
+        s.modal = null;
+        s.codeErr = "";
+        return draw();
+      }
+      if (t.closest("#m-ok")) return confirmCode();
+    };
+    root.oninput = (e) => {
+      const t = e.target;
+      if (t.id === "code") s.code = t.value;
+      else if (t.id === "remember") s.remember = t.checked;
+      else if (t.id in s) s[t.id] = t.value;
+    };
+    root.onsubmit = (e) => {
+      e.preventDefault();
+      submit();
+    };
+    root.onkeydown = (e) => {
+      if (e.key === "Enter" && e.target.id === "code") confirmCode();
+    };
+    draw();
+  }
+
   // src/pages.ts
-  var esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
-  var svg = (d, s = 16) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="${d}"/></svg>`;
+  var esc2 = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+  var svg2 = (d, s = 16) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="${d}"/></svg>`;
   var ARROW = "M19 12H5M12 19l-7-7 7-7";
   var CHECK = "M20 6L9 17l-5-5";
   var backBtn = (t = "\u2190 Volver") => `<button class="lnk back2" data-back>${t}</button>`;
@@ -114,10 +426,10 @@
     ["\xBFC\xF3mo me convierto en organizador?", "Si eres agente autorizado (c\xF3digo de acceso 007\u2013010) o administrador, puedes crear y gestionar eventos desde el panel correspondiente."]
   ];
   function renderHowItWorks(root, onBack) {
-    root.innerHTML = `<div class="how"><header class="top"><div class="container top__in"><button class="tbtn" data-back>${svg(ARROW, 14)} Volver al inicio</button><img src="${logo_new_default}" alt="6ixEvent logo" height="36" style="mix-blend-mode:screen"></div></header>
+    root.innerHTML = `<div class="how"><header class="top"><div class="container top__in"><button class="tbtn" data-back>${svg2(ARROW, 14)} Volver al inicio</button><img src="${logo_new_default}" alt="6ixEvent logo" height="36" style="mix-blend-mode:screen"></div></header>
   <section class="how__hero"><span class="eyebrow">Gu\xEDa de uso</span><h1>\xBFC\xF3mo funciona SIX EVENT?</h1><p>Todo lo que necesitas saber para encontrar, comprar y disfrutar eventos corporativos en Colombia con total seguridad.</p></section>
-  <section class="container steps2">${STEPS.map(([ic2, t, d, tips], i) => `<article class="step"><div class="step__n"><span>${svg(ic2, 22)}</span><b>0${i + 1}</b></div><div><h3>${t}</h3><p>${d}</p><ul>${tips.map((x) => `<li>${svg(CHECK, 12)}${x}</li>`).join("")}</ul></div></article>`).join("")}</section>
-  <section class="how__rules"><div class="container"><h2>Normas de uso</h2><p class="sub">Reglas que garantizan una experiencia segura y justa para todos.</p><div class="rules">${RULES.map(([ic2, t, d]) => `<div class="rule"><span>${svg(ic2, 24)}</span><h3>${t}</h3><p>${d}</p></div>`).join("")}</div></div></section>
+  <section class="container steps2">${STEPS.map(([ic2, t, d, tips], i) => `<article class="step"><div class="step__n"><span>${svg2(ic2, 22)}</span><b>0${i + 1}</b></div><div><h3>${t}</h3><p>${d}</p><ul>${tips.map((x) => `<li>${svg2(CHECK, 12)}${x}</li>`).join("")}</ul></div></article>`).join("")}</section>
+  <section class="how__rules"><div class="container"><h2>Normas de uso</h2><p class="sub">Reglas que garantizan una experiencia segura y justa para todos.</p><div class="rules">${RULES.map(([ic2, t, d]) => `<div class="rule"><span>${svg2(ic2, 24)}</span><h3>${t}</h3><p>${d}</p></div>`).join("")}</div></div></section>
   <section class="container faq"><h2>Preguntas frecuentes</h2><p class="sub">Todo lo que necesitas saber antes de tu primera compra.</p>${FAQS.map(([q, a]) => `<details><summary>${q}</summary><p>${a}</p></details>`).join("")}</section>
   <section class="how__cta"><h2>\xBFListo para tu pr\xF3ximo evento?</h2><p>Explora el cat\xE1logo y reserva tus entradas con total confianza.</p><button class="btn btn--cream" data-back>Explorar eventos</button></section></div>`;
     root.onclick = (e) => {
@@ -150,8 +462,8 @@
     "Cookies": { h: "Uso de Cookies", p: ["Nuestra plataforma utiliza cookies t\xE9cnicas estrictamente necesarias para mantener tu sesi\xF3n activa y proteger tus reservas (como el token de carrito). Tambi\xE9n usamos cookies anal\xEDticas (anonimizadas) para entender c\xF3mo interact\xFAas con la web y mejorar la experiencia.", "Puedes gestionar tus preferencias desde la configuraci\xF3n de tu navegador."] }
   };
   function renderStatic(root, title, onBack) {
-    const d = DOCS[title] ?? { h: "Informaci\xF3n no disponible", p: [`El contenido solicitado para "${esc(title)}" est\xE1 siendo actualizado. Disculpa las molestias.`] };
-    root.innerHTML = `<div class="page"><div class="wrap">${backBtn(`${svg(ARROW)} Volver`)}<h1>${esc(title)}</h1><div class="doc"><h3>${d.h}</h3>${(d.p ?? []).map((x) => `<p>${x}</p>`).join("")}
+    const d = DOCS[title] ?? { h: "Informaci\xF3n no disponible", p: [`El contenido solicitado para "${esc2(title)}" est\xE1 siendo actualizado. Disculpa las molestias.`] };
+    root.innerHTML = `<div class="page"><div class="wrap">${backBtn(`${svg2(ARROW)} Volver`)}<h1>${esc2(title)}</h1><div class="doc"><h3>${d.h}</h3>${(d.p ?? []).map((x) => `<p>${x}</p>`).join("")}
     ${d.ul ? `<ul>${d.ul.map((x) => `<li>${x}</li>`).join("")}</ul>` : ""}${d.cta ? `<a class="btn btn--navy" href="mailto:contacto@sixevent.co">${d.cta}</a>` : ""}</div></div></div>`;
     root.onclick = (e) => {
       if (e.target.closest("[data-back]")) onBack();
@@ -161,7 +473,7 @@
   }
 
   // src/main.ts
-  var esc2 = (s) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+  var esc3 = (s) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
   var cop = (n) => "$ " + n.toLocaleString("es-CO");
   var $ = (sel) => document.querySelector(sel);
   var app = $("#app");
@@ -195,12 +507,14 @@
     end: ""
   };
   function navbar() {
+    const u = getCurrentUser();
+    const right = u ? `<button class="user-chip" data-go="profile"><span class="avatar">${esc3(u.name.charAt(0).toUpperCase())}</span><span class="hide-sm">${esc3(u.name.split(" ")[0])}</span></button><button class="link" data-logout>Salir</button>` : `<button class="link" data-go="login">Entrar</button><button class="btn btn--cream" data-go="register">Registro</button>`;
     return `<header class="nav"><div class="container nav__in">
     <a href="#" data-go="home"><img src="${logo_new_default}" alt="6ix Event logo" height="40"></a>
     <nav class="nav__links"><a class="hide-sm" href="#eventos">Eventos</a>
-      <button class="link hide-sm" data-go="how">C\xF3mo funciona</button></nav></div></header>`;
+      <button class="link hide-sm" data-go="how">C\xF3mo funciona</button>${right}</nav></div></header>`;
   }
-  var select = (id, ico, opts, val, cls = "") => `<div class="field ${cls}">${icon(ico)}<select id="${id}" aria-label="${id}">${opts.map((o) => `<option${o === val ? " selected" : ""}>${esc2(o)}</option>`).join("")}</select></div>`;
+  var select = (id, ico, opts, val, cls = "") => `<div class="field ${cls}">${icon(ico)}<select id="${id}" aria-label="${id}">${opts.map((o) => `<option${o === val ? " selected" : ""}>${esc3(o)}</option>`).join("")}</select></div>`;
   function hero() {
     const stats = [["1.8M+", "Boletas vendidas"], ["4.200+", "Eventos gestionados"], ["620", "Organizadores activos"], ["38", "Ciudades en Colombia"]];
     return `<section><div class="hero__img">
@@ -210,7 +524,7 @@
       <p>Congresos, conferencias y foros empresariales en toda Colombia. Boletas seguras en minutos.</p>
       <div class="stats">${stats.map(([v, l]) => `<div><b>${v}</b><span>${l}</span></div>`).join("")}</div></div></div>
     <div class="container searchbox"><div class="search">
-      <div class="field">${icon(ic.search)}<input id="q" type="text" placeholder="Nombre del evento o ponente\u2026" value="${esc2(state.q)}"></div>
+      <div class="field">${icon(ic.search)}<input id="q" type="text" placeholder="Nombre del evento o ponente\u2026" value="${esc3(state.q)}"></div>
       ${select("city", ic.location, cityList(), state.city, "sm")}
       <div class="field sm" style="flex:0 0 200px">${icon(ic.calendar)}<select id="date" aria-label="Fecha">${DATES.map((o) => `<option${o === state.date ? " selected" : ""}>${o}</option>`).join("")}</select>
         <div class="range${state.date === DATES[3] ? " is-open" : ""}" id="range"><input type="date" id="start" value="${state.start}"><input type="date" id="end" value="${state.end}"></div></div>
@@ -218,12 +532,15 @@
       <div class="chips" id="chips"></div></div></section>`;
   }
   function card(e) {
+    const u = getCurrentUser();
+    const fav = !!u?.favorites?.includes(e.id);
     return `<div class="card-wrap">
-    <article class="card" tabindex="0" role="button" data-event="${e.id}" aria-label="Ver detalles de ${esc2(e.title)}">
-      <div class="card__img"><img src="${esc2(e.img)}" alt="${esc2(e.title)}" loading="lazy"><span class="badge">${esc2(e.category)}</span>
-        <div class="card__tr"><span class="rating">${icon(ic.star, 12)}${e.rating}</span></div></div>
-      <div class="card__body"><h3>${esc2(e.title)}</h3>
-        <p class="meta">${icon(ic.location, 14)}${esc2(placeLabel(e))}</p><p class="meta">${icon(ic.calendar, 14)}${formatDateString(e.date)}</p><hr>
+    <article class="card" tabindex="0" role="button" data-event="${e.id}" aria-label="Ver detalles de ${esc3(e.title)}">
+      <div class="card__img"><img src="${esc3(e.img)}" alt="${esc3(e.title)}" loading="lazy"><span class="badge">${esc3(e.category)}</span>
+        <div class="card__tr"><button class="fav${fav ? " is-on" : ""}" data-fav="${e.id}" aria-pressed="${fav}" aria-label="${fav ? "Quitar de favoritos" : "Agregar a favoritos"}">${icon(ic.heart, 16, fav ? "currentColor" : "none")}</button>
+        <span class="rating">${icon(ic.star, 12)}${e.rating}</span></div></div>
+      <div class="card__body"><h3>${esc3(e.title)}</h3>
+        <p class="meta">${icon(ic.location, 14)}${esc3(placeLabel(e))}</p><p class="meta">${icon(ic.calendar, 14)}${formatDateString(e.date)}</p><hr>
         <div class="price"><small>Precio desde</small><strong>${cop(e.price)}</strong></div></div></article></div>`;
   }
   function eventsSection() {
@@ -260,14 +577,20 @@
   function render(page, title) {
     window.scrollTo({ top: 0 });
     if (page === "home") return renderHome();
+    if (page === "login" || page === "register") {
+      app.innerHTML = `<main id="auth-root" style="flex:1"></main>${footer()}`;
+      return renderLogin($("#auth-root"), page, () => go("home"), () => go("home"));
+    }
     if (page === "how" || page === "static") {
       app.innerHTML = `<main id="pg-root" style="flex:1"></main>${footer()}`;
       const root = $("#pg-root");
       if (page === "how") return renderHowItWorks(root, () => go("home"));
       return renderStatic(root, title ?? "", () => go("home"));
     }
+    const name = title ?? { login: "Iniciar sesi\xF3n", register: "Registro", how: "C\xF3mo funciona", profile: "Mi perfil", event: "Detalle del evento", checkout: "Pago", "create-event": "Crear evento", static: "Informaci\xF3n" }[page];
+    app.innerHTML = `${navbar()}<main><section class="placeholder"><h1>${esc3(name)}</h1><p>Esta pantalla est\xE1 pendiente de migrar.</p><button class="btn btn--cream" data-go="home">Volver al inicio</button></section></main>${footer()}`;
   }
-  var HASH = { home: "#/", how: "#/como-funciona" };
+  var HASH = { home: "#/", login: "#/login", register: "#/registro", how: "#/como-funciona", profile: "#/perfil" };
   function hashFor(page, title) {
     if (page === "static") return `#/info/${encodeURIComponent(title ?? "")}`;
     return HASH[page] ?? "#/";
@@ -279,11 +602,18 @@
   }
   function route() {
     const [a = "", b = ""] = location.hash.replace(/^#\/?/, "").split("/");
+    const u = getCurrentUser();
     switch (a) {
+      case "login":
+        return render("login");
+      case "registro":
+        return render("register");
       case "como-funciona":
         return render("how");
       case "info":
         return render("static", decodeURIComponent(b));
+      case "perfil":
+        return u ? render("profile") : go("login");
       default:
         return render("home");
     }
@@ -312,6 +642,14 @@
   }
   document.addEventListener("click", (ev) => {
     const t = ev.target;
+    const fav = t.closest("#grid-root [data-fav]");
+    if (fav) {
+      const u = getCurrentUser();
+      if (!u) return go("login");
+      const id = Number(fav.dataset.fav), favs = u.favorites ?? [];
+      updateUser({ favorites: favs.includes(id) ? favs.filter((f) => f !== id) : [...favs, id] });
+      return paintGrid();
+    }
     const cat = t.closest("#chips [data-cat]");
     if (cat) {
       const c = cat.dataset.cat;
@@ -321,6 +659,10 @@
       paintChips();
       return paintGrid();
     }
+    if (t.closest("[data-logout]")) {
+      logout();
+      return go("home");
+    }
     const nav = t.closest("[data-go]");
     if (nav) {
       ev.preventDefault();
@@ -328,10 +670,12 @@
     }
     const foot = t.closest("[data-footer]")?.dataset.footer;
     if (foot) {
+      const u = getCurrentUser();
       if (foot === "Buscar eventos") {
         go("home");
         return void setTimeout(() => $("#eventos")?.scrollIntoView({ behavior: "smooth" }), 60);
       }
+      if (foot === "Mis boletas") return go(u ? "profile" : "login");
       return go("static", foot);
     }
     if (t.closest("#btn-search")) return applyFilters();
