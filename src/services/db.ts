@@ -94,9 +94,31 @@ const initialEvents: EventItem[] = [
 ];
 
 let eventsDB: EventItem[] = loadEvents();
+let nextId = eventsDB.length > 0 ? Math.max(...eventsDB.map(e => e.id)) + 1 : 17;
 
 export function getEvents() {
   return [...eventsDB];
+}
+
+export function addEvent(event: Omit<EventItem, "id" | "rating">) {
+  const newEvent: EventItem = {
+    ...event,
+    id: nextId++,
+    rating: 5.0,
+  };
+  eventsDB = [newEvent, ...eventsDB];
+  saveEvents(eventsDB);
+  return newEvent;
+}
+
+export function updateEvent(id: number, patch: Partial<EventItem>) {
+  eventsDB = eventsDB.map(e => (e.id === id ? { ...e, ...patch, id } : e));
+  saveEvents(eventsDB);
+}
+
+export function deleteEvent(id: number) {
+  eventsDB = eventsDB.filter(e => e.id !== id);
+  saveEvents(eventsDB);
 }
 
 export function consumeTickets(id: number, qty: number, category?: string) {

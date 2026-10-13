@@ -1,11 +1,11 @@
 import "./styles.css";
 import logo from "./assets/logo-new.png";
-import { getEvents, formatDateString, placeLabel, type EventItem } from "./services/db";
+import { getEvents, deleteEvent, formatDateString, placeLabel, type EventItem } from "./services/db";
 import { getCurrentUser, updateUser } from "./services/auth";
 import { renderLogin } from "./views/login";
 import { renderEventDetail, renderCheckout } from "./views/screens";
 import { renderProfile } from "./views/profile";
-import { renderHowItWorks, renderStatic } from "./views/pages";
+import { renderCreateEvent, renderEditEvent, renderHowItWorks, renderStatic } from "./views/pages";
 
 /* ── Utilidades ── */
 const esc = (s: string) =>
@@ -79,7 +79,9 @@ function hero() {
 function card(e: EventItem) {
   const u = getCurrentUser();
   const fav = !!u?.favorites?.includes(e.id);
+  const canDel = u?.role === "admin" || (u?.role === "agente" && e.createdBy === u.id);
   return `<div class="card-wrap">
+    ${canDel ? `<button class="card__edit" data-editev="${e.id}" title="Editar evento" aria-label="Editar evento">✎</button><button class="card__del" data-del="${e.id}" title="Eliminar evento" aria-label="Eliminar evento">✕</button>` : ""}
     <article class="card" tabindex="0" role="button" data-event="${e.id}" aria-label="Ver detalles de ${esc(e.title)}">
       <div class="card__img"><img src="${esc(e.img)}" alt="${esc(e.title)}" loading="lazy"><span class="badge">${esc(e.category)}</span>
         <div class="card__tr"><button class="fav${fav ? " is-on" : ""}" data-fav="${e.id}" aria-pressed="${fav}" aria-label="${fav ? "Quitar de favoritos" : "Agregar a favoritos"}">${icon(ic.heart, 16, fav ? "currentColor" : "none")}</button>
@@ -124,12 +126,15 @@ function paintGrid() {
   $("#grid-root")!.innerHTML = state.filtered.length
     ? `<div class="grid">${list.map(card).join("")}</div>`
     : `<div class="empty">No se encontraron eventos con los filtros seleccionados.</div>`;
+  const u = getCurrentUser();
+  const canCreate = u?.role === "admin" || u?.role === "agente";
   $("#more")!.innerHTML =
-    (state.visible < state.filtered.length ? `<button class="btn btn--ghost" id="btn-more">Ver más eventos</button>` : "");
+    (state.visible < state.filtered.length ? `<button class="btn btn--ghost" id="btn-more">Ver más eventos</button>` : "") +
+    (canCreate ? `<button class="btn btn--cream" data-go="create-event">Crear nuevo evento</button>` : "");
 }
 
 /* ── Navegación ── */
-type Page = "home" | "login" | "register" | "how" | "profile" | "event" | "checkout" | "static";
+type Page = "edit-event" | "home" | "login" | "register" | "how" | "profile" | "event" | "checkout" | "create-event" | "static";
 
 function render(page: Page, title?: string) {
   window.scrollTo({ top: 0 });
@@ -138,11 +143,14 @@ function render(page: Page, title?: string) {
     app.innerHTML = `<main id="auth-root" style="flex:1"></main>${footer()}`;
     return renderLogin($("#auth-root")!, page, () => go("home"), () => go("home"));
   }
-  if (page === "how" || page === "static") {
+  if (page === "how" || page === "create-event" || page === "edit-event" || page === "static") {
     app.innerHTML = `<main id="pg-root" style="flex:1"></main>${footer()}`;
     const root = $("#pg-root")!;
     if (page === "how") return renderHowItWorks(root, () => go("home"));
-    return renderStatic(root, title ?? "", () => go("home"));
+    if (page === "static") return renderStatic(root, title ?? "", () => go("home"));
+    const done = () => { state.all = state.filtered = getEvents(); state.category = null; state.visible = PAGE_SIZE; go("home"); };
+    if (page === "edit-event") return current ? renderEditEvent(root, current, done) : go("home");
+    return renderCreateEvent(root, done);
   }
   if (page === "profile") {
     app.innerHTML = `<main id="prof-root" style="flex:1"></main>${footer()}`;
@@ -160,9 +168,10 @@ function render(page: Page, title?: string) {
   app.innerHTML = `${navbar()}<main><section class="placeholder"><h1>${esc(name)}</h1><p>Esta pantalla está pendiente de migrar.</p><button class="btn btn--cream" data-go="home">Volver al inicio</button></section></main>${footer()}`;
 }
 
-const HASH: Partial<Record<Page, string>> = { home: "#/", login: "#/login", register: "#/registro", how: "#/como-funciona", profile: "#/perfil" };
+const HASH: Partial<Record<Page, string>> = { home: "#/", login: "#/login", register: "#/registro", how: "#/como-funciona", profile: "#/perfil", "create-event": "#/crear-evento" };
 function hashFor(page: Page, title?: string) {
   if (page === "event") return `#/evento/${current?.id}`;
+  if (page === "edit-event") return `#/editar-evento/${current?.id}`;
   if (page === "checkout") return `#/checkout/${current?.id}`;
   if (page === "static") return `#/info/${encodeURIComponent(title ?? "")}`;
   return HASH[page] ?? "#/";
@@ -182,6 +191,8 @@ function route() {
     case "como-funciona": return render("how");
     case "info": return render("static", decodeURIComponent(b));
     case "perfil": return u ? render("profile") : go("login");
+    case "crear-evento": return u ? render("create-event") : go("login");
+    case "editar-evento": current = ev; return u && ev ? render("edit-event") : go(u ? "home" : "login");
     case "evento": current = ev; return ev ? render("event") : go("home");
     case "checkout": current = ev; return !ev ? go("home") : u ? render("checkout") : go("login");
     default: return render("home");
@@ -220,6 +231,15 @@ document.addEventListener("click", ev => {
     updateUser({ favorites: favs.includes(id) ? favs.filter(f => f !== id) : [...favs, id] });
     return paintGrid();
   }
+  const del = t.closest<HTMLElement>("#grid-root [data-del]");
+  if (del) {
+    if (confirm("¿Estás seguro de eliminar este evento?")) {
+      deleteEvent(Number(del.dataset.del));
+      state.all = state.filtered = getEvents();
+      paintGrid();
+    }
+    return;
+  }
   const cat = t.closest<HTMLElement>("#chips [data-cat]");
   if (cat) {
     const c = cat.dataset.cat!;
@@ -228,6 +248,8 @@ document.addEventListener("click", ev => {
     state.filtered = state.category ? state.all.filter(e => e.category.startsWith(state.category!)) : state.all;
     paintChips(); return paintGrid();
   }
+  const edit = t.closest<HTMLElement>("#grid-root [data-editev]");
+  if (edit) { current = state.all.find(e => e.id === Number(edit.dataset.editev)) ?? null; return go("edit-event"); }
   const card = t.closest<HTMLElement>("#grid-root [data-event]");
   if (card) { current = state.all.find(e => e.id === Number(card.dataset.event)) ?? null; return go("event"); }
   const nav = t.closest<HTMLElement>("[data-go]");
@@ -237,6 +259,10 @@ document.addEventListener("click", ev => {
     const u = getCurrentUser();
     if (foot === "Buscar eventos") { go("home"); return void setTimeout(() => $("#eventos")?.scrollIntoView({ behavior: "smooth" }), 60); }
     if (foot === "Mis boletas") return go(u ? "profile" : "login");
+    if (foot === "Crear evento") {
+      if (!u) return go("login");
+      return u.role === "cliente" ? alert("Necesitas permisos de administrador o agente para crear un evento.") : go("create-event");
+    }
     return go("static", foot);
   }
   if (t.closest("#btn-search")) return applyFilters();
