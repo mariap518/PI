@@ -1,9 +1,10 @@
 import "./styles.css";
 import logo from "./assets/logo-new.png";
 import { getEvents, formatDateString, placeLabel, type EventItem } from "./services/db";
-import { getCurrentUser, updateUser, logout } from "./services/auth";
+import { getCurrentUser, updateUser } from "./services/auth";
 import { renderLogin } from "./views/login";
 import { renderEventDetail, renderCheckout } from "./views/screens";
+import { renderProfile } from "./views/profile";
 import { renderHowItWorks, renderStatic } from "./views/pages";
 
 /* ── Utilidades ── */
@@ -46,7 +47,7 @@ const state = {
 function navbar() {
   const u = getCurrentUser();
   const right = u
-    ? `<button class="user-chip" data-go="profile"><span class="avatar">${esc(u.name.charAt(0).toUpperCase())}</span><span class="hide-sm">${esc(u.name.split(" ")[0])}</span></button><button class="link" data-logout>Salir</button>`
+    ? `<button class="user-chip" data-go="profile"><span class="avatar">${esc(u.name.charAt(0).toUpperCase())}</span><span class="hide-sm">${esc(u.name.split(" ")[0])}</span></button>`
     : `<button class="link" data-go="login">Entrar</button><button class="btn btn--cream" data-go="register">Registro</button>`;
   return `<header class="nav"><div class="container nav__in">
     <a href="#" data-go="home"><img src="${logo}" alt="6ix Event logo" height="40"></a>
@@ -143,12 +144,16 @@ function render(page: Page, title?: string) {
     if (page === "how") return renderHowItWorks(root, () => go("home"));
     return renderStatic(root, title ?? "", () => go("home"));
   }
+  if (page === "profile") {
+    app.innerHTML = `<main id="prof-root" style="flex:1"></main>${footer()}`;
+    return renderProfile($("#prof-root")!, () => go("home"));
+  }
   if ((page === "event" || page === "checkout") && current) {
     app.innerHTML = `<main id="scr" style="flex:1;background:linear-gradient(135deg,#1E3A5F,#3B6EA5)"></main>${footer()}`;
     const root = $("#scr")!;
     return page === "event"
       ? renderEventDetail(root, current, () => go("home"), () => go("checkout"), () => go("login"))
-      : renderCheckout(root, current, () => go("event"), () => { alert("¡Reserva confirmada! Pronto podrás ver tus boletas en tu perfil."); go("home"); });
+      : renderCheckout(root, current, () => go("event"), () => go("profile"));
   }
   // TODO: migrar estas pantallas ( EventDetail, Checkout, ClientProfile, CreateEvent, HowItWorks, StaticPage)
   const name = title ?? ({ login: "Iniciar sesión", register: "Registro", how: "Cómo funciona", profile: "Mi perfil", event: "Detalle del evento", checkout: "Pago", "create-event": "Crear evento", static: "Información" } as Record<string, string>)[page];
@@ -225,7 +230,6 @@ document.addEventListener("click", ev => {
   }
   const card = t.closest<HTMLElement>("#grid-root [data-event]");
   if (card) { current = state.all.find(e => e.id === Number(card.dataset.event)) ?? null; return go("event"); }
-  if (t.closest("[data-logout]")) { logout(); return go("home"); }
   const nav = t.closest<HTMLElement>("[data-go]");
   if (nav) { ev.preventDefault(); return go(nav.dataset.go as Page); }
   const foot = t.closest<HTMLElement>("[data-footer]")?.dataset.footer;
