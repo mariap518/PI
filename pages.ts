@@ -1,81 +1,9 @@
 import logo from "./assets/logo-new.png";
-import { addEvent, updateEvent, type EventItem } from "./db";
-import { COUNTRIES, departments, cities } from "./geo";
-import { getCurrentUser } from "./auth";
 
 const esc = (s: unknown) => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
 const svg = (d: string, s = 16) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="${d}"/></svg>`;
 const ARROW = "M19 12H5M12 19l-7-7 7-7", CHECK = "M20 6L9 17l-5-5";
 const backBtn = (t = "← Volver") => `<button class="lnk back2" data-back>${t}</button>`;
-
-/* ───────── Crear / editar evento ───────── */
-const CATS = ["Conferencia", "Congreso", "Exposición", "Foro", "Gala", "Seminario", "Feria", "Taller"];
-const opts = (a: string[], sel = "") => a.map(o => `<option${o === sel ? " selected" : ""}>${esc(o)}</option>`).join("");
-const withCur = (list: string[], cur?: string) => (cur && !list.includes(cur) ? [...list, cur] : list);
-const catRow = (name = "", price: number | "" = "", rm = true) =>
-  `<div class="catf"><input type="text" name="cn" placeholder="Nombre (Ej: VIP)" required value="${esc(name)}"><input type="number" name="cp" min="0" placeholder="Valor (COP)" required value="${price}"><button type="button" class="pbtn" data-rm${rm ? "" : " disabled"}>✕</button></div>`;
-
-export const renderCreateEvent = (root: HTMLElement, onDone: () => void) => eventForm(root, onDone);
-export const renderEditEvent = (root: HTMLElement, ev: EventItem, onDone: () => void) => eventForm(root, onDone, ev);
-
-function eventForm(root: HTMLElement, onDone: () => void, ed?: EventItem) {
-  const u = getCurrentUser();
-  if (!u || u.role === "cliente" || (ed && u.role !== "admin" && ed.createdBy !== u.id)) return onDone();
-  const country = ed?.country || "Colombia";
-  const dept = ed?.department || (country === "Colombia" ? "Cundinamarca" : departments(country)[0]);
-  const category = ed?.category;
-  const rows = ed?.ticketCategories?.length ? ed.ticketCategories : [{ name: "General", price: "" as number | "" }];
-  root.innerHTML = `<div class="page"><div class="wrap">${backBtn()}<h1>${ed ? "Editar evento" : "Crear nuevo evento"}</h1>
-  <p class="sub">${ed ? "Modifica los datos del evento y guarda los cambios." : "Ingresa los detalles completos del evento a publicar."}</p>
-  <form id="ce" class="cform">
-    <div class="fg"><label>Título del evento</label><input name="title" required value="${esc(ed?.title)}"></div>
-    <div class="fg"><label>Descripción del evento</label><textarea name="description" rows="4" required placeholder="Cuenta de qué trata el evento, quién asiste y qué se va a vivir.">${esc(ed?.description)}</textarea></div>
-    <div class="fg"><label>Categoría</label><select name="category">${opts(withCur(CATS, category), category)}</select></div>
-    <div class="three">
-      <div class="fg"><label>País</label><select name="country">${opts(COUNTRIES, country)}</select></div>
-      <div class="fg"><label>Departamento / Estado</label><select name="department">${opts(withCur(departments(country), dept), dept)}</select></div>
-      <div class="fg"><label>Ciudad</label><select name="city">${opts(withCur(cities(country, dept), ed?.city), ed?.city)}</select></div></div>
-    <div class="three"><div class="fg"><label>Fecha</label><input type="date" name="date" required value="${esc(ed?.date)}"></div><div class="fg"><label>Hora inicio</label><input type="time" name="start" value="${esc(ed?.startTime ?? "09:00")}" required></div><div class="fg"><label>Hora cierre</label><input type="time" name="end" value="${esc(ed?.endTime ?? "18:00")}" required></div></div>
-    <div class="two"><div class="fg"><label>Lugar / Recinto</label><input name="venue" placeholder="Ej: Corferias" required value="${esc(ed?.venue)}"></div><div class="fg"><label>Capacidad total</label><input type="number" name="cap" min="1" placeholder="Ej: 500" required value="${esc(ed?.capacity)}"></div></div>
-    <div class="fg"><label>Agenda del día</label><textarea name="agenda" rows="4" required placeholder="09:00 - Registro&#10;10:00 - Bienvenida">${esc(ed?.agenda ?? "09:00 - Registro y apertura")}</textarea></div>
-    <div class="fg"><div class="phead" style="margin-bottom:8px"><label style="margin:0">Categorías de entrada</label><button type="button" class="lnk" data-add>+ Añadir categoría</button></div><div id="cats">${rows.map(r => catRow(r.name, r.price, rows.length > 1)).join("")}</div></div>
-    <div class="fg"><label>URL de la imagen</label><input type="url" name="img" required value="${esc(ed?.img ?? "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&h=380&fit=crop&auto=format")}"></div>
-    <button class="btn btn--navy full" type="submit">${ed ? "Guardar cambios" : "Crear Evento"}</button></form></div></div>`;
-  const cats = () => root.querySelector<HTMLElement>("#cats")!;
-  const sel = (n: string) => root.querySelector<HTMLSelectElement>(`select[name=${n}]`)!;
-  const fill = (el: HTMLSelectElement, list: string[]) => { el.innerHTML = opts(list); };
-  const sync = () => { const b = cats().querySelectorAll<HTMLButtonElement>("[data-rm]"); b.forEach(x => (x.disabled = b.length === 1)); };
-  root.onclick = e => {
-    const t = e.target as HTMLElement;
-    if (t.closest("[data-back]")) return onDone();
-    if (t.closest("[data-add]")) { cats().insertAdjacentHTML("beforeend", catRow()); sync(); }
-    const rm = t.closest("[data-rm]"); if (rm && cats().children.length > 1) { rm.closest(".catf")!.remove(); sync(); }
-  };
-  root.oninput = root.onchange = e => {
-    const t = e.target as HTMLSelectElement;
-    if (t.name === "country") { fill(sel("department"), departments(t.value)); fill(sel("city"), cities(t.value, sel("department").value)); }
-    if (t.name === "department") fill(sel("city"), cities(sel("country").value, t.value));
-  };
-  root.onsubmit = e => {
-    e.preventDefault();
-    const f = new FormData(e.target as HTMLFormElement), g = (k: string) => String(f.get(k) ?? "").trim();
-    const names = f.getAll("cn").map(String), prices = f.getAll("cp").map(Number);
-    const cap = parseInt(g("cap")), per = Math.floor(cap / names.length);
-    const ticketCategories = names.map((n, i) => {
-      const name = n.trim(), old = ed?.ticketCategories?.find(c => c.name === name);
-      const sold = old && old.capacity !== undefined && old.available !== undefined ? old.capacity - old.available : 0;
-      return { name, price: prices[i], capacity: per, available: Math.max(0, per - sold) };
-    }).filter(c => c.name && c.price >= 0);
-    const fields = { title: g("title"), description: g("description"), category: g("category"), country: g("country"), department: g("department"), city: g("city"), date: g("date"),
-      price: (ticketCategories.find(c => c.name.toLowerCase() === "general") ?? ticketCategories[0]).price,
-      startTime: g("start"), endTime: g("end"), venue: g("venue"), agenda: f.get("agenda") as string, ticketCategories, img: g("img") };
-    if (ed) {
-      const sold = Math.max(0, (ed.capacity ?? 0) - (ed.availableTickets ?? ed.capacity ?? 0));
-      updateEvent(ed.id, { ...fields, capacity: cap, availableTickets: Math.max(0, cap - sold) });
-    } else addEvent({ ...fields, capacity: cap, availableTickets: cap, createdBy: u.id, company: u.role === "agente" ? u.empresa : undefined });
-    onDone();
-  };
-}
 
 /* ───────── Cómo funciona ───────── */
 const IC = { search: "M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z", user: "M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z",
