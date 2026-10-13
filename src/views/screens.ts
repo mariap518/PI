@@ -73,12 +73,15 @@ export function renderCheckout(root: HTMLElement, e: EventItem, onBack: () => vo
   const s = { qty: 1, cat: cats.find(c => c.name === "General")?.name ?? cats[0].name, notes: "", coupon: "", pay: "card" as "card" | "pse", busy: false,
     bank: "", docType: "CC", docNumber: "", cardNum: "", cardName: "", exp: "", cvv: "" };
   const unit = () => cats.find(c => c.name === s.cat)?.price ?? e.price;
+  const stock = () => Math.max(0, Math.min(e.availableTickets ?? Infinity, (cats.find(c => c.name === s.cat) as { available?: number } | undefined)?.available ?? Infinity));
+  const avail = () => Math.min(10, stock());
   const coupons = () => (getCurrentUser()?.coupons ?? []).filter(c => !c.used);
   const cp = () => coupons().find(c => c.code === s.coupon);
   const sub = () => unit() * s.qty, disc = () => Math.round((sub() * (cp()?.percent ?? 0)) / 100), fee = () => Math.round((sub() - disc()) * FEE), total = () => sub() - disc() + fee();
   const inp = (id: keyof typeof s, label: string, ph: string, attrs = "") => `<div class="fg"><label for="${id}">${label}</label><input id="${id}" value="${esc(String(s[id]))}" placeholder="${ph}" required ${attrs}></div>`;
 
   function draw() {
+    s.qty = Math.min(s.qty, Math.max(1, avail()));
     const steps = ["Selección", "Reserva", "Pago", "Confirmación"];
     root.innerHTML = `${topbar(`<button class="tbtn" id="c-back">${svg(P.arrow)} Volver al evento</button>`, `<span class="tbtn">${svg(P.shield)} Pago seguro</span>`)}
     <div class="steps container">${steps.map((l, i) => `<span class="${i === 1 ? "is-cur" : i < 1 ? "is-done" : ""}"><i>${i < 1 ? svg(P.check, 12) : i + 1}</i>${l}</span>`).join("")}</div>
@@ -86,7 +89,7 @@ export function renderCheckout(root: HTMLElement, e: EventItem, onBack: () => vo
       <section class="cbox"><h2>Datos de la reserva</h2>
         <label class="lbl">Categoría de entrada</label><div class="opts">${cats.map(c => `<button type="button" data-cat="${esc(c.name)}" class="opt${c.name === s.cat ? " is-on" : ""}"><b>${esc(c.name)}</b><span>${cop(c.price)}</span></button>`).join("")}</div>
         <label class="lbl">Cantidad de entradas</label><div class="qty"><button type="button" data-q="-1" aria-label="Menos">${svg(P.minus, 16)}</button><b>${s.qty}</b><button type="button" data-q="1" aria-label="Más">${svg(P.plus, 16)}</button></div>
-        <small class="hint">Máximo 10 entradas por transacción.</small>
+        <small class="hint">Máximo 10 por transacción${Number.isFinite(stock()) ? ` · ${stock()} disponibles en esta categoría` : ""}.</small>
         ${coupons().length ? `<div class="fg"><label for="coupon">Cupón de descuento</label><select id="coupon"><option value="">Sin cupón</option>${coupons().map(c => `<option value="${c.code}"${c.code === s.coupon ? " selected" : ""}>${esc(c.label)} · ${c.code}</option>`).join("")}</select></div>` : ""}
         <div class="fg"><label for="notes">Observaciones (opcional)</label><textarea id="notes" rows="3" placeholder="Requisitos especiales de accesibilidad, necesidades dietéticas, etc.">${esc(s.notes)}</textarea></div></section>
       <section class="cbox"><h2>Método de pago</h2>
@@ -97,7 +100,7 @@ export function renderCheckout(root: HTMLElement, e: EventItem, onBack: () => vo
           : `<div class="fg"><label for="bank">Banco</label><select id="bank" required><option value="">Selecciona tu banco</option>${BANKS.map(b => `<option${b === s.bank ? " selected" : ""}>${b}</option>`).join("")}</select></div>
              <div class="two"><div class="fg"><label for="docType">Tipo de documento</label><select id="docType">${["CC", "CE", "NIT", "Pasaporte"].map(d => `<option${d === s.docType ? " selected" : ""}>${d}</option>`).join("")}</select></div>${inp("docNumber", "Número", "Documento", 'inputmode="numeric"')}</div>`}
       </section>
-      <button class="btn btn--navy full" type="submit"${s.busy ? " disabled" : ""}>${s.busy ? "Procesando pago…" : `Pagar ${cop(total())}`}</button></form>
+      <button class="btn btn--navy full" type="submit"${s.busy || avail() === 0 ? " disabled" : ""}>${s.busy ? "Procesando pago…" : avail() === 0 ? "Categoría agotada" : `Pagar ${cop(total())}`}</button></form>
       <aside class="dside"><h3>Resumen</h3><p class="sumt">${esc(e.title)}</p><p class="meta">${svg(P.cal)} ${formatDateString(e.date)}</p><p class="meta">${svg(P.loc)} ${esc(e.city)}</p><hr>
         <div class="sumr"><span>${s.qty} × ${esc(s.cat)}</span><b>${cop(sub())}</b></div>${disc() ? `<div class="sumr"><span>Cupón ${cp()!.percent}%</span><b>− ${cop(disc())}</b></div>` : ""}<div class="sumr"><span>Cargo por servicio (4%)</span><b>${cop(fee())}</b></div>
         <div class="sumr sumr--t"><span>Total</span><b>${cop(total())}</b></div></aside></div>`;
@@ -107,12 +110,13 @@ export function renderCheckout(root: HTMLElement, e: EventItem, onBack: () => vo
     const t = ev.target as HTMLElement, el = (k: string) => t.closest<HTMLElement>(`[${k}]`);
     if (t.closest("#c-back")) return onBack();
     if (el("data-cat")) { s.cat = el("data-cat")!.dataset.cat!; draw(); }
-    else if (el("data-q")) { s.qty = Math.min(10, Math.max(1, s.qty + Number(el("data-q")!.dataset.q))); draw(); }
+    else if (el("data-q")) { s.qty = Math.min(Math.max(1, avail()), Math.max(1, s.qty + Number(el("data-q")!.dataset.q))); draw(); }
     else if (el("data-pay")) { s.pay = el("data-pay")!.dataset.pay as "card" | "pse"; draw(); }
   };
   root.oninput = ev => { const t = ev.target as HTMLInputElement; if (t.id in s) (s as Record<string, unknown>)[t.id] = t.value; if (t.id === "coupon") draw(); };
   root.onsubmit = ev => {
     ev.preventDefault();
+    if (avail() < 1 || s.qty > avail()) return draw();
     s.busy = true; draw();
     setTimeout(() => {
       const u = getCurrentUser();

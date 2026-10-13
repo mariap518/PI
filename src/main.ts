@@ -191,8 +191,8 @@ function route() {
   const u = getCurrentUser();
   const ev = state.all.find(e => String(e.id) === b) ?? null;
   switch (a) {
-    case "login": return render("login");
-    case "registro": return render("register");
+    case "login": return u ? void location.replace("#/") : render("login");
+    case "registro": return u ? void location.replace("#/") : render("register");
     case "como-funciona": return render("how");
     case "info": return render("static", decodeURIComponent(b));
     case "perfil": return u ? render("profile") : go("login");
@@ -210,16 +210,19 @@ function renderHome() {
   paintChips(); paintGrid();
 }
 
+/** "2026-10-05" → fecha local (evita el desfase de zona horaria de new Date("2026-10-05")) */
+const localDate = (s: string) => { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d); };
+
 function applyFilters() {
   const q = state.q.trim().toLowerCase();
-  const today = new Date();
+  const now = new Date(), t0 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   state.category = null; state.visible = PAGE_SIZE;
   state.filtered = state.all.filter(e => {
-    const d = new Date(e.date);
+    const d = localDate(e.date);
     let okDate = true;
-    if (state.date === "Esta semana") okDate = d >= today && d.getTime() <= today.getTime() + 7 * 86400000;
-    else if (state.date === "Este mes") okDate = d.getMonth() === today.getMonth() && d.getFullYear() === today.getFullYear();
-    else if (state.date === DATES[3] && state.start && state.end) okDate = d >= new Date(state.start) && d <= new Date(state.end);
+    if (state.date === "Esta semana") okDate = d >= t0 && d <= new Date(t0.getTime() + 7 * 86400000);
+    else if (state.date === "Este mes") okDate = d.getMonth() === t0.getMonth() && d.getFullYear() === t0.getFullYear();
+    else if (state.date === DATES[3]) okDate = (!state.start || d >= localDate(state.start)) && (!state.end || d <= localDate(state.end));
     return (!q || e.title.toLowerCase().includes(q)) && (state.city === ALL || e.city === state.city) && okDate;
   });
   paintChips(); paintGrid();
@@ -287,9 +290,7 @@ document.addEventListener("input", ev => {
 document.addEventListener("keydown", ev => {
   const t = ev.target as HTMLElement;
   if (t.id === "q" && ev.key === "Enter") applyFilters();
-  if (t.matches?.("[data-event]") && t === ev.currentTarget || (t.matches?.("[data-event]") && (ev.key === "Enter" || ev.key === " "))) {
-    if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); t.click(); }
-  }
+  if ((ev.key === "Enter" || ev.key === " ") && t.matches?.("[data-event]")) { ev.preventDefault(); t.click(); }
 });
 
 /* ── Banner de cookies ── */

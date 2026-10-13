@@ -15,6 +15,8 @@ const withCur = (list: string[], cur?: string) => (cur && !list.includes(cur) ? 
 const catRow = (name = "", price: number | "" = "", rm = true) =>
   `<div class="catf"><input type="text" name="cn" placeholder="Nombre (Ej: VIP)" required value="${esc(name)}"><input type="number" name="cp" min="0" placeholder="Valor (COP)" required value="${price}"><button type="button" class="pbtn" data-rm${rm ? "" : " disabled"}>✕</button></div>`;
 
+const todayISO = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
+
 export const renderCreateEvent = (root: HTMLElement, onDone: () => void) => eventForm(root, onDone);
 export const renderEditEvent = (root: HTMLElement, ev: EventItem, onDone: () => void) => eventForm(root, onDone, ev);
 
@@ -35,7 +37,7 @@ function eventForm(root: HTMLElement, onDone: () => void, ed?: EventItem) {
       <div class="fg"><label>País</label><select name="country">${opts(COUNTRIES, country)}</select></div>
       <div class="fg"><label>Departamento / Estado</label><select name="department">${opts(withCur(departments(country), dept), dept)}</select></div>
       <div class="fg"><label>Ciudad</label><select name="city">${opts(withCur(cities(country, dept), ed?.city), ed?.city)}</select></div></div>
-    <div class="three"><div class="fg"><label>Fecha</label><input type="date" name="date" required value="${esc(ed?.date)}"></div><div class="fg"><label>Hora inicio</label><input type="time" name="start" value="${esc(ed?.startTime ?? "09:00")}" required></div><div class="fg"><label>Hora cierre</label><input type="time" name="end" value="${esc(ed?.endTime ?? "18:00")}" required></div></div>
+    <div class="three"><div class="fg"><label>Fecha</label><input type="date" name="date" required value="${esc(ed?.date)}"${ed ? "" : ` min="${todayISO()}"`}></div><div class="fg"><label>Hora inicio</label><input type="time" name="start" value="${esc(ed?.startTime ?? "09:00")}" required></div><div class="fg"><label>Hora cierre</label><input type="time" name="end" value="${esc(ed?.endTime ?? "18:00")}" required></div></div>
     <div class="two"><div class="fg"><label>Lugar / Recinto</label><input name="venue" placeholder="Ej: Corferias" required value="${esc(ed?.venue)}"></div><div class="fg"><label>Capacidad total</label><input type="number" name="cap" min="1" placeholder="Ej: 500" required value="${esc(ed?.capacity)}"></div></div>
     <div class="fg"><label>Agenda del día</label><textarea name="agenda" rows="4" required placeholder="09:00 - Registro&#10;10:00 - Bienvenida">${esc(ed?.agenda ?? "09:00 - Registro y apertura")}</textarea></div>
     <div class="fg"><div class="phead" style="margin-bottom:8px"><label style="margin:0">Categorías de entrada</label><button type="button" class="lnk" data-add>+ Añadir categoría</button></div><div id="cats">${rows.map(r => catRow(r.name, r.price, rows.length > 1)).join("")}</div></div>

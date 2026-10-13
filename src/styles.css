@@ -2210,3 +2210,10 @@ td {
     display: none;
   }
 }
+.pside > img {
+  align-self: flex-start;
+  width: auto;
+  height: 40px;
+  max-width: 100%;
+  object-fit: contain;
+}
