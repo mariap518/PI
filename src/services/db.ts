@@ -24,11 +24,24 @@ export interface EventItem {
   ticketCategories?: { name: string; price: number; capacity?: number; available?: number }[];
 }
 
+const SEED = "v11";
+
 function loadEvents(): EventItem[] {
   try {
     const data = localStorage.getItem("sixevent_events");
-    if (data) return (JSON.parse(data) as EventItem[]).map(normalize);
+    if (data) {
+      const saved = (JSON.parse(data) as EventItem[]).map(normalize);
+      // Usuarios con datos guardados de versiones anteriores: suma los eventos de ejemplo nuevos (id 17+) una sola vez
+      if (localStorage.getItem("sixevent_seed") !== SEED) {
+        const have = new Set(saved.map(e => e.id));
+        saved.push(...initialEvents.filter(e => e.id >= 17 && !have.has(e.id)).map(normalize));
+        localStorage.setItem("sixevent_seed", SEED);
+        localStorage.setItem("sixevent_events", JSON.stringify(saved));
+      }
+      return saved;
+    }
   } catch (e) {}
+  localStorage.setItem("sixevent_seed", SEED);
   return initialEvents.map(normalize);
 }
 
@@ -48,6 +61,9 @@ const DESC: Record<number, string> = {
  "13": "Desarrolladores y empresarios exploran contratos inteligentes, tokenización y finanzas descentralizadas, con demostraciones técnicas y un panel sobre regulación en América Latina.",
  "14": "Muestra de obras de artistas colombianos y latinoamericanos en distintos formatos, con visitas guiadas, charlas con los creadores y un espacio dedicado a coleccionistas.",
  "15": "Ceremonia que premia a los proyectos, empresas y talentos más innovadores del año en software, hardware y emprendimiento, con cóctel, presentaciones y música en vivo.",
+ "17": "Noche de música sinfónica con repertorio latinoamericano y clásico, pensada para clientes, equipos y aliados. Incluye cóctel de bienvenida y zona de networking en el foyer.",
+ "18": "Recorrido interactivo con estaciones de realidad aumentada, robótica y diseño de servicios, para vivir la innovación en primera persona. Cupos por turnos y visitas guiadas.",
+ "19": "Torneo de fútbol entre equipos de empresas de la región, con fase de grupos, final y actividades para el público. Incluye zona de comidas y premiación.",
  "16": "Psicólogos y líderes de talento humano presentan estrategias para prevenir el agotamiento, mejorar el clima laboral y construir programas de bienestar que funcionen."
 };
 
@@ -91,6 +107,9 @@ const initialEvents: EventItem[] = [
   { id: 14, title: "Exposición de Arte Contemporáneo", category: "Exposición", city: "Bogotá", date: "2027-03-15", price: 35000, img: "https://images.unsplash.com/photo-1531058020387-3be344556be6?w=600&h=380&fit=crop&auto=format", rating: 4.5, createdBy: "system", capacity: 1500, availableTickets: 1500, startTime: "10:00", endTime: "20:00", venue: "Museo de Arte Moderno", agenda: "10:00 - Apertura", ticketCategories: mockCategories(35000, 1500) },
   { id: 15, title: "Gala de Premios Tecnológicos", category: "Gala", city: "Cali", date: "2027-03-25", price: 300000, img: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&h=380&fit=crop&auto=format", rating: 4.9, createdBy: "system", capacity: 200, availableTickets: 200, startTime: "19:00", endTime: "00:00", venue: "Centro de Eventos Valle del Pacífico", agenda: "19:00 - Alfombra roja", ticketCategories: mockCategories(300000, 200) },
   { id: 16, title: "Simposio de Salud Mental en el Trabajo", category: "Simposio", city: "Medellín", date: "2027-04-10", price: 75000, img: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=600&h=380&fit=crop&auto=format", rating: 4.7, createdBy: "system", capacity: 300, availableTickets: 300, startTime: "08:00", endTime: "16:00", venue: "Auditorio Ruta N", agenda: "08:00 - Registro", ticketCategories: mockCategories(75000, 300) },
+  { id: 17, title: "Festival Sinfónico Corporativo", category: "Concierto", city: "Bogotá", date: "2027-04-24", price: 140000, img: "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=600&h=380&fit=crop&auto=format", rating: 4.8, createdBy: "system", capacity: 1200, availableTickets: 1200, startTime: "19:00", endTime: "22:00", venue: "Teatro Mayor Julio Mario Santo Domingo", agenda: "19:00 - Apertura de puertas\n20:00 - Concierto", ticketCategories: mockCategories(140000, 1200) },
+  { id: 18, title: "Experiencia Inmersiva de Innovación", category: "Experiencia", city: "Medellín", date: "2027-05-08", price: 110000, img: "https://images.unsplash.com/photo-1511578314322-379afb476865?w=600&h=380&fit=crop&auto=format", rating: 4.7, createdBy: "system", capacity: 400, availableTickets: 400, startTime: "10:00", endTime: "19:00", venue: "Parque Explora", agenda: "10:00 - Apertura\n14:00 - Recorrido guiado", ticketCategories: mockCategories(110000, 400) },
+  { id: 19, title: "Copa Empresarial de Fútbol", category: "Deporte", city: "Cali", date: "2027-05-22", price: 70000, img: "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=600&h=380&fit=crop&auto=format", rating: 4.6, createdBy: "system", capacity: 800, availableTickets: 800, startTime: "08:00", endTime: "17:00", venue: "Unidad Deportiva Alberto Galindo", agenda: "08:00 - Inscripción de equipos\n10:00 - Fase de grupos", ticketCategories: mockCategories(70000, 800) },
 ];
 
 let eventsDB: EventItem[] = loadEvents();

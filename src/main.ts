@@ -7,6 +7,7 @@ import { renderEventDetail, renderCheckout } from "./views/screens";
 import { renderProfile } from "./views/profile";
 import { renderDashboard } from "./views/dashboard";
 import { renderCreateEvent, renderEditEvent, renderHowItWorks, renderStatic } from "./views/pages";
+import { POPULAR, catPlural, catStyle } from "./services/categories";
 
 /* ── Utilidades ── */
 const esc = (s: string) =>
@@ -35,7 +36,6 @@ const icon = (d: string, size = 16, fill = "none") =>
 const ALL = "Todas las ciudades";
 const cityList = () => [ALL, ...Array.from(new Set(state.all.map(e => e.city))).sort((a, b) => a.localeCompare(b, "es"))];
 const DATES = ["Cualquier fecha", "Esta semana", "Este mes", "Personalizado..."];
-const TAGS = ["Conferencias", "Congresos", "Exposiciones", "Galas", "Foros"];
 const PAGE_SIZE = 6;
 
 const state = {
@@ -83,8 +83,8 @@ function card(e: EventItem) {
   const canDel = u?.role === "admin" || (u?.role === "agente" && e.createdBy === u.id);
   return `<div class="card-wrap">
     ${canDel ? `<button class="card__edit" data-editev="${e.id}" title="Editar evento" aria-label="Editar evento">✎</button><button class="card__del" data-del="${e.id}" title="Eliminar evento" aria-label="Eliminar evento">✕</button>` : ""}
-    <article class="card" tabindex="0" role="button" data-event="${e.id}" aria-label="Ver detalles de ${esc(e.title)}">
-      <div class="card__img"><img src="${esc(e.img)}" alt="${esc(e.title)}" loading="lazy"><span class="badge">${esc(e.category)}</span>
+    <article class="card" style="${catStyle(e.category)}" tabindex="0" role="button" data-event="${e.id}" aria-label="Ver detalles de ${esc(e.title)}">
+      <div class="card__img"><img src="${esc(e.img)}" alt="${esc(e.title)}" loading="lazy" onerror="this.style.display='none'"><span class="badge">${esc(e.category)}</span>
         <div class="card__tr"><button class="fav${fav ? " is-on" : ""}" data-fav="${e.id}" aria-pressed="${fav}" aria-label="${fav ? "Quitar de favoritos" : "Agregar a favoritos"}">${icon(ic.heart, 16, fav ? "currentColor" : "none")}</button>
         <span class="rating">${icon(ic.star, 12)}${e.rating}</span></div></div>
       <div class="card__body"><h3>${esc(e.title)}</h3>
@@ -116,10 +116,8 @@ function footer() {
 
 /* ── Pintado parcial (evita perder el foco de los inputs) ── */
 function paintChips() {
-  $("#chips")!.innerHTML = `<span>Categorías Populares:</span>` + TAGS.map(t => {
-    const on = state.category === t.slice(0, -1);
-    return `<button class="chip${on ? " is-on" : ""}" data-cat="${t.slice(0, -1)}">${t}</button>`;
-  }).join("");
+  $("#chips")!.innerHTML = `<span>Categorías populares:</span>` + POPULAR.map(c =>
+    `<button class="chip${state.category === c ? " is-on" : ""}" style="${catStyle(c)}" data-cat="${esc(c)}" aria-pressed="${state.category === c}">${esc(catPlural(c))}</button>`).join("");
 }
 
 function paintGrid() {
@@ -213,18 +211,24 @@ function renderHome() {
 /** "2026-10-05" → fecha local (evita el desfase de zona horaria de new Date("2026-10-05")) */
 const localDate = (s: string) => { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d); };
 
-function applyFilters() {
+/** Aplica buscador, ciudad, fecha y categoría a la vez */
+function filterEvents() {
   const q = state.q.trim().toLowerCase();
   const now = new Date(), t0 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  state.category = null; state.visible = PAGE_SIZE;
-  state.filtered = state.all.filter(e => {
+  return state.all.filter(e => {
     const d = localDate(e.date);
     let okDate = true;
     if (state.date === "Esta semana") okDate = d >= t0 && d <= new Date(t0.getTime() + 7 * 86400000);
     else if (state.date === "Este mes") okDate = d.getMonth() === t0.getMonth() && d.getFullYear() === t0.getFullYear();
     else if (state.date === DATES[3]) okDate = (!state.start || d >= localDate(state.start)) && (!state.end || d <= localDate(state.end));
-    return (!q || e.title.toLowerCase().includes(q)) && (state.city === ALL || e.city === state.city) && okDate;
+    const okQ = !q || [e.title, e.city, e.venue ?? "", e.category].some(t => t.toLowerCase().includes(q));
+    return okQ && (state.city === ALL || e.city === state.city) && okDate && (!state.category || e.category === state.category);
   });
+}
+
+function applyFilters() {
+  state.visible = PAGE_SIZE;
+  state.filtered = filterEvents();
   paintChips(); paintGrid();
   $("#eventos")?.scrollIntoView({ behavior: "smooth" });
 }
@@ -254,7 +258,7 @@ document.addEventListener("click", ev => {
     const c = cat.dataset.cat!;
     state.category = state.category === c ? null : c;
     state.visible = PAGE_SIZE;
-    state.filtered = state.category ? state.all.filter(e => e.category.startsWith(state.category!)) : state.all;
+    state.filtered = filterEvents();
     paintChips(); return paintGrid();
   }
   const edit = t.closest<HTMLElement>("#grid-root [data-editev]");

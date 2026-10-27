@@ -1,4 +1,5 @@
 import logo from "../assets/logo-new.png";
+import { catStyle } from "../services/categories";
 import { getCurrentUser, updateUser } from "../services/auth";
 import { consumeTickets, formatDateString, placeLabel, type EventItem } from "../services/db";
 
@@ -28,7 +29,7 @@ export function renderEventDetail(root: HTMLElement, e: EventItem, onBack: () =>
     root.innerHTML = `<div class="toast${toast ? " is-on" : ""}">${svg(P.check)} Enlace copiado al portapapeles</div>
     ${topbar(`<button class="tbtn" id="d-back">${svg(P.arrow)} Volver</button>`,
       `<span class="tgrp"><button class="tbtn tbtn--o" id="d-share">${svg(toast ? P.check : P.share)} ${toast ? "Copiado" : "Compartir"}</button><button class="tbtn tbtn--o${saved() ? " is-on" : ""}" id="d-save">${svg(P.heart, 14, saved() ? "currentColor" : "none")} ${saved() ? "Guardado" : "Guardar"}</button></span>`)}
-    <div class="dhero"><img src="${esc(e.img.replace("w=600&h=380", "w=1400&h=500"))}" alt="${esc(e.title)}"><div class="dhero__shade"></div><span class="badge badge--c">${esc(e.category)}</span></div>
+    <div class="dhero"><img src="${esc(e.img.replace("w=600&h=380", "w=1400&h=500"))}" alt="${esc(e.title)}"><div class="dhero__shade"></div><span class="badge badge--c" style="${catStyle(e.category)}">${esc(e.category)}</span></div>
     <div class="container dgrid"><div>
       <h1 class="dtitle">${esc(e.title)}</h1>
       <div class="dmeta">${[[P.loc, venue], [P.loc, `${placeLabel(e, true)}`], [P.cal, formatDateString(e.date)], [P.clock, `${t1} — ${t2}`]].map(([i, t]) => `<span>${svg(i, 15)}${esc(t)}</span>`).join("")}</div>
@@ -36,7 +37,7 @@ export function renderEventDetail(root: HTMLElement, e: EventItem, onBack: () =>
       <section class="dsec"><h2>Recinto</h2><div class="vgrid">${rows.map(([l, v]) => `<div><small>${l}</small><b>${esc(v)}</b></div>`).join("")}</div></section>
       <section class="dsec"><h2>Agenda del día</h2><ol class="agenda">${agenda.map(l => { const [h, ...r] = l.split(" - "); return `<li><b>${esc(h)}</b><span>${esc(r.join(" - ") || h)}</span></li>`; }).join("")}</ol></section>
       <section class="dsec"><h2>Categorías de entrada</h2>${cats.map(c => `<div class="catrow"><span>${esc(c.name)}</span><span>${c.available !== undefined ? `${c.available} disp.` : ""}</span><b>${cop(c.price)}</b></div>`).join("")}</section>
-    </div><aside class="dside"><small>Precio desde</small><div class="dprice">${cop(Math.min(...cats.map(c => c.price)))}</div>
+    </div><aside class="dside"><small>Precio desde</small><div class="dprice">${cop((cats.length ? Math.min(...cats.map(c => c.price)) : e.price))}</div>
       <div class="bar"><i style="width:${pct}%"></i></div><p class="dav">${av} de ${cap} entradas disponibles</p>
       <button class="btn btn--navy full" id="d-res"${av === 0 ? " disabled" : ""}>${av === 0 ? "Agotado" : "Reservar entradas"}</button>
       <p class="dnote">${svg(P.shield, 13)} Pago 100% seguro</p></aside></div>`;

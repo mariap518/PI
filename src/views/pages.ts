@@ -2,6 +2,7 @@ import logo from "../assets/logo-new.png";
 import { addEvent, updateEvent, type EventItem } from "../services/db";
 import { COUNTRIES, departments, cities } from "../services/geo";
 import { getCurrentUser } from "../services/auth";
+import { catNames } from "../services/categories";
 
 const esc = (s: unknown) => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
 const svg = (d: string, s = 16) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="${d}"/></svg>`;
@@ -9,7 +10,7 @@ const ARROW = "M19 12H5M12 19l-7-7 7-7", CHECK = "M20 6L9 17l-5-5";
 const backBtn = (t = "← Volver") => `<button class="lnk back2" data-back>${t}</button>`;
 
 /* ───────── Crear / editar evento ───────── */
-const CATS = ["Conferencia", "Congreso", "Exposición", "Foro", "Gala", "Seminario", "Feria", "Taller"];
+const CATS = catNames();
 const opts = (a: string[], sel = "") => a.map(o => `<option${o === sel ? " selected" : ""}>${esc(o)}</option>`).join("");
 const withCur = (list: string[], cur?: string) => (cur && !list.includes(cur) ? [...list, cur] : list);
 const catRow = (name = "", price: number | "" = "", rm = true) =>

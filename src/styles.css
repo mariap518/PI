@@ -275,17 +275,20 @@ img {
   height: 30px;
   padding: 0 14px;
   border-radius: 20px;
-  border: 1px solid var(--border);
-  background: #fff;
-  color: var(--navy-l);
+  border: 1px solid transparent;
+  background: var(--cat-bg, #fff);
+  color: #111;
   font-size: 13px;
   font-weight: 500;
   transition: all .2s;
 }
+.chip:hover {
+  background: var(--cat-tag, #fff);
+}
 .chip.is-on {
-  background: var(--navy);
-  border-color: var(--navy);
-  color: var(--cream);
+  background: var(--cat-tag, var(--navy));
+  border-color: #111;
+  font-weight: 700;
 }
 #eventos {
   padding: 24px 0 80px;
@@ -327,8 +330,9 @@ img {
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: #fff;
-  border: 1px solid var(--border);
+  background: var(--cat-bg, #fff);
+  color: #111;
+  border: 1px solid rgba(0, 0, 0, .06);
   border-radius: 10px;
   overflow: hidden;
   cursor: pointer;
@@ -363,8 +367,8 @@ img {
   position: absolute;
   top: 12px;
   left: 12px;
-  background: var(--navy);
-  color: var(--cream);
+  background: var(--cat-tag, var(--cream));
+  color: #111;
   font-size: 11px;
   font-weight: 600;
   padding: 4px 10px;
@@ -423,6 +427,7 @@ img {
   flex-direction: column;
 }
 .card__body h3 {
+  color: #111;
   font-size: 15px;
   font-weight: 600;
   line-height: 1.4;
@@ -433,16 +438,18 @@ img {
   align-items: center;
   gap: 8px;
   font-size: 13px;
-  color: var(--muted);
+  color: #111;
   margin-bottom: 7px;
 }
 .meta svg {
-  color: var(--navy-l);
+  color: #111;
+  opacity: .7;
+  flex-shrink: 0;
 }
 .card__body hr {
   border: 0;
   height: 1px;
-  background: var(--border);
+  background: rgba(0, 0, 0, .14);
   margin: 13px 0 16px;
 }
 .price {
@@ -451,12 +458,12 @@ img {
 .price small {
   display: block;
   font-size: 11px;
-  color: var(--muted);
+  color: #111;
   margin-bottom: 2px;
 }
 .price strong {
   font-size: 19px;
-  color: var(--navy);
+  color: #111;
 }
 .placeholder {
   padding: 120px 32px 80px;
@@ -999,8 +1006,8 @@ img {
       rgba(30, 58, 95, .95));
 }
 .badge--c {
-  background: var(--cream);
-  color: var(--navy);
+  background: var(--cat-tag, var(--cream));
+  color: #111;
   left: max(32px, calc(50% - 568px));
   top: auto;
   bottom: 24px;
