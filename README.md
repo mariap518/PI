@@ -21,20 +21,27 @@ un pull antes de intentar subir cualquier cosa para evitar conflictos, tambien e
 
 ## Cómo ejecutar
 
+**Para ver el proyecto (profesor):** descargar el repositorio y abrir `index.html` con doble clic en el navegador. No hace falta instalar nada (se necesita internet para las fuentes y las fotos de los eventos).
+
+**Para desarrollar:**
+
 ```bash
 pnpm install
-pnpm dev         # servidor de desarrollo
+pnpm dev         # servidor en http://localhost:5173
 pnpm typecheck   # revisar tipos
-pnpm build       # compilar para producción (carpeta dist/)
+pnpm build       # regenera la carpeta app/ (hacer commit de app/ después)
 ```
 
+> `app/` contiene el código ya compilado que usa `index.html`. Después de cambiar algo en `src/`, hay que correr `pnpm build` y subir también `app/`, o el cambio no se verá al abrir `index.html`.
+
 ## Tecnologías
-TypeScript + Vite. Los datos se guardan en `localStorage` (sin backend).
+TypeScript + esbuild (sin framework). Los datos se guardan en `localStorage` (sin backend).
 
 ## Estructura
 
 ```
-index.html        entrada de Vite
+index.html        página que se abre en el navegador
+app/              código compilado (main.js, main.css, assets/)
 src/main.ts       página principal y rutas
 src/services/     lógica y datos (db, auth, geo, points, ticket)
 src/views/        pantallas (login, profile, screens, pages, dashboard)
