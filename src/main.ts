@@ -60,21 +60,79 @@ const select = (id: string, ico: string, opts: string[], val: string, cls = "") 
   `<div class="field ${cls}">${icon(ico)}<select id="${id}" aria-label="${id}">${opts
     .map(o => `<option${o === val ? " selected" : ""}>${esc(o)}</option>`).join("")}</select></div>`;
 
+/** Eventos del carrusel. Para cambiarlos basta con editar esta lista de ids (o las imágenes en db.ts). */
+const FEATURED_IDS = [3, 6, 7, 17, 18, 19];
+const featured = () => {
+  const list = FEATURED_IDS.map(id => state.all.find(e => e.id === id)).filter((e): e is EventItem => !!e);
+  return list.length ? list : state.all.slice(0, 6);
+};
+const bigImg = (u: string) => u.replace("w=600&h=380", "w=1920&h=800");
+const chevron = (dir: 1 | -1) => icon(dir === 1 ? "M9 18l6-6-6-6" : "M15 18l-6-6 6-6", 22);
+
+function carousel() {
+  const list = featured();
+  if (!list.length) return `<div class="hero-gap"></div>`;
+  return `<div class="hero" id="hero" role="region" aria-roledescription="carrusel" aria-label="Eventos destacados">
+    ${list.map((e, i) => `<article class="slide${i === 0 ? " is-active" : ""}" data-hero-ev="${e.id}" aria-hidden="${i !== 0}" aria-label="${esc(e.title)}">
+      <img class="slide__img" src="${esc(bigImg(e.img))}" alt=""${i ? ' loading="lazy"' : ""} onerror="this.style.display='none'">
+      <div class="slide__shade"></div>
+      <div class="container slide__in"><div class="slide__txt" style="${catStyle(e.category)}">
+        <span class="slide__tag">${esc(e.category)}</span>
+        <h2>${esc(e.title)}</h2>
+        <p class="slide__meta"><span>${icon(ic.calendar, 16)}${formatDateString(e.date)}</span><span>${icon(ic.location, 16)}${esc(placeLabel(e))}</span></p>
+        <div class="slide__cta"><button class="btn btn--cream" data-hero-ev="${e.id}">Ver evento</button><span class="slide__price">Desde <b>${cop(e.price)}</b></span></div>
+      </div></div></article>`).join("")}
+    ${list.length > 1 ? `<button class="hero__arrow hero__arrow--prev" data-hero-dir="-1" aria-label="Evento anterior">${chevron(-1)}</button>
+    <button class="hero__arrow hero__arrow--next" data-hero-dir="1" aria-label="Evento siguiente">${chevron(1)}</button>
+    <div class="hero__dots">${list.map((e, i) => `<button class="hero__dot${i === 0 ? " is-on" : ""}" data-hero-dot="${i}" aria-label="Ir a ${esc(e.title)}" aria-current="${i === 0}"></button>`).join("")}</div>` : ""}
+  </div>`;
+}
+
 function hero() {
-  const stats = [["1.8M+", "Boletas vendidas"], ["4.200+", "Eventos gestionados"], ["620", "Organizadores activos"], ["38", "Ciudades en Colombia"]];
-  return `<section><div class="hero__img">
-    <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1400&h=500&fit=crop&auto=format" alt="Auditorio corporativo">
-    <div class="hero__shade"></div>
-    <div class="hero__txt"><h1>Encuentra tu próximo evento</h1>
-      <p>Congresos, conferencias y foros empresariales en toda Colombia. Boletas seguras en minutos.</p>
-      <div class="stats">${stats.map(([v, l]) => `<div><b>${v}</b><span>${l}</span></div>`).join("")}</div></div></div>
+  return `<section>${carousel()}
     <div class="container searchbox"><div class="search">
       <div class="field">${icon(ic.search)}<input id="q" type="text" placeholder="Nombre del evento o ponente…" value="${esc(state.q)}"></div>
       ${select("city", ic.location, cityList(), state.city, "sm")}
-      <div class="field sm" style="flex:0 0 200px">${icon(ic.calendar)}<select id="date" aria-label="Fecha">${DATES.map(o => `<option${o === state.date ? " selected" : ""}>${o}</option>`).join("")}</select>
+      <div class="field sm">${icon(ic.calendar)}<select id="date" aria-label="Fecha">${DATES.map(o => `<option${o === state.date ? " selected" : ""}>${o}</option>`).join("")}</select>
         <div class="range${state.date === DATES[3] ? " is-open" : ""}" id="range"><input type="date" id="start" value="${state.start}"><input type="date" id="end" value="${state.end}"></div></div>
       <button class="btn btn--navy" id="btn-search">${icon(ic.search, 15)} Buscar eventos</button></div>
       <div class="chips" id="chips"></div></div></section>`;
+}
+
+/* ── Carrusel: movimiento ── */
+let heroIdx = 0, heroTimer: number | undefined, heroPaused = false;
+const HERO_MS = 6500;
+function heroShow(i: number) {
+  const slides = document.querySelectorAll<HTMLElement>("#hero .slide");
+  if (!slides.length) return;
+  heroIdx = (i + slides.length) % slides.length;
+  slides.forEach((el, k) => { el.classList.toggle("is-active", k === heroIdx); el.setAttribute("aria-hidden", String(k !== heroIdx)); });
+  document.querySelectorAll<HTMLElement>("#hero [data-hero-dot]").forEach((d, k) => { d.classList.toggle("is-on", k === heroIdx); d.setAttribute("aria-current", String(k === heroIdx)); });
+}
+function heroStop() { if (heroTimer !== undefined) clearInterval(heroTimer); heroTimer = undefined; }
+function heroPlay() {
+  heroStop();
+  if (document.querySelectorAll("#hero .slide").length < 2 || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  heroTimer = window.setInterval(() => {
+    if (!$("#hero")) return heroStop();
+    if (!heroPaused && !document.hidden) heroShow(heroIdx + 1);
+  }, HERO_MS);
+}
+function startHero() {
+  heroIdx = 0; heroPaused = false;
+  const h = $("#hero");
+  if (!h) return heroStop();
+  const pause = () => { heroPaused = true; }, resume = () => { heroPaused = false; };
+  h.addEventListener("mouseenter", pause); h.addEventListener("mouseleave", resume);
+  h.addEventListener("focusin", pause); h.addEventListener("focusout", resume);
+  let x0 = 0;
+  h.addEventListener("touchstart", ev => { x0 = ev.touches[0].clientX; pause(); }, { passive: true });
+  h.addEventListener("touchend", ev => {
+    const dx = ev.changedTouches[0].clientX - x0;
+    if (Math.abs(dx) > 50) { heroShow(heroIdx + (dx < 0 ? 1 : -1)); heroPlay(); }
+    resume();
+  }, { passive: true });
+  heroPlay();
 }
 
 function card(e: EventItem) {
@@ -137,6 +195,7 @@ type Page = "dashboard" | "edit-event" | "home" | "login" | "register" | "how" |
 
 function render(page: Page, title?: string) {
   window.scrollTo({ top: 0 });
+  heroStop();
   if (page === "home") return renderHome();
   if (page === "login" || page === "register") {
     app.innerHTML = `<main id="auth-root" style="flex:1"></main>${footer()}`;
@@ -205,7 +264,7 @@ function route() {
 
 function renderHome() {
   app.innerHTML = `${navbar()}<main>${hero()}${eventsSection()}</main>${footer()}`;
-  paintChips(); paintGrid();
+  paintChips(); paintGrid(); startHero();
 }
 
 /** "2026-10-05" → fecha local (evita el desfase de zona horaria de new Date("2026-10-05")) */
@@ -253,6 +312,12 @@ document.addEventListener("click", ev => {
     }
     return;
   }
+  const hdir = t.closest<HTMLElement>("#hero [data-hero-dir]");
+  if (hdir) { heroShow(heroIdx + Number(hdir.dataset.heroDir)); return heroPlay(); }
+  const hdot = t.closest<HTMLElement>("#hero [data-hero-dot]");
+  if (hdot) { heroShow(Number(hdot.dataset.heroDot)); return heroPlay(); }
+  const hev = t.closest<HTMLElement>("#hero [data-hero-ev]");
+  if (hev) { current = state.all.find(e => e.id === Number(hev.dataset.heroEv)) ?? null; return go("event"); }
   const cat = t.closest<HTMLElement>("#chips [data-cat]");
   if (cat) {
     const c = cat.dataset.cat!;
