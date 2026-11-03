@@ -21,31 +21,37 @@ un pull antes de intentar subir cualquier cosa para evitar conflictos, tambien e
 
 ## Cómo ejecutar
 
-**Para ver el proyecto (profesor):** descargar el repositorio y abrir `index.html` con doble clic en el navegador. No hace falta instalar nada (se necesita internet para las fuentes y las fotos de los eventos).
+Los eventos se guardan en una base de datos **Neon (PostgreSQL)** y la página los pide a un pequeño servidor (`server/`). Por eso hacen falta tres cosas:
 
-**Para desarrollar:**
+1. **Instalar:** `pnpm install`
+2. **Credenciales:** crear un archivo `.env.local` en la raíz con `DATABASE_URL` y `DATABASE_URL_UNPOOLED` (los pide el equipo; **nunca** se suben al repositorio).
+3. **Correr** (en tres terminales):
 
 ```bash
-pnpm install
-pnpm dev         # servidor en http://localhost:5173
-pnpm typecheck   # revisar tipos
-pnpm build       # regenera la carpeta app/ (hacer commit de app/ después)
+pnpm server    # API en http://localhost:3001 (conecta con Neon)
+pnpm watch     # recompila src/ en app/ cada vez que se guarda
+pnpm dev       # abre la página en http://localhost:5173 (redirige /api al servidor)
 ```
 
-> `app/` contiene el código ya compilado que usa `index.html`. Después de cambiar algo en `src/`, hay que correr `pnpm build` y subir también `app/`, o el cambio no se verá al abrir `index.html`.
+Otros comandos: `pnpm migrate` (crea las tablas y datos iniciales), `pnpm smoke` (prueba rápida de la API), `pnpm typecheck` y `pnpm build` (genera `app/`; hacer commit de `app/` después de cambiar `src/`).
+
+> Si se abre `index.html` con doble clic, la página no tiene servidor y muestra el mensaje "No se pudieron cargar los eventos".
 
 ## Tecnologías
-TypeScript + esbuild (sin framework). Los datos se guardan en `localStorage` (sin backend).
+TypeScript + esbuild (frontend sin framework), Express + `pg` (servidor) y Neon PostgreSQL (base de datos).
 
 ## Estructura
 
 ```
-index.html        página que se abre en el navegador
-app/              código compilado (main.js, main.css, assets/)
+index.html        página principal (carga app/main.js y app/main.css)
+app/              código compilado del frontend
 src/main.ts       página principal y rutas
-src/services/     lógica y datos (db, auth, geo, points, ticket)
+src/services/     lógica y datos (db, auth, geo, points, ticket, categories, seed, theme)
 src/views/        pantallas (login, profile, screens, pages, dashboard)
 src/assets/       imágenes usadas desde el código
 public/           archivos estáticos (favicon)
+server/           API Express y scripts de base de datos
+neon.ts           configuración de Neon
+vite.config.ts    servidor de desarrollo (redirige /api a localhost:3001)
 docs/             documentación
 ```

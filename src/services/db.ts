@@ -25,27 +25,6 @@ export interface EventItem {
   ticketCategories?: { name: string; price: number; capacity?: number; available?: number }[];
 }
 
-const SEED = "v14";
-
-function loadEvents(): EventItem[] {
-  try {
-    const data = localStorage.getItem("sixevent_events");
-    if (data) {
-      const saved = (JSON.parse(data) as EventItem[]).map(normalize);
-      // Usuarios con datos guardados de versiones anteriores: suma los eventos de ejemplo nuevos (id 17+) una sola vez
-      if (localStorage.getItem("sixevent_seed") !== SEED) {
-        const have = new Set(saved.map(e => e.id));
-        saved.push(...initialEvents.filter(e => e.id >= 17 && !have.has(e.id)).map(normalize));
-        localStorage.setItem("sixevent_seed", SEED);
-        localStorage.setItem("sixevent_events", JSON.stringify(saved));
-      }
-      return saved;
-    }
-  } catch (e) {}
-  localStorage.setItem("sixevent_seed", SEED);
-  return initialEvents.map(normalize);
-}
-
 const DESC: Record<number, string> = {
  "1": "Encuentro regional que reúne a CEOs, inversionistas y líderes de más de 15 países para discutir expansión de mercados, alianzas estratégicas y el futuro de la economía latinoamericana. Incluye ruedas de negocios y cena de networking.",
  "2": "Dos jornadas de paneles y demostraciones sobre inteligencia artificial, computación en la nube y transformación digital, con startups invitadas y espacio para conectar con aceleradoras y fondos de capital de riesgo.",
@@ -79,10 +58,6 @@ function normalize(e: EventItem): EventItem {
 
 export function placeLabel(e: EventItem, full = false) {
   return [e.city, e.department, full ? e.country : ""].filter(Boolean).join(", ");
-}
-
-function saveEvents(events: EventItem[]) {
-  localStorage.setItem("sixevent_events", JSON.stringify(events));
 }
 
 const mockCategories = (price: number, cap: number) => [
@@ -141,41 +116,48 @@ function buildExtra([category, title, city, date, price, photo, venue]: Extra, i
 }
 const initialEvents: EventItem[] = [...baseEvents, ...EXTRA.map(buildExtra)];
 
-let eventsDB: EventItem[] = loadEvents();
-let nextId = eventsDB.length > 0 ? Math.max(...eventsDB.map(e => e.id)) + 1 : 17;
+let eventsDB: EventItem[] = [];
+
+const API = "/api";
+
+async function api<T>(path: string, init?: RequestInit): Promise<T> {
+  const res = await fetch(API + path, { headers: { "Content-Type": "application/json" }, ...init });
+  if (!res.ok) {
+    const msg = await res.json().catch(() => ({} as { error?: string }));
+    throw new Error(msg.error ?? `${init?.method ?? "GET"} ${path} → ${res.status}`);
+  }
+  if (res.status === 204) return undefined as T;
+  return res.json() as Promise<T>;
+}
+
+/** Carga los eventos desde Neon antes de montar la app */
+export async function initEvents() {
+  eventsDB = (await api<EventItem[]>("/events")).map(normalize);
+}
 
 export function getEvents() {
   return [...eventsDB];
 }
 
-export function addEvent(event: Omit<EventItem, "id" | "rating">) {
-  const newEvent: EventItem = {
-    ...event,
-    id: nextId++,
-    rating: 5.0,
-  };
-  eventsDB = [newEvent, ...eventsDB];
-  saveEvents(eventsDB);
-  return newEvent;
+export async function addEvent(event: Omit<EventItem, "id" | "rating">) {
+  const created = normalize(await api<EventItem>("/events", { method: "POST", body: JSON.stringify(event) }));
+  eventsDB = [created, ...eventsDB];
+  return created;
 }
 
-export function updateEvent(id: number, patch: Partial<EventItem>) {
-  eventsDB = eventsDB.map(e => (e.id === id ? { ...e, ...patch, id } : e));
-  saveEvents(eventsDB);
+export async function updateEvent(id: number, patch: Partial<EventItem>) {
+  const updated = normalize(await api<EventItem>(`/events/${id}`, { method: "PUT", body: JSON.stringify(patch) }));
+  eventsDB = eventsDB.map(e => (e.id === id ? updated : e));
 }
 
-export function deleteEvent(id: number) {
+export async function deleteEvent(id: number) {
+  await api(`/events/${id}`, { method: "DELETE" });
   eventsDB = eventsDB.filter(e => e.id !== id);
-  saveEvents(eventsDB);
 }
 
-export function consumeTickets(id: number, qty: number, category?: string) {
-  const e = eventsDB.find(x => x.id === id);
-  if (!e || e.availableTickets === undefined) return;
-  e.availableTickets = Math.max(0, e.availableTickets - qty);
-  const c = e.ticketCategories?.find(x => x.name === category);
-  if (c && c.available !== undefined) c.available = Math.max(0, c.available - qty);
-  saveEvents(eventsDB);
+export async function consumeTickets(id: number, qty: number, category?: string) {
+  const updated = normalize(await api<EventItem>(`/events/${id}/consume`, { method: "POST", body: JSON.stringify({ qty, category }) }));
+  eventsDB = eventsDB.map(e => (e.id === id ? updated : e));
 }
 
 export function formatDateString(dateStr: string) {

@@ -126,7 +126,7 @@ export function renderCheckout(root: HTMLElement, e: EventItem, onBack: () => vo
         const earned = Math.round(total() / 1000);
         updateUser({ reservations: [res, ...(u.reservations || [])], points: (u.points || 0) + earned, lifetimePoints: (u.lifetimePoints ?? u.points ?? 0) + earned,
           coupons: (u.coupons || []).map(c => (c.code === s.coupon ? { ...c, used: true } : c)) });
-        consumeTickets(e.id, s.qty, s.cat);
+        consumeTickets(e.id, s.qty, s.cat).catch(console.error);
       }
       onConfirm();
     }, 1600);

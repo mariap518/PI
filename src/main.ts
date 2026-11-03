@@ -1,13 +1,13 @@
 import "./styles.css";
 import logo from "./assets/logo-new.png";
-import { getEvents, deleteEvent, formatDateString, placeLabel, type EventItem } from "./services/db";
+import { getEvents, initEvents, deleteEvent, formatDateString, placeLabel, type EventItem } from "./services/db";
 import { getCurrentUser, updateUser } from "./services/auth";
 import { renderLogin } from "./views/login";
 import { renderEventDetail, renderCheckout } from "./views/screens";
 import { renderProfile } from "./views/profile";
 import { renderDashboard } from "./views/dashboard";
 import { renderCreateEvent, renderEditEvent, renderHowItWorks, renderStatic } from "./views/pages";
-import { THEMES, MOON, getTheme, setTheme, initTheme, type Theme } from "./services/theme";
+import { themesFor, MOON, getTheme, setTheme, initTheme, type Theme } from "./services/theme";
 import { CATEGORIES, POPULAR, catPlural, catSlug, catBySlug, catStyle, type Cat } from "./services/categories";
 
 /* ── Utilidades ── */
@@ -50,7 +50,7 @@ const state = {
 function themeMenu() {
   const cur = getTheme();
   return `<div class="theme"><button class="theme__btn" data-theme-toggle aria-haspopup="menu" aria-expanded="false" aria-label="Cambiar modo de color" title="Modo de color">${icon(MOON, 18)}</button>
-    <div class="theme__menu" role="menu" hidden>${THEMES.map(t => `<button class="theme__opt theme__opt--${t.id}${t.id === cur ? " is-on" : ""}" role="menuitemradio" aria-checked="${t.id === cur}" data-theme-set="${t.id}"><span>${t.label}</span><i>${icon(t.icon, 18)}</i></button>`).join("")}</div></div>`;
+    <div class="theme__menu" role="menu" hidden>${themesFor().map(t => `<button class="theme__opt theme__opt--${t.id}${t.id === cur ? " is-on" : ""}" role="menuitemradio" aria-checked="${t.id === cur}" data-theme-set="${t.id}"><span>${t.label}</span><i>${icon(t.icon, 18)}</i></button>`).join("")}</div></div>`;
 }
 const closeThemeMenu = () => document.querySelectorAll<HTMLElement>(".theme__menu").forEach(m => {
   m.hidden = true; m.parentElement?.querySelector(".theme__btn")?.setAttribute("aria-expanded", "false");
@@ -264,6 +264,7 @@ type Page = "category" | "dashboard" | "edit-event" | "home" | "login" | "regist
 function render(page: Page, title?: string) {
   window.scrollTo({ top: 0 });
   heroStop();
+  initTheme();
   catPage = null;
   if (page === "category") return renderCategory(title ?? "");
   if (page === "home") return renderHome();
@@ -384,9 +385,9 @@ document.addEventListener("click", ev => {
   const del = t.closest<HTMLElement>(".evlist [data-del]");
   if (del) {
     if (confirm("¿Estás seguro de eliminar este evento?")) {
-      deleteEvent(Number(del.dataset.del));
-      state.all = state.filtered = getEvents();
-      repaint();
+      deleteEvent(Number(del.dataset.del))
+        .then(() => { state.all = state.filtered = getEvents(); repaint(); })
+        .catch(err => alert("No se pudo eliminar: " + (err as Error).message));
     }
     return;
   }
@@ -474,6 +475,13 @@ function cookieBanner() {
 }
 
 initTheme();
-window.addEventListener("hashchange", route);
-route();
 cookieBanner();
+initEvents()
+  .then(() => {
+    state.all = state.filtered = getEvents();
+    window.addEventListener("hashchange", route);
+    route();
+  })
+  .catch(err => {
+    app.innerHTML = `<p style="padding:2rem">No se pudieron cargar los eventos: ${esc(String((err as Error).message))}</p>`;
+  });

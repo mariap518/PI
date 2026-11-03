@@ -2501,7 +2501,6 @@ html.theme-anim *:not(.slide):not(.slide__img) {
   display: flex;
   align-items: center;
   margin-left: 8px;
-  margin-right: -65px;
 }
 .theme__btn {
   width: 40px;
@@ -2865,5 +2864,301 @@ html[data-theme=exotic] .chip.is-on {
   }
   .theme__btn:hover {
     transform: none;
+  }
+}
+.theme__opt--secret {
+  background:
+    linear-gradient(
+      90deg,
+      #FF2E93,
+      #FFE600,
+      #00F0FF);
+  background-size: 200% 100%;
+  color: #000;
+  font-weight: 700;
+  animation: secretpill 4s linear infinite;
+}
+.theme__opt--secret i {
+  background: #7A00FF;
+}
+@keyframes secretpill {
+  to {
+    background-position: 200% 0;
+  }
+}
+html[data-theme=secret] {
+  --navy: #14002E;
+  --navy-l: #7A00FF;
+  --cream: #C6FF00;
+  --ink: #000;
+  --muted: #3B2A5A;
+  --border: #000;
+  --surface: #FFF04D;
+  --surface-2: #fff;
+}
+html[data-theme=secret]::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(rgba(20, 0, 46, .18), rgba(20, 0, 46, .18)),
+    url(./assets/pattern67.jpg) 0 0 / 760px auto,
+    #FF2E93;
+  background-blend-mode:
+    normal,
+    multiply,
+    normal;
+  animation: secretdrift 50s linear infinite, secrethue 14s linear infinite;
+}
+@keyframes secretdrift {
+  to {
+    background-position:
+      0 0,
+      760px 944px,
+      0 0;
+  }
+}
+@keyframes secrethue {
+  to {
+    filter: hue-rotate(360deg);
+  }
+}
+html[data-theme=secret] body,
+html[data-theme=secret] .shell > main {
+  background: transparent;
+}
+html[data-theme=secret] .nav,
+html[data-theme=secret] .top,
+html[data-theme=secret] .footer {
+  background: #14002E;
+  border-bottom: 3px solid #C6FF00;
+}
+html[data-theme=secret] .footer {
+  border-bottom: 0;
+  border-top: 3px solid #FF2E93;
+}
+html[data-theme=secret] .sec h2,
+html[data-theme=secret] .cathead h1,
+html[data-theme=secret] .chips > span,
+html[data-theme=secret] .dgrid,
+html[data-theme=secret] .cgrid,
+html[data-theme=secret] .cathead p {
+  text-shadow: 3px 3px 0 #000;
+}
+html[data-theme=secret] .dside,
+html[data-theme=secret] .cbox {
+  text-shadow: none;
+}
+html[data-theme=secret] .sec h2,
+html[data-theme=secret] .cathead h1,
+html[data-theme=secret] .chips > span {
+  display: inline-block;
+  background: #14002E;
+  color: #C6FF00;
+  padding: 6px 16px;
+  border: 3px solid #C6FF00;
+  box-shadow: 5px 5px 0 #000;
+  text-shadow: none;
+}
+html[data-theme=secret] .sec h2,
+html[data-theme=secret] .cathead h1 {
+  rotate: -1deg;
+}
+html[data-theme=secret] .sec h2::after {
+  display: none;
+}
+html[data-theme=secret] .dsec p,
+html[data-theme=secret] .dmeta {
+  background: rgba(20, 0, 46, .84);
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 8px;
+  text-shadow: none;
+}
+html[data-theme=secret] .dsec p {
+  margin-bottom: 8px;
+}
+html[data-theme=secret] .chips > span {
+  padding: 4px 12px;
+}
+html[data-theme=secret] .vgrid div,
+html[data-theme=secret] .catrow,
+html[data-theme=secret] .ptsbox {
+  background: rgba(20, 0, 46, .78);
+}
+html[data-theme=secret] .search,
+html[data-theme=secret] .auth__r,
+html[data-theme=secret] .modal__box,
+html[data-theme=secret] .btn--ghost2,
+html[data-theme=secret] .dside,
+html[data-theme=secret] .cbox,
+html[data-theme=secret] .opt,
+html[data-theme=secret] .roles button,
+html[data-theme=secret] .pcard,
+html[data-theme=secret] .pbtn,
+html[data-theme=secret] .page {
+  background: var(--surface);
+  color: #000;
+  border: 3px solid #000;
+  box-shadow: 6px 6px 0 #000;
+}
+html[data-theme=secret] .field input,
+html[data-theme=secret] .field select,
+html[data-theme=secret] .fg input,
+html[data-theme=secret] .fg select,
+html[data-theme=secret] .modal input,
+html[data-theme=secret] .cform .fg input,
+html[data-theme=secret] .cform .fg select,
+html[data-theme=secret] .cform .fg textarea,
+html[data-theme=secret] .cbox .fg input,
+html[data-theme=secret] .cbox .fg select,
+html[data-theme=secret] .cbox textarea,
+html[data-theme=secret] .qty button,
+html[data-theme=secret] .sub2,
+html[data-theme=secret] .hb > div,
+html[data-theme=secret] .occ {
+  background: #fff;
+  color: #000;
+  border: 2px solid #000;
+}
+html[data-theme=secret] .prof,
+html[data-theme=secret] .dash {
+  background: #FFB3E6;
+  color: #000;
+}
+html[data-theme=secret] .opt.is-on,
+html[data-theme=secret] .tier.is-cur {
+  background: #00F0FF;
+}
+html[data-theme=secret] .opt.is-on {
+  border-color: #000;
+}
+html[data-theme=secret] .auth__box h2,
+html[data-theme=secret] .modal__box h3,
+html[data-theme=secret] .cbox h2,
+html[data-theme=secret] .dside h3,
+html[data-theme=secret] .dprice,
+html[data-theme=secret] .sumr--t,
+html[data-theme=secret] .pmain h1,
+html[data-theme=secret] .phead h2,
+html[data-theme=secret] .pcard > h2,
+html[data-theme=secret] .pcard > b,
+html[data-theme=secret] .big,
+html[data-theme=secret] .sub2 h4,
+html[data-theme=secret] .qr h3,
+html[data-theme=secret] .page h1,
+html[data-theme=secret] .doc h3,
+html[data-theme=secret] .subh,
+html[data-theme=secret] .reward b,
+html[data-theme=secret] .dash h1,
+html[data-theme=secret] .hb b,
+html[data-theme=secret] .donut li b,
+html[data-theme=secret] .vb b {
+  color: #14002E;
+}
+html[data-theme=secret] .doc p,
+html[data-theme=secret] .doc li {
+  color: #000;
+}
+html[data-theme=secret] .auth__l {
+  background: #00F0FF;
+}
+html[data-theme=secret] .auth__l h1,
+html[data-theme=secret] .auth__l p,
+html[data-theme=secret] .back {
+  color: #14002E;
+}
+html[data-theme=secret] .btn--cream {
+  background: #C6FF00;
+  color: #000;
+  border: 3px solid #000;
+  box-shadow: 4px 4px 0 #000;
+}
+html[data-theme=secret] .btn--navy,
+html[data-theme=secret] .pbtn--p,
+html[data-theme=secret] .roles button.is-on {
+  background: #7A00FF;
+  color: #fff;
+  border: 3px solid #000;
+  box-shadow: 4px 4px 0 #000;
+}
+html[data-theme=secret] .btn--cream:hover,
+html[data-theme=secret] .btn--navy:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 #000;
+}
+html[data-theme=secret] .btn--ghost {
+  color: #C6FF00;
+  border-color: #C6FF00;
+}
+html[data-theme=secret] .card,
+html[data-theme=secret] .cat-tile,
+html[data-theme=secret] .chip {
+  border: 3px solid #000;
+  box-shadow: 6px 6px 0 #000;
+  filter: saturate(2.4) contrast(1.05);
+}
+html[data-theme=secret] .chip {
+  box-shadow: 3px 3px 0 #000;
+}
+html[data-theme=secret] .card:nth-child(odd) {
+  rotate: -.8deg;
+}
+html[data-theme=secret] .card:nth-child(even) {
+  rotate: .6deg;
+}
+html[data-theme=secret] .card:hover {
+  rotate: 0deg;
+}
+html[data-theme=secret] .cat-tile:nth-child(3n+1) {
+  rotate: -1deg;
+}
+html[data-theme=secret] .cat-tile:nth-child(3n+2) {
+  rotate: .8deg;
+}
+html[data-theme=secret] .cat-tile:hover {
+  rotate: 0deg;
+}
+html[data-theme=secret] .hb i {
+  background:
+    linear-gradient(
+      90deg,
+      #FF2E93,
+      #7A00FF);
+}
+html[data-theme=secret] .vb i {
+  background: linear-gradient(#00F0FF, #7A00FF);
+}
+html[data-theme=secret] .pill--ok {
+  background: #C6FF00;
+  color: #000;
+  border-color: #000;
+}
+html[data-theme=secret] .pill--bad {
+  background: #FF2E93;
+  color: #000;
+  border-color: #000;
+}
+html[data-theme=secret] .pill--warn {
+  background: #FFE600;
+  color: #000;
+  border-color: #000;
+}
+html[data-theme=secret] .mov strong,
+html[data-theme=secret] .oktxt {
+  color: #0A7A00;
+}
+html[data-theme=secret] .how {
+  background: #2A0057;
+}
+html[data-theme=secret] .theme__btn {
+  background: #C6FF00;
+  color: #000;
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme=secret]::before,
+  .theme__opt--secret {
+    animation: none;
   }
 }

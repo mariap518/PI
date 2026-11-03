@@ -59,7 +59,7 @@ function eventForm(root: HTMLElement, onDone: () => void, ed?: EventItem) {
     if (t.name === "country") { fill(sel("department"), departments(t.value)); fill(sel("city"), cities(t.value, sel("department").value)); }
     if (t.name === "department") fill(sel("city"), cities(sel("country").value, t.value));
   };
-  root.onsubmit = e => {
+  root.onsubmit = async e => {
     e.preventDefault();
     const f = new FormData(e.target as HTMLFormElement), g = (k: string) => String(f.get(k) ?? "").trim();
     const names = f.getAll("cn").map(String), prices = f.getAll("cp").map(Number);
@@ -72,10 +72,15 @@ function eventForm(root: HTMLElement, onDone: () => void, ed?: EventItem) {
     const fields = { title: g("title"), description: g("description"), category: g("category"), country: g("country"), department: g("department"), city: g("city"), date: g("date"),
       price: (ticketCategories.find(c => c.name.toLowerCase() === "general") ?? ticketCategories[0]).price,
       startTime: g("start"), endTime: g("end"), venue: g("venue"), agenda: f.get("agenda") as string, ticketCategories, img: g("img") };
-    if (ed) {
-      const sold = Math.max(0, (ed.capacity ?? 0) - (ed.availableTickets ?? ed.capacity ?? 0));
-      updateEvent(ed.id, { ...fields, capacity: cap, availableTickets: Math.max(0, cap - sold) });
-    } else addEvent({ ...fields, capacity: cap, availableTickets: cap, createdBy: u.id, company: u.role === "agente" ? u.empresa : undefined });
+    try {
+      if (ed) {
+        const sold = Math.max(0, (ed.capacity ?? 0) - (ed.availableTickets ?? ed.capacity ?? 0));
+        await updateEvent(ed.id, { ...fields, capacity: cap, availableTickets: Math.max(0, cap - sold) });
+      } else await addEvent({ ...fields, capacity: cap, availableTickets: cap, createdBy: u.id, company: u.role === "agente" ? u.empresa : undefined });
+    } catch (err) {
+      alert("No se pudo guardar el evento: " + (err as Error).message);
+      return;
+    }
     onDone();
   };
 }
