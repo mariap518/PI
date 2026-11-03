@@ -28,3 +28,7 @@ export const catNames = () => CATEGORIES.map(c => c.name);
 export const catPlural = (name: string) => find(name)?.plural ?? name;
 /** Variables CSS inline para pintar un elemento con los colores de su categoría */
 export const catStyle = (name: string) => { const c = find(name) ?? FALLBACK; return `--cat-bg:${c.bg};--cat-tag:${c.tag}`; };
+
+/** "Exposición" → "exposicion" (para la URL de la página de categoría) */
+export const catSlug = (name: string) => name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+export const catBySlug = (slug: string) => CATEGORIES.find(c => catSlug(c.name) === slug.toLowerCase());

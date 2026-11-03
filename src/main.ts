@@ -7,7 +7,8 @@ import { renderEventDetail, renderCheckout } from "./views/screens";
 import { renderProfile } from "./views/profile";
 import { renderDashboard } from "./views/dashboard";
 import { renderCreateEvent, renderEditEvent, renderHowItWorks, renderStatic } from "./views/pages";
-import { POPULAR, catPlural, catStyle } from "./services/categories";
+import { THEMES, MOON, getTheme, setTheme, initTheme, type Theme } from "./services/theme";
+import { CATEGORIES, POPULAR, catPlural, catSlug, catBySlug, catStyle, type Cat } from "./services/categories";
 
 /* ── Utilidades ── */
 const esc = (s: string) =>
@@ -45,6 +46,16 @@ const state = {
 };
 
 /* ── Vistas ── */
+/** Botón de luna con mini menú de modos (claro, oscuro, exótico) */
+function themeMenu() {
+  const cur = getTheme();
+  return `<div class="theme"><button class="theme__btn" data-theme-toggle aria-haspopup="menu" aria-expanded="false" aria-label="Cambiar modo de color" title="Modo de color">${icon(MOON, 18)}</button>
+    <div class="theme__menu" role="menu" hidden>${THEMES.map(t => `<button class="theme__opt theme__opt--${t.id}${t.id === cur ? " is-on" : ""}" role="menuitemradio" aria-checked="${t.id === cur}" data-theme-set="${t.id}"><span>${t.label}</span><i>${icon(t.icon, 18)}</i></button>`).join("")}</div></div>`;
+}
+const closeThemeMenu = () => document.querySelectorAll<HTMLElement>(".theme__menu").forEach(m => {
+  m.hidden = true; m.parentElement?.querySelector(".theme__btn")?.setAttribute("aria-expanded", "false");
+});
+
 function navbar() {
   const u = getCurrentUser();
   const right = u
@@ -52,8 +63,8 @@ function navbar() {
     : `<button class="link" data-go="login">Entrar</button><button class="btn btn--cream" data-go="register">Registro</button>`;
   return `<header class="nav"><div class="container nav__in">
     <a href="#" data-go="home"><img src="${logo}" alt="6ix Event logo" height="40"></a>
-    <nav class="nav__links"><a class="hide-sm" href="#eventos">Eventos</a>
-      <button class="link hide-sm" data-go="how">Cómo funciona</button>${u && u.role !== "cliente" ? `<button class="link" data-go="dashboard">Panel</button>` : ""}${right}</nav></div></header>`;
+    <nav class="nav__links"><button class="link hide-sm" data-scroll="events">Eventos</button>
+      <button class="link hide-sm" data-go="how">Cómo funciona</button>${u && u.role !== "cliente" ? `<button class="link" data-go="dashboard">Panel</button>` : ""}${right}${themeMenu()}</nav></div></header>`;
 }
 
 const select = (id: string, ico: string, opts: string[], val: string, cls = "") =>
@@ -146,14 +157,30 @@ function card(e: EventItem) {
         <div class="card__tr"><button class="fav${fav ? " is-on" : ""}" data-fav="${e.id}" aria-pressed="${fav}" aria-label="${fav ? "Quitar de favoritos" : "Agregar a favoritos"}">${icon(ic.heart, 16, fav ? "currentColor" : "none")}</button>
         <span class="rating">${icon(ic.star, 12)}${e.rating}</span></div></div>
       <div class="card__body"><h3>${esc(e.title)}</h3>
-        <p class="meta">${icon(ic.location, 14)}${esc(placeLabel(e))}</p><p class="meta">${icon(ic.calendar, 14)}${formatDateString(e.date)}</p><hr>
-        <div class="price"><small>Precio desde</small><strong>${cop(e.price)}</strong></div></div></article></div>`;
+        <p class="meta">${icon(ic.location, 14)}${esc(placeLabel(e))}</p><p class="meta">${icon(ic.calendar, 14)}${formatDateString(e.date)}</p></div></article></div>`;
 }
 
 function eventsSection() {
-  return `<section id="eventos"><div class="container"><div class="eyebrow">Próximas fechas</div><h2>Eventos destacados</h2>
-    <div id="grid-root"></div><div class="more" id="more"></div></div></section>`;
+  return `<section id="destacados" class="sec"><div class="container"><h2>Eventos destacados</h2>
+    <div class="evlist" id="feat-root"></div></div><div class="sec__line" aria-hidden="true"></div></section>
+    <section id="eventos" class="sec sec--next"><div class="container"><h2 id="sec-title">Próximos eventos</h2>
+    <div class="evlist" id="grid-root"></div><div class="more" id="more"></div></div></section>
+    <section id="categorias" class="sec sec--cats"><div class="container"><h2>Categorías</h2>${catTiles()}</div></section>`;
 }
+
+/** Recuadros de categorías: cada uno enlaza a su página (#/categoria/xxx) */
+function catTiles(except?: string) {
+  const n = (c: string) => state.all.filter(e => e.category === c).length;
+  return `<div class="cat-grid">${CATEGORIES.filter(c => c.name !== except).map(c => `<a class="cat-tile" href="#/categoria/${catSlug(c.name)}" style="${catStyle(c.name)}">
+    <span class="cat-tile__name">${esc(c.plural)}</span><span class="cat-tile__n">${n(c.name)} eventos</span><span class="cat-tile__go" aria-hidden="true">${icon("M5 12h14M12 5l7 7-7 7", 18)}</span></a>`).join("")}</div>`;
+}
+
+/** Próximos primero (por fecha); los que ya pasaron, al final */
+const byDate = (list: EventItem[]) => {
+  const today = new Date(); const t0 = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
+  const key = (e: EventItem) => { const t = localDate(e.date).getTime(); return t >= t0 ? t : t + 1e13; };
+  return [...list].sort((a, b) => key(a) - key(b));
+};
 
 function footer() {
   const cols: [string, string[]][] = [
@@ -178,24 +205,67 @@ function paintChips() {
     `<button class="chip${state.category === c ? " is-on" : ""}" style="${catStyle(c)}" data-cat="${esc(c)}" aria-pressed="${state.category === c}">${esc(catPlural(c))}</button>`).join("");
 }
 
+/** ¿Hay buscador, ciudad, fecha o categoría aplicados? */
+const filtersActive = () => !!(state.q.trim() || state.city !== ALL || state.date !== DATES[0] || state.category);
+
 function paintGrid() {
-  const list = state.filtered.slice(0, state.visible);
-  $("#grid-root")!.innerHTML = state.filtered.length
+  const active = filtersActive();
+  const feat = featured();
+  const ids = new Set(feat.map(e => e.id));
+  // Sin filtros: "Eventos destacados" (los del carrusel) y "Próximos eventos" (el resto).
+  // Con filtros: se oculta la sección destacada y se muestran todos los resultados.
+  const pool = byDate(active ? state.filtered : state.filtered.filter(e => !ids.has(e.id)));
+  $("#destacados")!.hidden = active || !feat.length;
+  $("#feat-root")!.innerHTML = active ? "" : `<div class="grid">${feat.map(card).join("")}</div>`;
+  $("#sec-title")!.textContent = active ? `Resultados (${state.filtered.length})` : "Próximos eventos";
+  const list = pool.slice(0, state.visible);
+  $("#grid-root")!.innerHTML = pool.length
     ? `<div class="grid">${list.map(card).join("")}</div>`
-    : `<div class="empty">No se encontraron eventos con los filtros seleccionados.</div>`;
+    : `<div class="empty">${active ? "No se encontraron eventos con los filtros seleccionados." : "Por ahora no hay más eventos programados."}</div>`;
   const u = getCurrentUser();
   const canCreate = u?.role === "admin" || u?.role === "agente";
   $("#more")!.innerHTML =
-    (state.visible < state.filtered.length ? `<button class="btn btn--ghost" id="btn-more">Ver más eventos</button>` : "") +
+    (state.visible < pool.length ? `<button class="btn btn--ghost" id="btn-more">Ver más eventos</button>` : "") +
     (canCreate ? `<button class="btn btn--cream" data-go="create-event">Crear nuevo evento</button>` : "");
 }
 
+/* ── Página de categoría ── */
+let catPage: Cat | null = null;
+function paintCategory() {
+  if (!catPage) return;
+  const list = byDate(state.all.filter(e => e.category === catPage!.name));
+  $("#cat-root")!.innerHTML = list.length
+    ? `<div class="grid">${list.slice(0, state.visible).map(card).join("")}</div>`
+    : `<div class="empty">Todavía no hay eventos en esta categoría.</div>`;
+  const u = getCurrentUser();
+  $("#more")!.innerHTML =
+    (state.visible < list.length ? `<button class="btn btn--ghost" id="btn-more">Ver más eventos</button>` : "") +
+    (u?.role === "admin" || u?.role === "agente" ? `<button class="btn btn--cream" data-go="create-event">Crear nuevo evento</button>` : "");
+}
+const repaint = () => (catPage && $("#cat-root") ? paintCategory() : paintGrid());
+
+function renderCategory(slug: string) {
+  const c = catBySlug(slug);
+  if (!c) return go("home");
+  catPage = c; state.visible = PAGE_SIZE;
+  const total = state.all.filter(e => e.category === c.name).length;
+  app.innerHTML = `${navbar()}<main><section class="cathead" style="${catStyle(c.name)}"><div class="container">
+    <button class="link cathead__back" data-go="home">← Volver al inicio</button>
+    <span class="cathead__tag">Categoría</span><h1>${esc(c.plural)}</h1>
+    <p>${total} ${total === 1 ? "evento" : "eventos"} · ordenados por fecha</p></div></section>
+    <section class="sec sec--cat"><div class="container"><div class="evlist" id="cat-root"></div><div class="more" id="more"></div></div></section>
+    <section class="sec sec--cats"><div class="container"><h2>Otras categorías</h2>${catTiles(c.name)}</div></section></main>${footer()}`;
+  paintCategory();
+}
+
 /* ── Navegación ── */
-type Page = "dashboard" | "edit-event" | "home" | "login" | "register" | "how" | "profile" | "event" | "checkout" | "create-event" | "static";
+type Page = "category" | "dashboard" | "edit-event" | "home" | "login" | "register" | "how" | "profile" | "event" | "checkout" | "create-event" | "static";
 
 function render(page: Page, title?: string) {
   window.scrollTo({ top: 0 });
   heroStop();
+  catPage = null;
+  if (page === "category") return renderCategory(title ?? "");
   if (page === "home") return renderHome();
   if (page === "login" || page === "register") {
     app.innerHTML = `<main id="auth-root" style="flex:1"></main>${footer()}`;
@@ -219,7 +289,7 @@ function render(page: Page, title?: string) {
     return renderProfile($("#prof-root")!, () => go("home"));
   }
   if ((page === "event" || page === "checkout") && current) {
-    app.innerHTML = `<main id="scr" style="flex:1;background:linear-gradient(135deg,#1E3A5F,#3B6EA5)"></main>${footer()}`;
+    app.innerHTML = `<main id="scr"></main>${footer()}`;
     const root = $("#scr")!;
     return page === "event"
       ? renderEventDetail(root, current, () => go("home"), () => go("checkout"), () => go("login"))
@@ -236,6 +306,7 @@ function hashFor(page: Page, title?: string) {
   if (page === "edit-event") return `#/editar-evento/${current?.id}`;
   if (page === "checkout") return `#/checkout/${current?.id}`;
   if (page === "static") return `#/info/${encodeURIComponent(title ?? "")}`;
+  if (page === "category") return `#/categoria/${title ?? ""}`;
   return HASH[page] ?? "#/";
 }
 /** Navega cambiando la URL (así funciona el botón "atrás" y los enlaces compartidos) */
@@ -250,6 +321,7 @@ function route() {
   switch (a) {
     case "login": return u ? void location.replace("#/") : render("login");
     case "registro": return u ? void location.replace("#/") : render("register");
+    case "categoria": return catBySlug(b) ? render("category", b) : go("home");
     case "como-funciona": return render("how");
     case "info": return render("static", decodeURIComponent(b));
     case "perfil": return u ? render("profile") : go("login");
@@ -270,6 +342,12 @@ function renderHome() {
 /** "2026-10-05" → fecha local (evita el desfase de zona horaria de new Date("2026-10-05")) */
 const localDate = (s: string) => { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d); };
 
+/** Lleva a la primera sección de eventos visible (destacados, o resultados si hay filtros) */
+const scrollToEvents = () => {
+  const feat = $("#destacados");
+  (feat && !feat.hidden ? feat : $("#eventos"))?.scrollIntoView({ behavior: "smooth" });
+};
+
 /** Aplica buscador, ciudad, fecha y categoría a la vez */
 function filterEvents() {
   const q = state.q.trim().toLowerCase();
@@ -289,29 +367,42 @@ function applyFilters() {
   state.visible = PAGE_SIZE;
   state.filtered = filterEvents();
   paintChips(); paintGrid();
-  $("#eventos")?.scrollIntoView({ behavior: "smooth" });
+  scrollToEvents();
 }
 
 /* ── Eventos de usuario (delegación) ── */
 document.addEventListener("click", ev => {
   const t = ev.target as HTMLElement;
-  const fav = t.closest<HTMLElement>("#grid-root [data-fav]");
+  const fav = t.closest<HTMLElement>(".evlist [data-fav]");
   if (fav) {
     const u = getCurrentUser();
     if (!u) return go("login");
     const id = Number(fav.dataset.fav), favs = u.favorites ?? [];
     updateUser({ favorites: favs.includes(id) ? favs.filter(f => f !== id) : [...favs, id] });
-    return paintGrid();
+    return repaint();
   }
-  const del = t.closest<HTMLElement>("#grid-root [data-del]");
+  const del = t.closest<HTMLElement>(".evlist [data-del]");
   if (del) {
     if (confirm("¿Estás seguro de eliminar este evento?")) {
       deleteEvent(Number(del.dataset.del));
       state.all = state.filtered = getEvents();
-      paintGrid();
+      repaint();
     }
     return;
   }
+  const tset = t.closest<HTMLElement>("[data-theme-set]");
+  if (tset) {
+    setTheme(tset.dataset.themeSet as Theme, true);
+    document.querySelectorAll<HTMLElement>("[data-theme-set]").forEach(b => { const on = b === tset; b.classList.toggle("is-on", on); b.setAttribute("aria-checked", String(on)); });
+    return closeThemeMenu();
+  }
+  const ttog = t.closest<HTMLElement>("[data-theme-toggle]");
+  if (ttog) {
+    const menu = ttog.parentElement!.querySelector<HTMLElement>(".theme__menu")!;
+    const open = menu.hidden; closeThemeMenu(); menu.hidden = !open; ttog.setAttribute("aria-expanded", String(open));
+    return;
+  }
+  if (!t.closest(".theme")) closeThemeMenu();
   const hdir = t.closest<HTMLElement>("#hero [data-hero-dir]");
   if (hdir) { heroShow(heroIdx + Number(hdir.dataset.heroDir)); return heroPlay(); }
   const hdot = t.closest<HTMLElement>("#hero [data-hero-dot]");
@@ -326,16 +417,17 @@ document.addEventListener("click", ev => {
     state.filtered = filterEvents();
     paintChips(); return paintGrid();
   }
-  const edit = t.closest<HTMLElement>("#grid-root [data-editev]");
+  const edit = t.closest<HTMLElement>(".evlist [data-editev]");
   if (edit) { current = state.all.find(e => e.id === Number(edit.dataset.editev)) ?? null; return go("edit-event"); }
-  const card = t.closest<HTMLElement>("#grid-root [data-event]");
+  const card = t.closest<HTMLElement>(".evlist [data-event]");
   if (card) { current = state.all.find(e => e.id === Number(card.dataset.event)) ?? null; return go("event"); }
+  if (t.closest("[data-scroll]")) { if ($("#eventos")) return scrollToEvents(); go("home"); return void setTimeout(scrollToEvents, 150); }
   const nav = t.closest<HTMLElement>("[data-go]");
   if (nav) { ev.preventDefault(); return go(nav.dataset.go as Page); }
   const foot = t.closest<HTMLElement>("[data-footer]")?.dataset.footer;
   if (foot) {
     const u = getCurrentUser();
-    if (foot === "Buscar eventos") { go("home"); return void setTimeout(() => $("#eventos")?.scrollIntoView({ behavior: "smooth" }), 60); }
+    if (foot === "Buscar eventos") { go("home"); return void setTimeout(scrollToEvents, 60); }
     if (foot === "Mis boletas") return go(u ? "profile" : "login");
     if (foot === "Crear evento") {
       if (!u) return go("login");
@@ -344,7 +436,7 @@ document.addEventListener("click", ev => {
     return go("static", foot);
   }
   if (t.closest("#btn-search")) return applyFilters();
-  if (t.closest("#btn-more")) { state.visible += PAGE_SIZE; paintGrid(); }
+  if (t.closest("#btn-more")) { state.visible += PAGE_SIZE; repaint(); }
 });
 
 document.addEventListener("input", ev => {
@@ -360,6 +452,7 @@ document.addEventListener("keydown", ev => {
   const t = ev.target as HTMLElement;
   if (t.id === "q" && ev.key === "Enter") applyFilters();
   if ((ev.key === "Enter" || ev.key === " ") && t.matches?.("[data-event]")) { ev.preventDefault(); t.click(); }
+  if (ev.key === "Escape") closeThemeMenu();
 });
 
 /* ── Banner de cookies ── */
@@ -380,6 +473,7 @@ function cookieBanner() {
   });
 }
 
+initTheme();
 window.addEventListener("hashchange", route);
 route();
 cookieBanner();

@@ -1,4 +1,5 @@
 import { locate } from "./geo";
+import { EXTRA, type Extra } from "./seed";
 
 export interface EventItem {
   id: number;
@@ -24,7 +25,7 @@ export interface EventItem {
   ticketCategories?: { name: string; price: number; capacity?: number; available?: number }[];
 }
 
-const SEED = "v11";
+const SEED = "v14";
 
 function loadEvents(): EventItem[] {
   try {
@@ -90,7 +91,7 @@ const mockCategories = (price: number, cap: number) => [
   { name: "Estudiante Afiliado", price: Math.round(price * 0.28), capacity: Math.round(cap * 0.3), available: Math.round(cap * 0.3) }
 ];
 
-const initialEvents: EventItem[] = [
+const baseEvents: EventItem[] = [
   { id: 1, title: "Cumbre Empresarial Latinoamérica 2026", category: "Conferencia", city: "Medellín", date: "2026-10-15", price: 320000, img: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&h=380&fit=crop&auto=format", rating: 4.9, createdBy: "system", startTime: "09:00", endTime: "18:30", venue: "Centro de Convenciones Medellín", capacity: 500, availableTickets: 48, agenda: "09:00 - Registro\n10:00 - Conferencia inaugural", ticketCategories: mockCategories(320000, 500) },
   { id: 2, title: "Foro Internacional de Innovación y Tecnología", category: "Foro", city: "Bogotá", date: "2026-10-22", price: 180000, img: "https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=600&h=380&fit=crop&auto=format", rating: 4.7, createdBy: "system", startTime: "08:30", endTime: "17:00", venue: "Hotel Tequendama", capacity: 300, availableTickets: 120, agenda: "08:30 - Registro\n09:30 - Panel", ticketCategories: mockCategories(180000, 300) },
   { id: 3, title: "Congreso Nacional de Finanzas Corporativas", category: "Congreso", city: "Cali", date: "2026-11-03", price: 250000, img: "https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?w=600&h=380&fit=crop&auto=format", rating: 4.8, createdBy: "system", startTime: "10:00", endTime: "18:00", venue: "Palacio de Exposiciones", capacity: 200, availableTickets: 30, agenda: "10:00 - Inicio\n12:00 - Almuerzo", ticketCategories: mockCategories(250000, 200) },
@@ -111,6 +112,34 @@ const initialEvents: EventItem[] = [
   { id: 18, title: "Experiencia Inmersiva de Innovación", category: "Experiencia", city: "Medellín", date: "2027-05-08", price: 110000, img: "https://images.unsplash.com/photo-1511578314322-379afb476865?w=600&h=380&fit=crop&auto=format", rating: 4.7, createdBy: "system", capacity: 400, availableTickets: 400, startTime: "10:00", endTime: "19:00", venue: "Parque Explora", agenda: "10:00 - Apertura\n14:00 - Recorrido guiado", ticketCategories: mockCategories(110000, 400) },
   { id: 19, title: "Copa Empresarial de Fútbol", category: "Deporte", city: "Cali", date: "2027-05-22", price: 70000, img: "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=600&h=380&fit=crop&auto=format", rating: 4.6, createdBy: "system", capacity: 800, availableTickets: 800, startTime: "08:00", endTime: "17:00", venue: "Unidad Deportiva Alberto Galindo", agenda: "08:00 - Inscripción de equipos\n10:00 - Fase de grupos", ticketCategories: mockCategories(70000, 800) },
 ];
+
+/** Valores por categoría para los eventos de ejemplo: capacidad, horario y agenda */
+const PROFILE: Record<string, { cap: number; t1: string; t2: string; agenda: string }> = {
+  Gala: { cap: 200, t1: "19:00", t2: "23:30", agenda: "19:00 - Cóctel de bienvenida\n20:30 - Ceremonia\n22:00 - Cena y música" },
+  Concierto: { cap: 1200, t1: "19:00", t2: "22:30", agenda: "19:00 - Apertura de puertas\n20:00 - Concierto" },
+  Deporte: { cap: 600, t1: "07:00", t2: "13:00", agenda: "07:00 - Inscripción y kits\n08:00 - Salida\n12:00 - Premiación" },
+  Experiencia: { cap: 150, t1: "11:00", t2: "20:00", agenda: "11:00 - Recepción\n13:00 - Actividad principal" },
+  Taller: { cap: 80, t1: "08:00", t2: "13:00", agenda: "08:00 - Registro\n09:00 - Sesión práctica" },
+  Feria: { cap: 1500, t1: "10:00", t2: "19:00", agenda: "10:00 - Apertura de stands" },
+  "Exposición": { cap: 1800, t1: "10:00", t2: "19:00", agenda: "10:00 - Apertura de stands" },
+  Conferencia: { cap: 400, t1: "09:00", t2: "17:00", agenda: "09:00 - Registro\n10:00 - Conferencia inaugural" },
+  Congreso: { cap: 500, t1: "09:00", t2: "18:00", agenda: "09:00 - Registro\n10:00 - Sesión plenaria" },
+  Foro: { cap: 350, t1: "08:30", t2: "16:00", agenda: "08:30 - Registro\n09:30 - Panel" },
+  Seminario: { cap: 250, t1: "09:00", t2: "17:00", agenda: "09:00 - Registro\n10:00 - Sesión técnica" },
+  Simposio: { cap: 300, t1: "09:00", t2: "16:00", agenda: "09:00 - Apertura\n15:00 - Cierre" },
+  Encuentro: { cap: 250, t1: "14:00", t2: "20:00", agenda: "14:00 - Registro\n15:00 - Networking" },
+};
+function buildExtra([category, title, city, date, price, photo, venue]: Extra, i: number): EventItem {
+  const pr = PROFILE[category] ?? PROFILE.Conferencia;
+  const id = 20 + i;
+  return {
+    id, title, category, city, date, price, rating: Math.round((4.4 + ((id * 7) % 6) / 10) * 10) / 10, createdBy: "system",
+    img: `https://images.unsplash.com/photo-${photo}?w=600&h=380&fit=crop&auto=format`,
+    startTime: pr.t1, endTime: pr.t2, venue, capacity: pr.cap, availableTickets: Math.round(pr.cap * (0.3 + ((id * 13) % 7) / 10)),
+    agenda: pr.agenda, ticketCategories: mockCategories(price, pr.cap),
+  };
+}
+const initialEvents: EventItem[] = [...baseEvents, ...EXTRA.map(buildExtra)];
 
 let eventsDB: EventItem[] = loadEvents();
 let nextId = eventsDB.length > 0 ? Math.max(...eventsDB.map(e => e.id)) + 1 : 17;

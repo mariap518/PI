@@ -4,8 +4,8 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "esbuild src/main.ts --bundle --outfile=app/main.js --loader:.png=file --loader:.jpeg=file --asset-names=assets/[name] --public-path=./app --format=iife --servedir=. --serve=5173",
-    "build": "tsc && esbuild src/main.ts --bundle --minify --outfile=app/main.js --loader:.png=file --loader:.jpeg=file --asset-names=assets/[name] --public-path=./app --format=iife",
+    "dev": "esbuild src/main.ts --bundle --outfile=app/main.js --loader:.png=file --loader:.jpeg=file --loader:.jpg=dataurl --asset-names=assets/[name] --public-path=./app --format=iife --servedir=. --serve=5173",
+    "build": "tsc && esbuild src/main.ts --bundle --minify --outfile=app/main.js --loader:.png=file --loader:.jpeg=file --loader:.jpg=dataurl --asset-names=assets/[name] --public-path=./app --format=iife",
     "typecheck": "tsc"
   },
   "dependencies": {
