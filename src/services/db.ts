@@ -116,6 +116,11 @@ function buildExtra([category, title, city, date, price, photo, venue]: Extra, i
 }
 const initialEvents: EventItem[] = [...baseEvents, ...EXTRA.map(buildExtra)];
 
+/** Eventos de ejemplo ya normalizados (descripción y ubicación completas) */
+export function sampleEvents() {
+  return initialEvents.map(normalize);
+}
+
 let eventsDB: EventItem[] = [];
 
 const API = "/api";

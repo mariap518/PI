@@ -33,7 +33,7 @@ pnpm watch     # recompila src/ en app/ cada vez que se guarda
 pnpm dev       # abre la página en http://localhost:5173 (redirige /api al servidor)
 ```
 
-Otros comandos: `pnpm migrate` (crea las tablas y datos iniciales), `pnpm smoke` (prueba rápida de la API), `pnpm typecheck` y `pnpm build` (genera `app/`; hacer commit de `app/` después de cambiar `src/`).
+Otros comandos: `pnpm migrate` (crea las tablas), `pnpm seed` (con el servidor corriendo, carga eventos de ejemplo, 3 por categoría; solo si la base está vacía), `pnpm smoke` (prueba rápida de la API), `pnpm typecheck` y `pnpm build` (genera `app/`; hacer commit de `app/` después de cambiar `src/`).
 
 > Si se abre `index.html` con doble clic, la página no tiene servidor y muestra el mensaje "No se pudieron cargar los eventos".
 

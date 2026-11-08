@@ -10,6 +10,7 @@
     "typecheck": "tsc",
     "server": "node server/index.mjs",
     "migrate": "node server/migrate.mjs",
+    "seed": "node server/seed.mjs",
     "smoke": "node server/smoke.mjs"
   },
   "dependencies": {

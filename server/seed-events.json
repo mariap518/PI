@@ -1,0 +1,1484 @@
+[
+  {
+    "title": "Cumbre Empresarial Latinoamérica 2026",
+    "category": "Conferencia",
+    "city": "Medellín",
+    "date": "2026-10-15",
+    "price": 320000,
+    "img": "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&h=380&fit=crop&auto=format",
+    "createdBy": "system",
+    "startTime": "09:00",
+    "endTime": "18:30",
+    "venue": "Centro de Convenciones Medellín",
+    "capacity": 500,
+    "availableTickets": 48,
+    "agenda": "09:00 - Registro\n10:00 - Conferencia inaugural",
+    "ticketCategories": [
+      {
+        "name": "VIP Ejecutivo",
+        "price": 649600,
+        "capacity": 50,
+        "available": 50
+      },
+      {
+        "name": "General",
+        "price": 320000,
+        "capacity": 300,
+        "available": 300
+      },
+      {
+        "name": "Estudiante Afiliado",
+        "price": 89600,
+        "capacity": 150,
+        "available": 150
+      }
+    ],
+    "country": "Colombia",
+    "department": "Antioquia",
+    "description": "Encuentro regional que reúne a CEOs, inversionistas y líderes de más de 15 países para discutir expansión de mercados, alianzas estratégicas y el futuro de la economía latinoamericana. Incluye ruedas de negocios y cena de networking."
+  },
+  {
+    "title": "Foro Internacional de Innovación y Tecnología",
+    "category": "Foro",
+    "city": "Bogotá",
+    "date": "2026-10-22",
+    "price": 180000,
+    "img": "https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=600&h=380&fit=crop&auto=format",
+    "createdBy": "system",
+    "startTime": "08:30",
+    "endTime": "17:00",
+    "venue": "Hotel Tequendama",
+    "capacity": 300,
+    "availableTickets": 120,
+    "agenda": "08:30 - Registro\n09:30 - Panel",
+    "ticketCategories": [
+      {
+        "name": "VIP Ejecutivo",
+        "price": 365400,
+        "capacity": 30,
+        "available": 30
+      },
+      {
+        "name": "General",
+        "price": 180000,
+        "capacity": 180,
+        "available": 180
+      },
+      {
+        "name": "Estudiante Afiliado",
+        "price": 50400,
+        "capacity": 90,
+        "available": 90
+      }
+    ],
+    "country": "Colombia",
+    "department": "Cundinamarca",
+    "description": "Dos jornadas de paneles y demostraciones sobre inteligencia artificial, computación en la nube y transformación digital, con startups invitadas y espacio para conectar con aceleradoras y fondos de capital de riesgo."
+  },
+  {
+    "title": "Congreso Nacional de Finanzas Corporativas",
+    "category": "Congreso",
+    "city": "Cali",
+    "date": "2026-11-03",
+    "price": 250000,
+    "img": "https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?w=600&h=380&fit=crop&auto=format",
+    "createdBy": "system",
+    "startTime": "10:00",
+    "endTime": "18:00",
+    "venue": "Palacio de Exposiciones",
+    "capacity": 200,
+    "availableTickets": 30,
+    "agenda": "10:00 - Inicio\n12:00 - Almuerzo",
+    "ticketCategories": [
+      {
+        "name": "VIP Ejecutivo",
+        "price": 507500,
+        "capacity": 20,
+        "available": 20
+      },
+      {
+        "name": "General",
+        "price": 250000,
+        "capacity": 120,
+        "available": 120
+      },
+      {
+        "name": "Estudiante Afiliado",
+        "price": 70000,
+        "capacity": 60,
+        "available": 60
+      }
+    ],
+    "country": "Colombia",
+    "department": "Valle del Cauca",
+    "description": "Especialistas en tesorería, fusiones y gestión de riesgos presentan casos reales de empresas colombianas. Las sesiones técnicas abordan valoración, financiación y cumplimiento normativo para directores financieros."
+  },
+  {
+    "title": "Simposio de Derecho Corporativo 2026",
+    "category": "Simposio",
+    "city": "Bogotá",
+    "date": "2026-11-10",
+    "price": 90000,
+    "img": "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=600&h=380&fit=crop&auto=format",
+    "createdBy": "system",
+    "startTime": "09:00",
+    "endTime": "16:00",
+    "venue": "U. de los Andes",
+    "capacity": 400,
+    "availableTickets": 200,
+    "agenda": "09:00 - Apertura\n15:00 - Cierre",
+    "ticketCategories": [
+      {
+        "name": "VIP Ejecutivo",
+        "price": 182700,
+        "capacity": 40,
+        "available": 40
+      },
+      {
+        "name": "General",
+        "price": 90000,
+        "capacity": 240,
+        "available": 240
+      },
+      {
+        "name": "Estudiante Afiliado",
+        "price": 25200,
+        "capacity": 120,
+        "available": 120
+      }
+    ],
+    "country": "Colombia",
+    "department": "Cundinamarca",
+    "description": "Magistrados, abogados y académicos analizan las reformas más recientes en derecho societario, contratación y arbitraje comercial, con sesiones de preguntas y casos prácticos."
+  },
+  {
+    "title": "Expo Construcción e Infraestructura 2026",
+    "category": "Exposición",
+    "city": "Bogotá",
+    "date": "2026-11-18",
+    "price": 60000,
+    "img": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&h=380&fit=crop&auto=format",
+    "createdBy": "system",
+    "startTime": "08:00",
+    "endTime": "19:00",
+    "venue": "Corferias",
+    "capacity": 2000,
+    "availableTickets": 800,
+    "agenda": "08:00 - Apertura stands",
+    "ticketCategories": [
+      {
+        "name": "VIP Ejecutivo",
+        "price": 121800,
+        "capacity": 200,
+        "available": 200
+      },
+      {
+        "name": "General",
+        "price": 60000,
+        "capacity": 1200,
+        "available": 1200
+      },
+      {
+        "name": "Estudiante Afiliado",
+        "price": 16800,
+        "capacity": 600,
+        "available": 600
+      }
+    ],
+    "country": "Colombia",
+    "department": "Cundinamarca",
+    "description": "Feria con más de cien expositores de maquinaria, materiales y software de ingeniería. Habrá demostraciones en vivo, charlas sobre obra sostenible y encuentros con constructoras y proveedores."
+  },
+  {
+    "title": "Gala Anual de Responsabilidad Social Empresarial",
+    "category": "Gala",
+    "city": "Bogotá",
+    "date": "2026-11-25",
+    "price": 450000,
+    "img": "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=600&h=380&fit=crop&auto=format",
+    "createdBy": "system",
+    "startTime": "19:00",
+    "endTime": "23:30",
+    "venue": "Club El Nogal",
+    "capacity": 150,
+    "availableTickets": 15,
+    "agenda": "19:00 - Cóctel\n20:30 - Premiación",
+    "ticketCategories": [
+      {
+        "name": "VIP Ejecutivo",
+        "price": 913500,
+        "capacity": 15,
+        "available": 15
+      },
+      {
+        "name": "General",
+        "price": 450000,
+        "capacity": 90,
+        "available": 90
+      },
+      {
+        "name": "Estudiante Afiliado",
+        "price": 126000,
+        "capacity": 45,
+        "available": 45
+      }
+    ],
+    "country": "Colombia",
+    "department": "Cundinamarca",
+    "description": "Noche de reconocimiento a las empresas con mayor impacto social y ambiental del año. Incluye cena de gala, presentación de los proyectos ganadores y una subasta benéfica."
+  },
+  {
+    "title": "Seminario de Inteligencia Artificial",
+    "category": "Seminario",
+    "city": "Medellín",
+    "date": "2026-12-05",
+    "price": 120000,
+    "img": "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=600&h=380&fit=crop&auto=format",
+    "createdBy": "system",
+    "capacity": 500,
+    "availableTickets": 500,
+    "startTime": "09:00",
+    "endTime": "17:00",
+    "venue": "Ruta N",
+    "agenda": "09:00 - Registro",
+    "ticketCategories": [
+      {
+        "name": "VIP Ejecutivo",
+        "price": 243600,
+        "capacity": 50,
+        "available": 50
+      },
+      {
+        "name": "General",
+        "price": 120000,
+        "capacity": 300,
+        "available": 300
+      },
+      {
+        "name": "Estudiante Afiliado",
+        "price": 33600,
+        "capacity": 150,
+        "available": 150
+      }
+    ],
+    "country": "Colombia",
+    "department": "Antioquia",
+    "description": "Seminario práctico para profesionales que quieren aplicar IA en sus equipos: modelos de lenguaje, automatización de procesos, ética y gobernanza de datos, con talleres guiados."
+  },
+  {
+    "title": "Feria de Emprendimiento Universitario",
+    "category": "Feria",
+    "city": "Cali",
+    "date": "2026-12-12",
+    "price": 45000,
+    "img": "https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=600&h=380&fit=crop&auto=format",
+    "createdBy": "system",
+    "capacity": 1000,
+    "availableTickets": 1000,
+    "startTime": "10:00",
+    "endTime": "18:00",
+    "venue": "Centro de Eventos Valle del Pacífico",
+    "agenda": "10:00 - Apertura",
+    "ticketCategories": [
+      {
+        "name": "VIP Ejecutivo",
+        "price": 91350,
+        "capacity": 100,
+        "available": 100
+      },
+      {
+        "name": "General",
+        "price": 45000,
+        "capacity": 600,
+        "available": 600
+      },
+      {
+        "name": "Estudiante Afiliado",
+        "price": 12600,
+        "capacity": 300,
+        "available": 300
+      }
+    ],
+    "country": "Colombia",
+    "department": "Valle del Cauca",
+    "description": "Estudiantes y jóvenes emprendedores muestran sus proyectos ante mentores e inversionistas. Hay pitches de tres minutos, stands de incubadoras y premios para las mejores ideas."
+  },
+  {
+    "title": "Taller de Liderazgo Ejecutivo",
+    "category": "Taller",
+    "city": "Bogotá",
+    "date": "2026-12-15",
+    "price": 210000,
+    "img": "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=600&h=380&fit=crop&auto=format",
+    "createdBy": "system",
+    "capacity": 100,
+    "availableTickets": 100,
+    "startTime": "08:00",
+    "endTime": "12:00",
+    "venue": "Hotel W",
+    "agenda": "08:00 - Desayuno",
+    "ticketCategories": [
+      {
+        "name": "VIP Ejecutivo",
+        "price": 426300,
+        "capacity": 10,
+        "available": 10
+      },
+      {
+        "name": "General",
+        "price": 210000,
+        "capacity": 60,
+        "available": 60
+      },
+      {
+        "name": "Estudiante Afiliado",
+        "price": 58800,
+        "capacity": 30,
+        "available": 30
+      }
+    ],
+    "country": "Colombia",
+    "department": "Cundinamarca",
+    "description": "Taller intensivo de un día sobre comunicación, toma de decisiones y gestión de equipos de alto desempeño, con ejercicios en grupos pequeños y retroalimentación personalizada."
+  },
+  {
+    "title": "Congreso de Marketing Digital",
+    "category": "Congreso",
+    "city": "Barranquilla",
+    "date": "2027-01-20",
+    "price": 150000,
+    "img": "https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?w=600&h=380&fit=crop&auto=format",
+    "createdBy": "system",
+    "capacity": 300,
+    "availableTickets": 300,
+    "startTime": "09:00",
+    "endTime": "18:00",
+    "venue": "Puerta de Oro",
+    "agenda": "09:00 - Registro",
+    "ticketCategories": [
+      {
+        "name": "VIP Ejecutivo",
+        "price": 304500,
+        "capacity": 30,
+        "available": 30
+      },
+      {
+        "name": "General",
+        "price": 150000,
+        "capacity": 180,
+        "available": 180
+      },
+      {
+        "name": "Estudiante Afiliado",
+        "price": 42000,
+        "capacity": 90,
+        "available": 90
+      }
+    ],
+    "country": "Colombia",
+    "department": "Atlántico",
+    "description": "Expertos en posicionamiento, analítica y publicidad en redes comparten estrategias para crecer en entornos digitales. Incluye talleres de contenido, comercio electrónico y marca personal."
+  },
+  {
+    "title": "Encuentro de Mujeres Líderes",
+    "category": "Encuentro",
+    "city": "Cartagena",
+    "date": "2027-02-10",
+    "price": 130000,
+    "img": "https://images.unsplash.com/photo-1573164713988-8665fc963095?w=600&h=380&fit=crop&auto=format",
+    "createdBy": "system",
+    "capacity": 250,
+    "availableTickets": 250,
+    "startTime": "14:00",
+    "endTime": "20:00",
+    "venue": "Centro de Convenciones",
+    "agenda": "14:00 - Registro",
+    "ticketCategories": [
+      {
+        "name": "VIP Ejecutivo",
+        "price": 263900,
+        "capacity": 25,
+        "available": 25
+      },
+      {
+        "name": "General",
+        "price": 130000,
+        "capacity": 150,
+        "available": 150
+      },
+      {
+        "name": "Estudiante Afiliado",
+        "price": 36400,
+        "capacity": 75,
+        "available": 75
+      }
+    ],
+    "country": "Colombia",
+    "department": "Bolívar",
+    "description": "Espacio para mujeres directivas y emprendedoras: conversatorios sobre liderazgo, equidad salarial y acceso a financiación, con mentorías abiertas y una red de contactos."
+  },
+  {
+    "title": "Foro de Sostenibilidad Ambiental",
+    "category": "Foro",
+    "city": "Bogotá",
+    "date": "2027-02-18",
+    "price": 80000,
+    "img": "https://images.unsplash.com/photo-1497366216548-37526070297c?w=600&h=380&fit=crop&auto=format",
+    "createdBy": "system",
+    "capacity": 400,
+    "availableTickets": 400,
+    "startTime": "08:00",
+    "endTime": "14:00",
+    "venue": "Auditorio Principal",
+    "agenda": "08:00 - Registro",
+    "ticketCategories": [
+      {
+        "name": "VIP Ejecutivo",
+        "price": 162400,
+        "capacity": 40,
+        "available": 40
+      },
+      {
+        "name": "General",
+        "price": 80000,
+        "capacity": 240,
+        "available": 240
+      },
+      {
+        "name": "Estudiante Afiliado",
+        "price": 22400,
+        "capacity": 120,
+        "available": 120
+      }
+    ],
+    "country": "Colombia",
+    "department": "Cundinamarca",
+    "description": "Empresas, gobierno y organizaciones debaten metas de descarbonización, economía circular y reportes ESG, con casos de éxito y mesas de trabajo sobre financiación verde."
+  },
+  {
+    "title": "Conferencia de Blockchain y Web3",
+    "category": "Conferencia",
+    "city": "Medellín",
+    "date": "2027-03-05",
+    "price": 195000,
+    "img": "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=600&h=380&fit=crop&auto=format",
+    "createdBy": "system",
+    "capacity": 350,
+    "availableTickets": 350,
+    "startTime": "09:00",
+    "endTime": "18:00",
+    "venue": "Plaza Mayor",
+    "agenda": "09:00 - Registro",
+    "ticketCategories": [
+      {
+        "name": "VIP Ejecutivo",
+        "price": 395850,
+        "capacity": 35,
+        "available": 35
+      },
+      {
+        "name": "General",
+        "price": 195000,
+        "capacity": 210,
+        "available": 210
+      },
+      {
+        "name": "Estudiante Afiliado",
+        "price": 54600,
+        "capacity": 105,
+        "available": 105
+      }
+    ],
+    "country": "Colombia",
+    "department": "Antioquia",
+    "description": "Desarrolladores y empresarios exploran contratos inteligentes, tokenización y finanzas descentralizadas, con demostraciones técnicas y un panel sobre regulación en América Latina."
+  },
+  {
+    "title": "Exposición de Arte Contemporáneo",
+    "category": "Exposición",
+    "city": "Bogotá",
+    "date": "2027-03-15",
+    "price": 35000,
+    "img": "https://images.unsplash.com/photo-1531058020387-3be344556be6?w=600&h=380&fit=crop&auto=format",
+    "createdBy": "system",
+    "capacity": 1500,
+    "availableTickets": 1500,
+    "startTime": "10:00",
+    "endTime": "20:00",
+    "venue": "Museo de Arte Moderno",
+    "agenda": "10:00 - Apertura",
+    "ticketCategories": [
+      {
+        "name": "VIP Ejecutivo",
+        "price": 71050,
+        "capacity": 150,
+        "available": 150
+      },
+      {
+        "name": "General",
+        "price": 35000,
+        "capacity": 900,
+        "available": 900
+      },
+      {
+        "name": "Estudiante Afiliado",
+        "price": 9800,
+        "capacity": 450,
+        "available": 450
+      }
+    ],
+    "country": "Colombia",
+    "department": "Cundinamarca",
+    "description": "Muestra de obras de artistas colombianos y latinoamericanos en distintos formatos, con visitas guiadas, charlas con los creadores y un espacio dedicado a coleccionistas."
+  },
+  {
+    "title": "Gala de Premios Tecnológicos",
+    "category": "Gala",
+    "city": "Cali",
+    "date": "2027-03-25",
+    "price": 300000,
+    "img": "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&h=380&fit=crop&auto=format",
+    "createdBy": "system",
+    "capacity": 200,
+    "availableTickets": 200,
+    "startTime": "19:00",
+    "endTime": "00:00",
+    "venue": "Centro de Eventos Valle del Pacífico",
+    "agenda": "19:00 - Alfombra roja",
+    "ticketCategories": [
+      {
+        "name": "VIP Ejecutivo",
+        "price": 609000,
+        "capacity": 20,
+        "available": 20
+      },
+      {
+        "name": "General",
+        "price": 300000,
+        "capacity": 120,
+        "available": 120
+      },
+      {
+        "name": "Estudiante Afiliado",
+        "price": 84000,
+        "capacity": 60,
+        "available": 60
+      }
+    ],
+    "country": "Colombia",
+    "department": "Valle del Cauca",
+    "description": "Ceremonia que premia a los proyectos, empresas y talentos más innovadores del año en software, hardware y emprendimiento, con cóctel, presentaciones y música en vivo."
+  },
+  {
+    "title": "Simposio de Salud Mental en el Trabajo",
+    "category": "Simposio",
+    "city": "Medellín",
+    "date": "2027-04-10",
+    "price": 75000,
+    "img": "https://images.unsplash.com/photo-1552664730-d307ca884978?w=600&h=380&fit=crop&auto=format",
+    "createdBy": "system",
+    "capacity": 300,
+    "availableTickets": 300,
+    "startTime": "08:00",
+    "endTime": "16:00",
+    "venue": "Auditorio Ruta N",
+    "agenda": "08:00 - Registro",
+    "ticketCategories": [
+      {
+        "name": "VIP Ejecutivo",
+        "price": 152250,
+        "capacity": 30,
+        "available": 30
+      },
+      {
+        "name": "General",
+        "price": 75000,
+        "capacity": 180,
+        "available": 180
+      },
+      {
+        "name": "Estudiante Afiliado",
+        "price": 21000,
+        "capacity": 90,
+        "available": 90
+      }
+    ],
+    "country": "Colombia",
+    "department": "Antioquia",
+    "description": "Psicólogos y líderes de talento humano presentan estrategias para prevenir el agotamiento, mejorar el clima laboral y construir programas de bienestar que funcionen."
+  },
+  {
+    "title": "Festival Sinfónico Corporativo",
+    "category": "Concierto",
+    "city": "Bogotá",
+    "date": "2027-04-24",
+    "price": 140000,
+    "img": "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=600&h=380&fit=crop&auto=format",
+    "createdBy": "system",
+    "capacity": 1200,
+    "availableTickets": 1200,
+    "startTime": "19:00",
+    "endTime": "22:00",
+    "venue": "Teatro Mayor Julio Mario Santo Domingo",
+    "agenda": "19:00 - Apertura de puertas\n20:00 - Concierto",
+    "ticketCategories": [
+      {
+        "name": "VIP Ejecutivo",
+        "price": 284200,
+        "capacity": 120,
+        "available": 120
+      },
+      {
+        "name": "General",
+        "price": 140000,
+        "capacity": 720,
+        "available": 720
+      },
+      {
+        "name": "Estudiante Afiliado",
+        "price": 39200,
+        "capacity": 360,
+        "available": 360
+      }
+    ],
+    "country": "Colombia",
+    "department": "Cundinamarca",
+    "description": "Noche de música sinfónica con repertorio latinoamericano y clásico, pensada para clientes, equipos y aliados. Incluye cóctel de bienvenida y zona de networking en el foyer."
+  },
+  {
+    "title": "Experiencia Inmersiva de Innovación",
+    "category": "Experiencia",
+    "city": "Medellín",
+    "date": "2027-05-08",
+    "price": 110000,
+    "img": "https://images.unsplash.com/photo-1511578314322-379afb476865?w=600&h=380&fit=crop&auto=format",
+    "createdBy": "system",
+    "capacity": 400,
+    "availableTickets": 400,
+    "startTime": "10:00",
+    "endTime": "19:00",
+    "venue": "Parque Explora",
+    "agenda": "10:00 - Apertura\n14:00 - Recorrido guiado",
+    "ticketCategories": [
+      {
+        "name": "VIP Ejecutivo",
+        "price": 223300,
+        "capacity": 40,
+        "available": 40
+      },
+      {
+        "name": "General",
+        "price": 110000,
+        "capacity": 240,
+        "available": 240
+      },
+      {
+        "name": "Estudiante Afiliado",
+        "price": 30800,
+        "capacity": 120,
+        "available": 120
+      }
+    ],
+    "country": "Colombia",
+    "department": "Antioquia",
+    "description": "Recorrido interactivo con estaciones de realidad aumentada, robótica y diseño de servicios, para vivir la innovación en primera persona. Cupos por turnos y visitas guiadas."
+  },
+  {
+    "title": "Copa Empresarial de Fútbol",
+    "category": "Deporte",
+    "city": "Cali",
+    "date": "2027-05-22",
+    "price": 70000,
+    "img": "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=600&h=380&fit=crop&auto=format",
+    "createdBy": "system",
+    "capacity": 800,
+    "availableTickets": 800,
+    "startTime": "08:00",
+    "endTime": "17:00",
+    "venue": "Unidad Deportiva Alberto Galindo",
+    "agenda": "08:00 - Inscripción de equipos\n10:00 - Fase de grupos",
+    "ticketCategories": [
+      {
+        "name": "VIP Ejecutivo",
+        "price": 142100,
+        "capacity": 80,
+        "available": 80
+      },
+      {
+        "name": "General",
+        "price": 70000,
+        "capacity": 480,
+        "available": 480
+      },
+      {
+        "name": "Estudiante Afiliado",
+        "price": 19600,
+        "capacity": 240,
+        "available": 240
+      }
+    ],
+    "country": "Colombia",
+    "department": "Valle del Cauca",
+    "description": "Torneo de fútbol entre equipos de empresas de la región, con fase de grupos, final y actividades para el público. Incluye zona de comidas y premiación."
+  },
+  {
+    "title": "Conferencia Nacional de Liderazgo Digital",
+    "category": "Conferencia",
+    "city": "Bogotá",
+    "date": "2026-11-12",
+    "price": 140000,
+    "createdBy": "system",
+    "img": "https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?w=600&h=380&fit=crop&auto=format",
+    "startTime": "09:00",
+    "endTime": "17:00",
+    "venue": "Centro de Convenciones Ágora",
+    "capacity": 400,
+    "availableTickets": 160,
+    "agenda": "09:00 - Registro\n10:00 - Conferencia inaugural",
+    "ticketCategories": [
+      {
+        "name": "VIP Ejecutivo",
+        "price": 284200,
+        "capacity": 40,
+        "available": 40
+      },
+      {
+        "name": "General",
+        "price": 140000,
+        "capacity": 240,
+        "available": 240
+      },
+      {
+        "name": "Estudiante Afiliado",
+        "price": 39200,
+        "capacity": 120,
+        "available": 120
+      }
+    ],
+    "country": "Colombia",
+    "department": "Cundinamarca",
+    "description": "Conferencia Nacional de Liderazgo Digital es un evento de conferencia que se realizará en Bogotá. Reúne a profesionales y organizaciones del sector para compartir experiencias, conocimiento y oportunidades de negocio."
+  },
+  {
+    "title": "Congreso Colombiano de Logística y Comercio Exterior",
+    "category": "Congreso",
+    "city": "Cartagena",
+    "date": "2026-11-19",
+    "price": 280000,
+    "createdBy": "system",
+    "img": "https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?w=600&h=380&fit=crop&auto=format",
+    "startTime": "09:00",
+    "endTime": "18:00",
+    "venue": "Centro de Convenciones Cartagena de Indias",
+    "capacity": 500,
+    "availableTickets": 350,
+    "agenda": "09:00 - Registro\n10:00 - Sesión plenaria",
+    "ticketCategories": [
+      {
+        "name": "VIP Ejecutivo",
+        "price": 568400,
+        "capacity": 50,
+        "available": 50
+      },
+      {
+        "name": "General",
+        "price": 280000,
+        "capacity": 300,
+        "available": 300
+      },
+      {
+        "name": "Estudiante Afiliado",
+        "price": 78400,
+        "capacity": 150,
+        "available": 150
+      }
+    ],
+    "country": "Colombia",
+    "department": "Bolívar",
+    "description": "Congreso Colombiano de Logística y Comercio Exterior es un evento de congreso que se realizará en Cartagena. Reúne a profesionales y organizaciones del sector para compartir experiencias, conocimiento y oportunidades de negocio."
+  },
+  {
+    "title": "Expo Tecnología y Automatización",
+    "category": "Exposición",
+    "city": "Bogotá",
+    "date": "2026-12-02",
+    "price": 55000,
+    "createdBy": "system",
+    "img": "https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=600&h=380&fit=crop&auto=format",
+    "startTime": "10:00",
+    "endTime": "19:00",
+    "venue": "Corferias",
+    "capacity": 1800,
+    "availableTickets": 540,
+    "agenda": "10:00 - Apertura de stands",
+    "ticketCategories": [
+      {
+        "name": "VIP Ejecutivo",
+        "price": 111650,
+        "capacity": 180,
+        "available": 180
+      },
+      {
+        "name": "General",
+        "price": 55000,
+        "capacity": 1080,
+        "available": 1080
+      },
+      {
+        "name": "Estudiante Afiliado",
+        "price": 15400,
+        "capacity": 540,
+        "available": 540
+      }
+    ],
+    "country": "Colombia",
+    "department": "Cundinamarca",
+    "description": "Expo Tecnología y Automatización es un evento de exposición que se realizará en Bogotá. Reúne a profesionales y organizaciones del sector para compartir experiencias, conocimiento y oportunidades de negocio."
+  },
+  {
+    "title": "Foro de Economía y Finanzas Públicas",
+    "category": "Foro",
+    "city": "Bogotá",
+    "date": "2026-11-17",
+    "price": 90000,
+    "createdBy": "system",
+    "img": "https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=600&h=380&fit=crop&auto=format",
+    "startTime": "08:30",
+    "endTime": "16:00",
+    "venue": "Auditorio Principal",
+    "capacity": 350,
+    "availableTickets": 210,
+    "agenda": "08:30 - Registro\n09:30 - Panel",
+    "ticketCategories": [
+      {
+        "name": "VIP Ejecutivo",
+        "price": 182700,
+        "capacity": 35,
+        "available": 35
+      },
+      {
+        "name": "General",
+        "price": 90000,
+        "capacity": 210,
+        "available": 210
+      },
+      {
+        "name": "Estudiante Afiliado",
+        "price": 25200,
+        "capacity": 105,
+        "available": 105
+      }
+    ],
+    "country": "Colombia",
+    "department": "Cundinamarca",
+    "description": "Foro de Economía y Finanzas Públicas es un evento de foro que se realizará en Bogotá. Reúne a profesionales y organizaciones del sector para compartir experiencias, conocimiento y oportunidades de negocio."
+  },
+  {
+    "title": "Gala de Premios a la Excelencia Empresarial",
+    "category": "Gala",
+    "city": "Medellín",
+    "date": "2026-12-10",
+    "price": 380000,
+    "createdBy": "system",
+    "img": "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=600&h=380&fit=crop&auto=format",
+    "startTime": "19:00",
+    "endTime": "23:30",
+    "venue": "Hotel Intercontinental",
+    "capacity": 200,
+    "availableTickets": 180,
+    "agenda": "19:00 - Cóctel de bienvenida\n20:30 - Ceremonia\n22:00 - Cena y música",
+    "ticketCategories": [
+      {
+        "name": "VIP Ejecutivo",
+        "price": 771400,
+        "capacity": 20,
+        "available": 20
+      },
+      {
+        "name": "General",
+        "price": 380000,
+        "capacity": 120,
+        "available": 120
+      },
+      {
+        "name": "Estudiante Afiliado",
+        "price": 106400,
+        "capacity": 60,
+        "available": 60
+      }
+    ],
+    "country": "Colombia",
+    "department": "Antioquia",
+    "description": "Gala de Premios a la Excelencia Empresarial es un evento de gala que se realizará en Medellín. Reúne a profesionales y organizaciones del sector para compartir experiencias, conocimiento y oportunidades de negocio."
+  },
+  {
+    "title": "Seminario de Gestión de Proyectos Ágiles",
+    "category": "Seminario",
+    "city": "Bogotá",
+    "date": "2026-11-24",
+    "price": 130000,
+    "createdBy": "system",
+    "img": "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=600&h=380&fit=crop&auto=format",
+    "startTime": "09:00",
+    "endTime": "17:00",
+    "venue": "Cámara de Comercio",
+    "capacity": 250,
+    "availableTickets": 125,
+    "agenda": "09:00 - Registro\n10:00 - Sesión técnica",
+    "ticketCategories": [
+      {
+        "name": "VIP Ejecutivo",
+        "price": 263900,
+        "capacity": 25,
+        "available": 25
+      },
+      {
+        "name": "General",
+        "price": 130000,
+        "capacity": 150,
+        "available": 150
+      },
+      {
+        "name": "Estudiante Afiliado",
+        "price": 36400,
+        "capacity": 75,
+        "available": 75
+      }
+    ],
+    "country": "Colombia",
+    "department": "Cundinamarca",
+    "description": "Seminario de Gestión de Proyectos Ágiles es un evento de seminario que se realizará en Bogotá. Reúne a profesionales y organizaciones del sector para compartir experiencias, conocimiento y oportunidades de negocio."
+  },
+  {
+    "title": "Seminario de Analítica de Datos",
+    "category": "Seminario",
+    "city": "Bucaramanga",
+    "date": "2027-01-21",
+    "price": 110000,
+    "createdBy": "system",
+    "img": "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=600&h=380&fit=crop&auto=format",
+    "startTime": "09:00",
+    "endTime": "17:00",
+    "venue": "Neomundo",
+    "capacity": 250,
+    "availableTickets": 100,
+    "agenda": "09:00 - Registro\n10:00 - Sesión técnica",
+    "ticketCategories": [
+      {
+        "name": "VIP Ejecutivo",
+        "price": 223300,
+        "capacity": 25,
+        "available": 25
+      },
+      {
+        "name": "General",
+        "price": 110000,
+        "capacity": 150,
+        "available": 150
+      },
+      {
+        "name": "Estudiante Afiliado",
+        "price": 30800,
+        "capacity": 75,
+        "available": 75
+      }
+    ],
+    "country": "Colombia",
+    "department": "Santander",
+    "description": "Seminario de Analítica de Datos es un evento de seminario que se realizará en Bucaramanga. Reúne a profesionales y organizaciones del sector para compartir experiencias, conocimiento y oportunidades de negocio."
+  },
+  {
+    "title": "Feria Internacional de Franquicias",
+    "category": "Feria",
+    "city": "Bogotá",
+    "date": "2026-11-27",
+    "price": 40000,
+    "createdBy": "system",
+    "img": "https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=600&h=380&fit=crop&auto=format",
+    "startTime": "10:00",
+    "endTime": "19:00",
+    "venue": "Corferias",
+    "capacity": 1500,
+    "availableTickets": 1050,
+    "agenda": "10:00 - Apertura de stands",
+    "ticketCategories": [
+      {
+        "name": "VIP Ejecutivo",
+        "price": 81200,
+        "capacity": 150,
+        "available": 150
+      },
+      {
+        "name": "General",
+        "price": 40000,
+        "capacity": 900,
+        "available": 900
+      },
+      {
+        "name": "Estudiante Afiliado",
+        "price": 11200,
+        "capacity": 450,
+        "available": 450
+      }
+    ],
+    "country": "Colombia",
+    "department": "Cundinamarca",
+    "description": "Feria Internacional de Franquicias es un evento de feria que se realizará en Bogotá. Reúne a profesionales y organizaciones del sector para compartir experiencias, conocimiento y oportunidades de negocio."
+  },
+  {
+    "title": "Feria de Empleo y Talento",
+    "category": "Feria",
+    "city": "Medellín",
+    "date": "2027-01-30",
+    "price": 20000,
+    "createdBy": "system",
+    "img": "https://images.unsplash.com/photo-1552664730-d307ca884978?w=600&h=380&fit=crop&auto=format",
+    "startTime": "10:00",
+    "endTime": "19:00",
+    "venue": "Plaza Mayor",
+    "capacity": 1500,
+    "availableTickets": 900,
+    "agenda": "10:00 - Apertura de stands",
+    "ticketCategories": [
+      {
+        "name": "VIP Ejecutivo",
+        "price": 40600,
+        "capacity": 150,
+        "available": 150
+      },
+      {
+        "name": "General",
+        "price": 20000,
+        "capacity": 900,
+        "available": 900
+      },
+      {
+        "name": "Estudiante Afiliado",
+        "price": 5600,
+        "capacity": 450,
+        "available": 450
+      }
+    ],
+    "country": "Colombia",
+    "department": "Antioquia",
+    "description": "Feria de Empleo y Talento es un evento de feria que se realizará en Medellín. Reúne a profesionales y organizaciones del sector para compartir experiencias, conocimiento y oportunidades de negocio."
+  },
+  {
+    "title": "Taller de Oratoria y Presentaciones de Alto Impacto",
+    "category": "Taller",
+    "city": "Bogotá",
+    "date": "2026-11-14",
+    "price": 160000,
+    "createdBy": "system",
+    "img": "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=600&h=380&fit=crop&auto=format",
+    "startTime": "08:00",
+    "endTime": "13:00",
+    "venue": "Hotel W",
+    "capacity": 80,
+    "availableTickets": 72,
+    "agenda": "08:00 - Registro\n09:00 - Sesión práctica",
+    "ticketCategories": [
+      {
+        "name": "VIP Ejecutivo",
+        "price": 324800,
+        "capacity": 8,
+        "available": 8
+      },
+      {
+        "name": "General",
+        "price": 160000,
+        "capacity": 48,
+        "available": 48
+      },
+      {
+        "name": "Estudiante Afiliado",
+        "price": 44800,
+        "capacity": 24,
+        "available": 24
+      }
+    ],
+    "country": "Colombia",
+    "department": "Cundinamarca",
+    "description": "Taller de Oratoria y Presentaciones de Alto Impacto es un evento de taller que se realizará en Bogotá. Reúne a profesionales y organizaciones del sector para compartir experiencias, conocimiento y oportunidades de negocio."
+  },
+  {
+    "title": "Taller de Negociación Estratégica",
+    "category": "Taller",
+    "city": "Medellín",
+    "date": "2027-01-16",
+    "price": 180000,
+    "createdBy": "system",
+    "img": "https://images.unsplash.com/photo-1552664730-d307ca884978?w=600&h=380&fit=crop&auto=format",
+    "startTime": "08:00",
+    "endTime": "13:00",
+    "venue": "Ruta N",
+    "capacity": 80,
+    "availableTickets": 64,
+    "agenda": "08:00 - Registro\n09:00 - Sesión práctica",
+    "ticketCategories": [
+      {
+        "name": "VIP Ejecutivo",
+        "price": 365400,
+        "capacity": 8,
+        "available": 8
+      },
+      {
+        "name": "General",
+        "price": 180000,
+        "capacity": 48,
+        "available": 48
+      },
+      {
+        "name": "Estudiante Afiliado",
+        "price": 50400,
+        "capacity": 24,
+        "available": 24
+      }
+    ],
+    "country": "Colombia",
+    "department": "Antioquia",
+    "description": "Taller de Negociación Estratégica es un evento de taller que se realizará en Medellín. Reúne a profesionales y organizaciones del sector para compartir experiencias, conocimiento y oportunidades de negocio."
+  },
+  {
+    "title": "Simposio de Ingeniería y Construcción Sostenible",
+    "category": "Simposio",
+    "city": "Medellín",
+    "date": "2026-12-03",
+    "price": 85000,
+    "createdBy": "system",
+    "img": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&h=380&fit=crop&auto=format",
+    "startTime": "09:00",
+    "endTime": "16:00",
+    "venue": "Plaza Mayor",
+    "capacity": 300,
+    "availableTickets": 120,
+    "agenda": "09:00 - Apertura\n15:00 - Cierre",
+    "ticketCategories": [
+      {
+        "name": "VIP Ejecutivo",
+        "price": 172550,
+        "capacity": 30,
+        "available": 30
+      },
+      {
+        "name": "General",
+        "price": 85000,
+        "capacity": 180,
+        "available": 180
+      },
+      {
+        "name": "Estudiante Afiliado",
+        "price": 23800,
+        "capacity": 90,
+        "available": 90
+      }
+    ],
+    "country": "Colombia",
+    "department": "Antioquia",
+    "description": "Simposio de Ingeniería y Construcción Sostenible es un evento de simposio que se realizará en Medellín. Reúne a profesionales y organizaciones del sector para compartir experiencias, conocimiento y oportunidades de negocio."
+  },
+  {
+    "title": "Encuentro Nacional de Emprendedores",
+    "category": "Encuentro",
+    "city": "Bogotá",
+    "date": "2026-12-05",
+    "price": 60000,
+    "createdBy": "system",
+    "img": "https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=600&h=380&fit=crop&auto=format",
+    "startTime": "14:00",
+    "endTime": "20:00",
+    "venue": "Agora Bogotá",
+    "capacity": 250,
+    "availableTickets": 175,
+    "agenda": "14:00 - Registro\n15:00 - Networking",
+    "ticketCategories": [
+      {
+        "name": "VIP Ejecutivo",
+        "price": 121800,
+        "capacity": 25,
+        "available": 25
+      },
+      {
+        "name": "General",
+        "price": 60000,
+        "capacity": 150,
+        "available": 150
+      },
+      {
+        "name": "Estudiante Afiliado",
+        "price": 16800,
+        "capacity": 75,
+        "available": 75
+      }
+    ],
+    "country": "Colombia",
+    "department": "Cundinamarca",
+    "description": "Encuentro Nacional de Emprendedores es un evento de encuentro que se realizará en Bogotá. Reúne a profesionales y organizaciones del sector para compartir experiencias, conocimiento y oportunidades de negocio."
+  },
+  {
+    "title": "Encuentro de Gerentes de Pymes",
+    "category": "Encuentro",
+    "city": "Pereira",
+    "date": "2027-01-23",
+    "price": 75000,
+    "createdBy": "system",
+    "img": "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&h=380&fit=crop&auto=format",
+    "startTime": "14:00",
+    "endTime": "20:00",
+    "venue": "Expofuturo",
+    "capacity": 250,
+    "availableTickets": 150,
+    "agenda": "14:00 - Registro\n15:00 - Networking",
+    "ticketCategories": [
+      {
+        "name": "VIP Ejecutivo",
+        "price": 152250,
+        "capacity": 25,
+        "available": 25
+      },
+      {
+        "name": "General",
+        "price": 75000,
+        "capacity": 150,
+        "available": 150
+      },
+      {
+        "name": "Estudiante Afiliado",
+        "price": 21000,
+        "capacity": 75,
+        "available": 75
+      }
+    ],
+    "country": "Colombia",
+    "department": "Risaralda",
+    "description": "Encuentro de Gerentes de Pymes es un evento de encuentro que se realizará en Pereira. Reúne a profesionales y organizaciones del sector para compartir experiencias, conocimiento y oportunidades de negocio."
+  },
+  {
+    "title": "Concierto Sinfónico de Navidad",
+    "category": "Concierto",
+    "city": "Bogotá",
+    "date": "2026-12-13",
+    "price": 130000,
+    "createdBy": "system",
+    "img": "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&h=380&fit=crop&auto=format",
+    "startTime": "19:00",
+    "endTime": "22:30",
+    "venue": "Teatro Municipal",
+    "capacity": 1200,
+    "availableTickets": 1080,
+    "agenda": "19:00 - Apertura de puertas\n20:00 - Concierto",
+    "ticketCategories": [
+      {
+        "name": "VIP Ejecutivo",
+        "price": 263900,
+        "capacity": 120,
+        "available": 120
+      },
+      {
+        "name": "General",
+        "price": 130000,
+        "capacity": 720,
+        "available": 720
+      },
+      {
+        "name": "Estudiante Afiliado",
+        "price": 36400,
+        "capacity": 360,
+        "available": 360
+      }
+    ],
+    "country": "Colombia",
+    "department": "Cundinamarca",
+    "description": "Concierto Sinfónico de Navidad es un evento de concierto que se realizará en Bogotá. Reúne a profesionales y organizaciones del sector para compartir experiencias, conocimiento y oportunidades de negocio."
+  },
+  {
+    "title": "Noche de Jazz en la Ciudad",
+    "category": "Concierto",
+    "city": "Medellín",
+    "date": "2027-01-09",
+    "price": 95000,
+    "createdBy": "system",
+    "img": "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=600&h=380&fit=crop&auto=format",
+    "startTime": "19:00",
+    "endTime": "22:30",
+    "venue": "Teatro Municipal",
+    "capacity": 1200,
+    "availableTickets": 960,
+    "agenda": "19:00 - Apertura de puertas\n20:00 - Concierto",
+    "ticketCategories": [
+      {
+        "name": "VIP Ejecutivo",
+        "price": 192850,
+        "capacity": 120,
+        "available": 120
+      },
+      {
+        "name": "General",
+        "price": 95000,
+        "capacity": 720,
+        "available": 720
+      },
+      {
+        "name": "Estudiante Afiliado",
+        "price": 26600,
+        "capacity": 360,
+        "available": 360
+      }
+    ],
+    "country": "Colombia",
+    "department": "Antioquia",
+    "description": "Noche de Jazz en la Ciudad es un evento de concierto que se realizará en Medellín. Reúne a profesionales y organizaciones del sector para compartir experiencias, conocimiento y oportunidades de negocio."
+  },
+  {
+    "title": "Experiencia Gastronómica de Autor",
+    "category": "Experiencia",
+    "city": "Bogotá",
+    "date": "2026-11-21",
+    "price": 250000,
+    "createdBy": "system",
+    "img": "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=600&h=380&fit=crop&auto=format",
+    "startTime": "11:00",
+    "endTime": "20:00",
+    "venue": "Casa de Eventos Zona G",
+    "capacity": 150,
+    "availableTickets": 60,
+    "agenda": "11:00 - Recepción\n13:00 - Actividad principal",
+    "ticketCategories": [
+      {
+        "name": "VIP Ejecutivo",
+        "price": 507500,
+        "capacity": 15,
+        "available": 15
+      },
+      {
+        "name": "General",
+        "price": 250000,
+        "capacity": 90,
+        "available": 90
+      },
+      {
+        "name": "Estudiante Afiliado",
+        "price": 70000,
+        "capacity": 45,
+        "available": 45
+      }
+    ],
+    "country": "Colombia",
+    "department": "Cundinamarca",
+    "description": "Experiencia Gastronómica de Autor es un evento de experiencia que se realizará en Bogotá. Reúne a profesionales y organizaciones del sector para compartir experiencias, conocimiento y oportunidades de negocio."
+  },
+  {
+    "title": "Experiencia de Cata de Café Especial",
+    "category": "Experiencia",
+    "city": "Armenia",
+    "date": "2027-01-17",
+    "price": 90000,
+    "createdBy": "system",
+    "img": "https://images.unsplash.com/photo-1511578314322-379afb476865?w=600&h=380&fit=crop&auto=format",
+    "startTime": "11:00",
+    "endTime": "20:00",
+    "venue": "Finca Cafetera del Eje",
+    "capacity": 150,
+    "availableTickets": 45,
+    "agenda": "11:00 - Recepción\n13:00 - Actividad principal",
+    "ticketCategories": [
+      {
+        "name": "VIP Ejecutivo",
+        "price": 182700,
+        "capacity": 15,
+        "available": 15
+      },
+      {
+        "name": "General",
+        "price": 90000,
+        "capacity": 90,
+        "available": 90
+      },
+      {
+        "name": "Estudiante Afiliado",
+        "price": 25200,
+        "capacity": 45,
+        "available": 45
+      }
+    ],
+    "country": "Colombia",
+    "department": "Quindío",
+    "description": "Experiencia de Cata de Café Especial es un evento de experiencia que se realizará en Armenia. Reúne a profesionales y organizaciones del sector para compartir experiencias, conocimiento y oportunidades de negocio."
+  },
+  {
+    "title": "Maratón Empresarial 10K",
+    "category": "Deporte",
+    "city": "Bogotá",
+    "date": "2026-12-06",
+    "price": 80000,
+    "createdBy": "system",
+    "img": "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=600&h=380&fit=crop&auto=format",
+    "startTime": "07:00",
+    "endTime": "13:00",
+    "venue": "Parque Simón Bolívar",
+    "capacity": 600,
+    "availableTickets": 360,
+    "agenda": "07:00 - Inscripción y kits\n08:00 - Salida\n12:00 - Premiación",
+    "ticketCategories": [
+      {
+        "name": "VIP Ejecutivo",
+        "price": 162400,
+        "capacity": 60,
+        "available": 60
+      },
+      {
+        "name": "General",
+        "price": 80000,
+        "capacity": 360,
+        "available": 360
+      },
+      {
+        "name": "Estudiante Afiliado",
+        "price": 22400,
+        "capacity": 180,
+        "available": 180
+      }
+    ],
+    "country": "Colombia",
+    "department": "Cundinamarca",
+    "description": "Maratón Empresarial 10K es un evento de deporte que se realizará en Bogotá. Reúne a profesionales y organizaciones del sector para compartir experiencias, conocimiento y oportunidades de negocio."
+  },
+  {
+    "title": "Torneo de Golf Corporativo",
+    "category": "Deporte",
+    "city": "Medellín",
+    "date": "2027-01-31",
+    "price": 350000,
+    "createdBy": "system",
+    "img": "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=600&h=380&fit=crop&auto=format",
+    "startTime": "07:00",
+    "endTime": "13:00",
+    "venue": "Club Campestre",
+    "capacity": 600,
+    "availableTickets": 300,
+    "agenda": "07:00 - Inscripción y kits\n08:00 - Salida\n12:00 - Premiación",
+    "ticketCategories": [
+      {
+        "name": "VIP Ejecutivo",
+        "price": 710500,
+        "capacity": 60,
+        "available": 60
+      },
+      {
+        "name": "General",
+        "price": 350000,
+        "capacity": 360,
+        "available": 360
+      },
+      {
+        "name": "Estudiante Afiliado",
+        "price": 98000,
+        "capacity": 180,
+        "available": 180
+      }
+    ],
+    "country": "Colombia",
+    "department": "Antioquia",
+    "description": "Torneo de Golf Corporativo es un evento de deporte que se realizará en Medellín. Reúne a profesionales y organizaciones del sector para compartir experiencias, conocimiento y oportunidades de negocio."
+  }
+]
