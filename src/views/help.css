@@ -117,6 +117,9 @@ html[data-theme="secret"] .help__fab {
 }
 
 /* Saludo flotante */
+.help.is-open .help__fab {
+  display: none;
+}
 .help__bubble {
   position: absolute;
   right: 78px;
@@ -170,32 +173,57 @@ html[data-theme="secret"] .help__bubble {
   }
 }
 
-/* Panel */
+/* Panel: cajón a toda la altura, de derecha a izquierda (casi la mitad de la pantalla) */
+.help__backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 16, 30, .45);
+  backdrop-filter: blur(2px);
+  animation: helpfade .3s ease;
+}
+.help__backdrop[hidden] {
+  display: none;
+}
+@keyframes helpfade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+html.help-open {
+  overflow: hidden;
+}
 .help__panel {
-  position: absolute;
+  position: fixed;
+  top: 0;
   right: 0;
-  bottom: 80px;
-  width: 380px;
-  height: min(640px, calc(100vh - 120px));
+  bottom: 0;
+  width: clamp(420px, 48vw, 920px);
+  height: 100vh;
+  height: 100dvh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  border-radius: 20px;
+  border-radius: 22px 0 0 22px;
   background: var(--h-bg);
-  box-shadow: var(--h-shadow);
-  transform-origin: bottom right;
-  animation: helpopen .25s ease;
+  box-shadow: -18px 0 60px rgba(8, 16, 30, .45);
+  container: help / inline-size;
+  animation: helpslide .35s cubic-bezier(.2, .8, .2, 1);
 }
 .help__panel[hidden] {
   display: none;
 }
 html[data-theme="secret"] .help__panel {
   border: 3px solid #000;
+  border-right: 0;
+  box-shadow: -8px 0 0 #000;
 }
-@keyframes helpopen {
+@keyframes helpslide {
   from {
     opacity: 0;
-    transform: translateY(14px) scale(.96);
+    transform: translateX(80px);
   }
   to {
     opacity: 1;
@@ -205,8 +233,8 @@ html[data-theme="secret"] .help__panel {
 .help__head {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 14px 16px;
+  gap: 14px;
+  padding: 18px 22px;
   background: var(--h-head);
   color: var(--h-head-ink);
 }
@@ -233,8 +261,8 @@ html[data-theme="secret"] .help__panel {
   box-shadow: 0 0 0 3px rgba(74, 222, 128, .25);
 }
 .help__av {
-  width: 40px;
-  height: 40px;
+  width: 46px;
+  height: 46px;
   padding: 4px;
   border-radius: 50%;
   background: #fff;
@@ -265,12 +293,12 @@ html[data-theme="secret"] .help__panel {
   align-items: center;
   justify-content: center;
   gap: 7px;
-  padding: 12px 6px;
+  padding: 14px 6px;
   border: 0;
   border-bottom: 3px solid transparent;
   background: transparent;
   color: var(--h-muted);
-  font-size: 13.5px;
+  font-size: 14.5px;
   font-weight: 600;
   cursor: pointer;
 }
@@ -381,6 +409,13 @@ html[data-theme="secret"] .help__tabs button.is-on {
   transform: translateY(-1px);
   background: var(--h-soft);
 }
+.msg__note {
+  display: block;
+  margin-top: 8px;
+  font-size: 11px;
+  line-height: 1.3;
+  color: var(--h-muted);
+}
 .typing {
   display: flex;
   gap: 4px;
@@ -435,6 +470,13 @@ html[data-theme="secret"] .help__tabs button.is-on {
   gap: 8px;
   padding: 10px 12px 12px;
   border-top: 1px solid var(--h-line);
+}
+.help__hint {
+  margin: 0;
+  padding: 0 14px 10px;
+  font-size: 11px;
+  color: var(--h-muted);
+  text-align: center;
 }
 .help__form input {
   flex: 1;
@@ -587,7 +629,92 @@ html[data-theme="secret"] .man__b a {
   border-top: 1px solid var(--h-line);
 }
 
-/* Celular: el panel ocupa el ancho de la pantalla */
+/* Manual con índice lateral y letra más cómoda cuando el cajón es ancho */
+#help-view-manual {
+  flex-direction: row;
+}
+.man__main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.man__nav {
+  display: none;
+}
+.man__nav button[hidden] {
+  display: none;
+}
+.msg__b {
+  max-width: min(82%, 640px);
+}
+@container help (min-width: 560px) {
+  .help__msgs {
+    padding: 22px 24px 8px;
+  }
+  .msg__b,
+  .man__b {
+    font-size: 15px;
+  }
+  .man__t summary {
+    font-size: 15px;
+    padding: 13px 16px;
+  }
+  .man__search {
+    padding: 16px 20px 10px;
+  }
+  .man__search svg {
+    left: 34px;
+    top: 29px;
+  }
+  .man__scroll {
+    padding: 0 20px 20px;
+  }
+  .help__chips,
+  .help__form,
+  .help__hint {
+    padding-left: 22px;
+    padding-right: 22px;
+  }
+}
+@container help (min-width: 720px) {
+  .man__nav {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    width: 200px;
+    flex-shrink: 0;
+    padding: 16px 10px;
+    overflow-y: auto;
+    border-right: 1px solid var(--h-line);
+    background: var(--h-soft);
+  }
+  .man__nav button {
+    padding: 10px 12px;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--h-ink);
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+  }
+  .man__nav button:hover {
+    background: var(--h-bg);
+  }
+}
+
+/* Celular y pantallas angostas: el cajón ocupa todo el ancho */
+@media (max-width: 860px) {
+  .help__panel {
+    width: 100vw;
+    border-radius: 0;
+  }
+}
+
+/* (reglas anteriores del celular) */
 @media (max-width: 480px) {
   .help {
     right: 14px;
@@ -596,18 +723,6 @@ html[data-theme="secret"] .man__b a {
   .help__fab {
     width: 58px;
     height: 58px;
-  }
-  .help__panel {
-    position: fixed;
-    right: 0;
-    left: 0;
-    bottom: 0;
-    width: auto;
-    height: min(86vh, 700px);
-    border-radius: 20px 20px 0 0;
-  }
-  .help.is-open .help__fab {
-    display: none;
   }
   .help__bubble {
     right: 70px;

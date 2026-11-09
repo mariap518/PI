@@ -14,8 +14,9 @@ const I = {
   chat: "M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z",
 };
 
-/* ───────────────────────── Chat: respuestas del asistente ───────────────────────── */
-
+/* ───────────────────────── Chat: respuestas del asistente ─────────────────────────
+ *  Por ahora responde con la descripción de la página y las ventajas de ser agente.
+ *  Para agregar diálogos nuevos basta con añadir un elemento a DIALOGOS (más abajo). */
 interface Accion { label: string; hash?: string; fn?: () => void }
 interface Respuesta { html: string; acciones?: Accion[] }
 
@@ -58,60 +59,31 @@ const answer = (text: string): Respuesta => {
 const SUGERENCIAS: Accion[] = [{ label: "¿Qué es SIX EVENT?" }, { label: "Ventajas de ser agente" }, { label: "Ver el manual", fn: () => showTab("manual") }];
 
 /* ───────────────────────── Manual de usuario ───────────────────────── */
-interface Tema { id: string; q: string; html: string }
-interface Seccion { titulo: string; temas: Tema[] }
-const L = (hash: string, label: string) => `<a href="${hash}">${label}</a>`;
-
-const MANUAL: Seccion[] = [
-  { titulo: "Primeros pasos", temas: [
-    { id: "que-es", q: "¿Qué es SIX EVENT?", html: `<p>Es una plataforma de venta de boletas para eventos corporativos en Colombia: congresos, conferencias, foros, simposios, ferias, galas y más. Aquí encuentras el evento, reservas tus entradas, pagas en línea y descargas tus boletas con código QR.</p><p>${L("#/como-funciona", "Ver la guía «Cómo funciona»")}</p>` },
-    { id: "cuenta", q: "Crear mi cuenta", html: `<ol><li>Pulsa <b>Registro</b> (arriba a la derecha).</li><li>Elige el tipo de cuenta: <b>Cliente</b> (usuario, correo, celular, ciudad y contraseña) o <b>Agente</b> (nombre, correo, empresa, cédula, celular, ciudad y contraseña).</li><li>Pulsa el botón para crear la cuenta. Es gratis.</li></ol><p>Para comprar boletas necesitas haber iniciado sesión.</p>` },
-    { id: "sesion", q: "Iniciar y cerrar sesión", html: `<p>Pulsa <b>Entrar</b> e ingresa tu correo o usuario y tu contraseña. Si eres <b>agente</b> o administrador, la página te pedirá además tu <b>código de acceso</b>.</p><p>Para salir, abre tu perfil (tu nombre, arriba a la derecha) y pulsa <b>Cerrar sesión</b>.</p>` },
-    { id: "modos", q: "Cambiar el modo de color", html: `<p>Con el botón de la <b>luna</b> (arriba a la derecha) eliges entre modo <b>claro</b>, <b>oscuro</b> y <b>exótico</b>. La página recuerda tu elección.</p>` },
-  ] },
-  { titulo: "Encontrar eventos", temas: [
-    { id: "buscar", q: "Buscar y filtrar eventos", html: `<p>En el inicio usa la barra de búsqueda para escribir el nombre del evento y elige la <b>ciudad</b> o la <b>fecha</b> (esta semana, este mes o un rango). Debajo hay chips de <b>categorías</b> para filtrar con un clic. Todos los filtros se combinan.</p>` },
-    { id: "destacados", q: "Eventos destacados y próximos", html: `<p>El carrusel de arriba y la sección <b>Eventos destacados</b> muestran la selección especial. En <b>Próximos eventos</b> aparece el resto, ordenado por fecha; usa <b>Ver más eventos</b> para cargar más.</p>` },
-    { id: "categorias", q: "Categorías", html: `<p>Al final del inicio está la sección <b>Categorías</b>: cada recuadro lleva a una página con todos los eventos de esa categoría (conferencias, congresos, foros, galas, conciertos, deportes y más).</p>` },
-    { id: "favoritos", q: "Guardar favoritos", html: `<p>Toca el <b>corazón</b> de una tarjeta para guardar el evento. Necesitas haber iniciado sesión.</p>` },
-    { id: "compartir", q: "Compartir un evento", html: `<p>Dentro del evento pulsa <b>Compartir</b>: se copia el enlace para que lo envíes a quien quieras.</p>` },
-  ] },
-  { titulo: "Comprar boletas", temas: [
-    { id: "reservar", q: "Reservar paso a paso", html: `<ol><li>Abre el evento que te interesa.</li><li>Pulsa <b>Reservar entradas</b> (inicia sesión si te lo pide).</li><li>Elige el <b>tipo de entrada</b> y la <b>cantidad</b> (máximo 10 por transacción).</li><li>Si tienes un cupón, selecciónalo.</li><li>Elige el medio de pago y completa tus datos.</li><li>Confirma el pago y revisa el resumen.</li></ol>` },
-    { id: "pago", q: "Medios de pago y cargos", html: `<p>Puedes pagar con <b>tarjeta de crédito o débito</b> o por <b>PSE / transferencia</b>. Sobre el subtotal se suma un <b>cargo por servicio del 4 %</b>, que ves en el resumen antes de pagar.</p>` },
-    { id: "cupones", q: "Usar un cupón de descuento", html: `<p>Los cupones se consiguen canjeando puntos (ver <i>Puntos y cupones</i>). En el pago aparece el selector <b>Cupón de descuento</b>; solo puedes usar uno por compra.</p>` },
-    { id: "tiempo", q: "Tiempo para completar el pago", html: `<p>Según las normas de uso de la plataforma, mientras pagas las entradas se reservan temporalmente (15 minutos) para que no se agoten. Si se acaba el tiempo, vuelve a elegir tus entradas.</p>` },
-  ] },
-  { titulo: "Mis boletas", temas: [
-    { id: "mis-reservas", q: "Dónde veo mis reservas y boletas", html: `<p>Abre tu perfil y entra a <b>Mis Reservas</b>: allí está el historial con su estado. Al abrir una reserva ves tu boleta con el <b>código QR</b> y el botón <b>Descargar boleta</b>. También puedes <b>Exportar CSV</b> con el historial.</p>` },
-    { id: "ingreso", q: "Entrar al evento", html: `<p>Presenta tu <b>código QR</b> junto con tu documento de identidad. Las entradas son personales e intransferibles: están ligadas al titular de la compra.</p>` },
-    { id: "autentica", q: "¿Cómo sé que mi boleta es auténtica?", html: `<p>Cada boleta tiene un <b>código QR único</b> que se verifica en la puerta del evento.</p>` },
-  ] },
-  { titulo: "Puntos y cupones", temas: [
-    { id: "ganar", q: "Cómo gano puntos", html: `<p>Ganas <b>1 punto por cada $1.000 COP</b> pagados en cada compra. Tu saldo y tu historial están en <b>Mis Puntos</b>, dentro de tu perfil.</p>` },
-    { id: "niveles", q: "Niveles", html: `<p>Tu nivel depende de los puntos <b>acumulados</b> en total (canjear no te baja de nivel):</p><ul><li>Bronce: desde 0</li><li>Plata: 5.000</li><li>Oro: 25.000</li><li>Platino: 100.000</li><li>Diamante: 500.000</li><li>Plus: 2.000.000</li></ul>` },
-    { id: "canjear", q: "Canjear puntos por cupones", html: `<p>En <b>Mis Puntos → Canjear puntos</b> eliges tu cupón:</p><ul><li>10 % de descuento: 200 puntos</li><li>25 % de descuento: 600 puntos</li><li>50 % de descuento: 1.500 puntos</li></ul>` },
-  ] },
-  { titulo: "Cancelaciones y reembolsos", temas: [
-    { id: "cancelan", q: "Si cancelan el evento", html: `<p>Si el organizador cancela, recibes el reembolso del valor de tu boleta en un plazo de 5 a 10 días hábiles.</p>` },
-    { id: "retracto", q: "Retracto y otros casos", html: `<p>Tienes derecho a retracto dentro de los 5 días hábiles siguientes a la compra, siempre que falten 48 horas o más para el evento. Cada organizador puede tener condiciones propias.</p><p>${L("#/info/" + encodeURIComponent("Política de reembolsos"), "Leer la política de reembolsos")}</p>` },
-  ] },
-  { titulo: "Para agentes (organizadores)", temas: [
-    { id: "ser-agente", q: "Cómo ser agente", html: `<p>En el registro elige <b>Agente</b>, selecciona tu <b>empresa</b> e ingresa tu cédula. Cuando inicies sesión, la página te pedirá el <b>código de acceso</b> de tu empresa.</p>` },
-    { id: "crear-evento", q: "Crear un evento", html: `<ol><li>En el inicio pulsa <b>Crear nuevo evento</b>.</li><li>Completa título, descripción, categoría, ubicación, fecha, horario, recinto y aforo.</li><li>Agrega tus <b>tipos de boleta</b> con su precio, la agenda y la imagen.</li><li>Pulsa <b>Crear Evento</b> <b>una sola vez</b> y espera a que termine de guardar.</li></ol>` },
-    { id: "editar", q: "Editar o eliminar mis eventos", html: `<p>En las tarjetas de tus eventos aparecen los botones de <b>editar</b> (lápiz) y <b>eliminar</b> (X). Solo puedes modificar los eventos que creaste.</p>` },
-    { id: "panel", q: "Panel de ventas", html: `<p>Entra a <b>Panel</b> (menú superior) para ver los <b>ingresos estimados</b>, las boletas vendidas, la ocupación, los ingresos por evento, por categoría y por ciudad, y una tabla con el detalle de cada evento de tu empresa.</p>` },
-    { id: "tarifas", q: "Tarifas", html: `<p>La cuenta de agente funciona por comisión: desde <b>3,5 % por boleta vendida + $500 COP fijos</b>.</p><p>${L("#/info/Precios", "Ver precios y tarifas")}</p>` },
-  ] },
-  { titulo: "Contacto y soporte", temas: [
-    { id: "contacto", q: "Hablar con nosotros", html: `<p>Nuestro equipo atiende de <b>lunes a sábado, de 8 a. m. a 8 p. m.</b></p><ul><li>Correo: <a href="mailto:contacto@sixevent.co">contacto@sixevent.co</a></li><li>Teléfono: +57 601 744 0000</li><li>O escríbenos aquí, en el chat.</li></ul>` },
-  ] },
-];
+import { MANUAL } from "../services/manual-data";
 
 /* ───────────────────────── Interfaz ───────────────────────── */
 let root: HTMLElement;
 let busy = false;
 let greeted = false;
+let aiEnabled = false;                    // el servidor tiene la clave de IA configurada
+let aiPausedUntil = 0;                    // si se agota el cupo, se usan las respuestas de siempre un rato
+const history: { role: "user" | "bot"; text: string }[] = [];   // conversación que se envía a la IA
+
+/** Convierte la respuesta de la IA (texto con **negritas** y listas "- ") en HTML seguro */
+function mdLite(text: string): string {
+  const inline = (t: string) => esc(t).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");
+  const out: string[] = []; let list = false;
+  for (const raw of text.replace(/\r/g, "").split("\n")) {
+    const line = raw.trim().replace(/^#{1,6}\s+/, "");
+    const li = /^[-*•]\s+(.*)$/.exec(line);
+    if (li) { if (!list) { out.push("<ul>"); list = true; } out.push(`<li>${inline(li[1])}</li>`); continue; }
+    if (list) { out.push("</ul>"); list = false; }
+    if (line) out.push(`<p>${inline(line)}</p>`);
+  }
+  if (list) out.push("</ul>");
+  return out.join("");
+}
+const toPlain = (html: string) => html.replace(/<li>/g, "\n- ").replace(/<\/(p|li)>/g, "\n").replace(/<[^>]+>/g, "").trim();
 const q = <T extends HTMLElement>(sel: string) => root.querySelector<T>(sel)!;
 
 const bubbleBot = (r: Respuesta) =>
@@ -119,15 +91,18 @@ const bubbleBot = (r: Respuesta) =>
 
 let actionsStore: Accion[][] = [];
 
-function addBot(r: Respuesta) {
+function addBot(r: Respuesta, ai = false) {
   const box = q("#help-msgs");
   const wrap = document.createElement("div");
   actionsStore.push(r.acciones ?? []);
   wrap.innerHTML = bubbleBot(r).replace(/data-act="(\d+)"/g, `data-act="$1" data-set="${actionsStore.length - 1}"`);
+  if (ai) wrap.querySelector(".msg__b")?.insertAdjacentHTML("beforeend", `<small class="msg__note">Respuesta generada con IA; puede equivocarse.</small>`);
   box.append(...Array.from(wrap.children));
+  history.push({ role: "bot", text: toPlain(r.html) });
   scrollDown();
 }
 function addUser(text: string) {
+  history.push({ role: "user", text });
   const el = document.createElement("div");
   el.className = "msg msg--user";
   el.innerHTML = `<div class="msg__b">${esc(text)}</div>`;
@@ -140,7 +115,20 @@ function renderChips() {
   q("#help-chips").innerHTML = SUGERENCIAS.map((a, i) => `<button type="button" class="chip2" data-chip="${i}">${esc(a.label)}</button>`).join("");
 }
 
-function ask(text: string) {
+/** Pregunta a la IA (servidor → Gemini). Devuelve null si hay que usar las respuestas de siempre. */
+async function askAI(): Promise<string | null> {
+  if (!aiEnabled || Date.now() < aiPausedUntil) return null;
+  try {
+    const res = await fetch("/api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ messages: history.slice(-8) }), signal: AbortSignal.timeout(25000) });
+    if (!res.ok) return null;
+    const data = await res.json() as { reply?: string; fallback?: boolean; reason?: string };
+    if (data.fallback && (data.reason === "cupo" || data.reason === "limite")) aiPausedUntil = Date.now() + 10 * 60_000;
+    return data.reply?.trim() || null;
+  } catch { return null; }
+}
+
+/** `local`: respuesta inmediata sin IA (sugerencias y botones); si no, la escribe la IA y, si falla, el respaldo local. */
+async function ask(text: string, local = false) {
   text = text.trim().slice(0, 300);
   if (!text || busy) return;
   busy = true;
@@ -149,22 +137,24 @@ function ask(text: string) {
   typing.className = "msg msg--bot";
   typing.innerHTML = `<img class="msg__av" src="${robot}" alt=""><div class="msg__b typing" aria-label="El asistente está escribiendo"><i></i><i></i><i></i></div>`;
   q("#help-msgs").append(typing); scrollDown();
-  window.setTimeout(() => {
-    typing.remove();
-    addBot(answer(text));
-    busy = false;
-  }, 700 + Math.min(text.length * 8, 500));
+  const delay = new Promise(r => window.setTimeout(r, 700 + Math.min(text.length * 8, 500)));
+  const ai = local ? null : await askAI();
+  await delay;
+  typing.remove();
+  if (ai) addBot({ html: mdLite(ai) }, true); else addBot(answer(text));
+  busy = false;
   while (q("#help-msgs").children.length > 80) q("#help-msgs").firstElementChild!.remove();
 }
 
 function runAction(a: Accion) {
   if (a.hash) { closePanel(); location.hash = a.hash; }
   else if (a.fn) a.fn();
-  else ask(a.label);
+  else ask(a.label, true);
 }
 
 /* Manual */
 function renderManual() {
+  q("#help-man-nav").innerHTML = MANUAL.map((s, i) => `<button type="button" data-man-go="${i}">${esc(s.titulo)}</button>`).join("");
   q("#help-manual-list").innerHTML = MANUAL.map(s => `<section class="man__sec"><h3>${esc(s.titulo)}</h3>${s.temas.map(t =>
     `<details class="man__t" id="man-${t.id}" data-text="${esc(norm(t.q + " " + t.html.replace(/<[^>]+>/g, " ")))}"><summary>${esc(t.q)}</summary><div class="man__b">${t.html}</div></details>`).join("")}</section>`).join("");
 }
@@ -181,6 +171,7 @@ function filterManual(term: string) {
       if (ok) any++;
     });
     sec.hidden = !any; hits += any;
+    q("#help-man-nav").children[Array.from(sec.parentElement!.children).indexOf(sec)]?.toggleAttribute("hidden", !any);
   });
   q("#help-manual-empty").hidden = hits > 0;
 }
@@ -202,6 +193,8 @@ function openPanel() {
   const panel = q("#help-panel");
   if (!panel.hidden) return;
   panel.hidden = false;
+  q("#help-backdrop").hidden = false;
+  document.documentElement.classList.add("help-open");
   root.classList.add("is-open");
   q("#help-fab").setAttribute("aria-expanded", "true");
   q("#help-bubble").hidden = true;
@@ -209,6 +202,8 @@ function openPanel() {
 }
 function closePanel() {
   q("#help-panel").hidden = true;
+  q("#help-backdrop").hidden = true;
+  document.documentElement.classList.remove("help-open");
   root.classList.remove("is-open");
   q("#help-fab").setAttribute("aria-expanded", "false");
 }
@@ -219,6 +214,7 @@ export function mountHelp() {
   root.id = "help"; root.className = "help";
   root.innerHTML = `
     <div class="help__bubble" id="help-bubble" role="status" hidden><button type="button" class="help__bubble-x" data-bx aria-label="Cerrar saludo">${ico(I.close, 12)}</button>¡Hola! ¿Cómo podemos ayudarte?</div>
+    <div class="help__backdrop" id="help-backdrop" hidden></div>
     <section class="help__panel" id="help-panel" role="dialog" aria-label="Centro de ayuda de SIX EVENT" hidden>
       <header class="help__head"><img src="${robot}" alt="" class="help__av"><div><b>Asistente SIX EVENT</b><small><i class="dot"></i> En línea</small></div>
         <button type="button" class="help__x" data-close aria-label="Cerrar ayuda">${ico(I.close, 20)}</button></header>
@@ -232,10 +228,13 @@ export function mountHelp() {
           <form class="help__form" id="help-form" autocomplete="off"><input id="help-input" type="text" maxlength="300" placeholder="Escribe tu pregunta…" aria-label="Tu mensaje"><button type="submit" aria-label="Enviar mensaje">${ico(I.send, 18)}</button></form>
         </div>
         <div class="help__view" id="help-view-manual" hidden>
+          <nav class="man__nav" id="help-man-nav" aria-label="Secciones del manual"></nav>
+          <div class="man__main">
           <div class="man__search">${ico(I.search, 16)}<input id="help-search" type="search" placeholder="Buscar en el manual…" aria-label="Buscar en el manual"></div>
           <div class="man__scroll"><div id="help-manual-list"></div>
             <p class="man__empty" id="help-manual-empty" hidden>No encontramos ese tema. <button type="button" class="msg__act" data-tab-go="chat">Pregúntale al asistente</button></p>
             <div class="man__foot"><a class="msg__act" href="#/como-funciona">Guía «Cómo funciona»</a><a class="msg__act" href="#/info/${encodeURIComponent("Política de privacidad")}">Privacidad</a><a class="msg__act" href="#/info/${encodeURIComponent("Términos y condiciones")}">Términos</a></div></div>
+          </div>
         </div>
       </div>
     </section>
@@ -243,12 +242,25 @@ export function mountHelp() {
   document.body.append(root);
 
   renderManual(); renderChips();
-  addBot({ html: `<p>¡Hola! Soy el asistente de <b>SIX EVENT</b>. 👋 ¿En qué te puedo ayudar?</p><p>Por ahora puedo contarte qué es la página y qué ventajas tiene ser agente. También tienes el manual de usuario en la otra pestaña.</p>` });
+  addBot({ html: `<p>¡Hola! Soy el asistente de <b>SIX EVENT</b>. 👋 ¿En qué te puedo ayudar?</p><p id="help-greet-p">Por ahora puedo contarte qué es la página y qué ventajas tiene ser agente. También tienes el manual de usuario en la otra pestaña.</p>` });
+
+  // ¿El servidor tiene la IA configurada? Si sí, el texto libre lo responde la IA.
+  fetch("/api/chat/status").then(r => r.json()).then((j: { enabled?: boolean }) => {
+    aiEnabled = Boolean(j.enabled);
+    if (aiEnabled) {
+      const p = root.querySelector("#help-greet-p");
+      if (p) p.innerHTML = "Pregúntame lo que quieras sobre la plataforma: comprar boletas, puntos, reembolsos o cómo ser agente. También tienes el manual de usuario en la otra pestaña.";
+      q<HTMLInputElement>("#help-input").placeholder = "Escribe tu pregunta (responde una IA)…";
+      q("#help-form").insertAdjacentHTML("afterend", `<p class="help__hint">Responde una IA. No escribas datos personales ni contraseñas.</p>`);
+    }
+  }).catch(() => {});
 
   root.addEventListener("click", e => {
     const t = e.target as HTMLElement;
     if (t.closest("#help-fab")) return root.classList.contains("is-open") ? closePanel() : showTab("chat");
-    if (t.closest("[data-close]")) { closePanel(); q("#help-fab").focus(); return; }
+    if (t.closest("[data-close]") || t.closest("#help-backdrop")) { closePanel(); q("#help-fab").focus(); return; }
+    const go = t.closest<HTMLElement>("[data-man-go]");
+    if (go) { const sec = q("#help-manual-list").children[Number(go.dataset.manGo)] as HTMLElement | undefined; sec?.scrollIntoView({ behavior: "smooth", block: "start" }); return; }
     if (t.closest("[data-bx]")) { q("#help-bubble").hidden = true; sessionStorage.setItem("sixevent_help_greeted", "1"); return; }
     if (t.closest("#help-bubble")) return showTab("chat");
     const tab = t.closest<HTMLElement>("[data-tab]") ?? t.closest<HTMLElement>("[data-tab-go]");
