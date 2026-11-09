@@ -7,6 +7,7 @@ import { renderEventDetail, renderCheckout } from "./views/screens";
 import { renderProfile } from "./views/profile";
 import { renderDashboard } from "./views/dashboard";
 import { renderCreateEvent, renderEditEvent, renderHowItWorks, renderStatic } from "./views/pages";
+import { mountHelp } from "./views/help";
 import { themesFor, MOON, getTheme, setTheme, initTheme, type Theme } from "./services/theme";
 import { CATEGORIES, POPULAR, catPlural, catSlug, catBySlug, catStyle, type Cat } from "./services/categories";
 
@@ -476,6 +477,7 @@ function cookieBanner() {
 
 initTheme();
 cookieBanner();
+mountHelp();
 initEvents()
   .then(() => {
     state.all = state.filtered = getEvents();
