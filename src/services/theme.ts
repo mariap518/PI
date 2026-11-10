@@ -1,6 +1,7 @@
+import "./theme-lock.css";
 import { getCurrentUser } from "./auth";
 
-/** Modos de color: claro (por defecto), oscuro y exótico. Se guarda la elección en el navegador. */
+/** Modos de color: claro (por defecto), oscuro y exótico (solo con sesión iniciada). Se guarda la elección en el navegador. */
 export type Theme = "light" | "dark" | "exotic" | "secret";
 
 export const THEMES: { id: Theme; label: string; icon: string }[] = [
@@ -12,21 +13,31 @@ export const THEMES: { id: Theme; label: string; icon: string }[] = [
 /** Modo secreto: solo aparece y se puede activar con una cuenta de administrador */
 export const SECRET = { id: "secret" as Theme, label: "Modo secreto", icon: "M13 2L3 14h9l-1 8 10-12h-9l1-8z" };
 const isAdmin = () => getCurrentUser()?.role === "admin";
-export const themesFor = () => (isAdmin() ? [...THEMES, SECRET] : THEMES);
+const isLoggedIn = () => getCurrentUser() !== null;
+export const LOCK = "M5 11h14v10H5zM8 11V7a4 4 0 0 1 8 0v4";
+
+export interface ThemeItem { id: Theme; label: string; icon: string; locked: boolean }
+/** Opciones del menú: el exótico aparece bloqueado hasta iniciar sesión; el secreto solo lo ve un admin. */
+export const themeItems = (): ThemeItem[] => [
+  ...THEMES.map(t => ({ ...t, locked: t.id === "exotic" && !isLoggedIn() })),
+  ...(isAdmin() ? [{ ...SECRET, locked: false }] : []),
+];
+/** ¿Se puede usar este modo con la sesión actual? */
+const allowed = (t: Theme) => (t !== "secret" || isAdmin()) && (t !== "exotic" || isLoggedIn());
 
 export const MOON = THEMES[1].icon;
 const KEY = "sixevent_theme";
 const valid = (t: unknown): t is Theme => THEMES.some(x => x.id === t) || t === SECRET.id;
 
-/** Modo en uso: si el guardado es el secreto y no hay un admin con sesión, se usa el claro */
+/** Modo en uso: si el guardado es el exótico sin sesión, o el secreto sin un admin, se usa el claro */
 export function getTheme(): Theme {
-  try { const t = localStorage.getItem(KEY); if (valid(t) && (t !== SECRET.id || isAdmin())) return t; } catch { /* sin almacenamiento */ }
+  try { const t = localStorage.getItem(KEY); if (valid(t) && allowed(t)) return t; } catch { /* sin almacenamiento */ }
   return "light";
 }
 
 /** Aplica el modo al documento. Con `animate` los colores cambian suavemente. */
 export function setTheme(t: Theme, animate = false) {
-  if (t === SECRET.id && !isAdmin()) t = "light";
+  if (!allowed(t)) t = "light";
   const root = document.documentElement;
   if (animate) { root.classList.add("theme-anim"); window.setTimeout(() => root.classList.remove("theme-anim"), 450); }
   root.dataset.theme = t;

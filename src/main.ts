@@ -8,7 +8,7 @@ import { renderProfile } from "./views/profile";
 import { renderDashboard } from "./views/dashboard";
 import { renderCreateEvent, renderEditEvent, renderHowItWorks, renderStatic } from "./views/pages";
 import { mountHelp } from "./views/help";
-import { themesFor, MOON, getTheme, setTheme, initTheme, type Theme } from "./services/theme";
+import { themeItems, MOON, LOCK, getTheme, setTheme, initTheme, type Theme } from "./services/theme";
 import { CATEGORIES, POPULAR, catPlural, catSlug, catBySlug, catStyle, type Cat } from "./services/categories";
 
 /* ── Utilidades ── */
@@ -51,7 +51,9 @@ const state = {
 function themeMenu() {
   const cur = getTheme();
   return `<div class="theme"><button class="theme__btn" data-theme-toggle aria-haspopup="menu" aria-expanded="false" aria-label="Cambiar modo de color" title="Modo de color">${icon(MOON, 18)}</button>
-    <div class="theme__menu" role="menu" hidden>${themesFor().map(t => `<button class="theme__opt theme__opt--${t.id}${t.id === cur ? " is-on" : ""}" role="menuitemradio" aria-checked="${t.id === cur}" data-theme-set="${t.id}"><span>${t.label}</span><i>${icon(t.icon, 18)}</i></button>`).join("")}</div></div>`;
+    <div class="theme__menu" role="menu" hidden>${themeItems().map(t => t.locked
+      ? `<button class="theme__opt theme__opt--${t.id} is-locked" role="menuitem" aria-label="${t.label}: bloqueado. Inicia sesión para usarlo" data-theme-locked title="Inicia sesión para usar este modo"><span>${t.label}<small>Inicia sesión</small></span><i>${icon(LOCK, 18)}</i></button>`
+      : `<button class="theme__opt theme__opt--${t.id}${t.id === cur ? " is-on" : ""}" role="menuitemradio" aria-checked="${t.id === cur}" data-theme-set="${t.id}"><span>${t.label}</span><i>${icon(t.icon, 18)}</i></button>`).join("")}</div></div>`;
 }
 const closeThemeMenu = () => document.querySelectorAll<HTMLElement>(".theme__menu").forEach(m => {
   m.hidden = true; m.parentElement?.querySelector(".theme__btn")?.setAttribute("aria-expanded", "false");
@@ -394,6 +396,7 @@ document.addEventListener("click", ev => {
     }
     return;
   }
+  if (t.closest("[data-theme-locked]")) { closeThemeMenu(); location.hash = "#/login"; return; }   // modo bloqueado: lleva a iniciar sesión
   const tset = t.closest<HTMLElement>("[data-theme-set]");
   if (tset) {
     setTheme(tset.dataset.themeSet as Theme, true);

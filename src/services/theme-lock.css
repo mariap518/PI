@@ -1,0 +1,19 @@
+/* Opción de modo bloqueada (modo exótico sin sesión) */
+.theme__opt.is-locked {
+  opacity: .72;
+  filter: saturate(.55);
+}
+.theme__opt.is-locked i {
+  background: #5b6678;
+}
+.theme__opt.is-locked:hover {
+  opacity: 1;
+  filter: none;
+}
+.theme__opt span small {
+  display: block;
+  margin-top: 1px;
+  font-size: 11px;
+  font-weight: 500;
+  opacity: .85;
+}
