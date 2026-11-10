@@ -12,6 +12,8 @@ const I = {
   search: "M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z",
   book: "M4 19.5A2.5 2.5 0 0 1 6.5 17H20V2H6.5A2.5 2.5 0 0 0 4 4.5v15zM4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5",
   chat: "M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z",
+  expand: "M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7",
+  shrink: "M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7",
 };
 
 /* ───────────────────────── Chat: respuestas del asistente ─────────────────────────
@@ -189,22 +191,40 @@ function showTab(tab: "chat" | "manual", topicId?: string) {
   } else if (tab === "chat" && matchMedia("(pointer: fine)").matches) q<HTMLInputElement>("#help-input").focus({ preventScroll: true }); // en celular no se abre el teclado solo
 }
 
+/** Ventana pequeña (por defecto) o cajón grande. Se recuerda durante la sesión una vez que la persona lo elige. */
+let big = sessionStorage.getItem("sixevent_help_big") === "1";
+function applySize() {
+  const open = root.classList.contains("is-open");
+  root.classList.toggle("is-big", big);
+  q("#help-backdrop").hidden = !(open && big);                        // el fondo atenuado solo va con el cajón grande
+  document.documentElement.classList.toggle("help-open", open && big); // y solo entonces se bloquea el scroll de la página
+  const b = q("#help-size");
+  b.innerHTML = ico(big ? I.shrink : I.expand, 18);
+  b.setAttribute("aria-label", big ? "Reducir la ventana de ayuda" : "Agrandar la ventana de ayuda");
+  b.setAttribute("aria-pressed", String(big));
+  b.title = big ? "Reducir" : "Agrandar";
+}
+function toggleSize() {
+  big = !big;
+  sessionStorage.setItem("sixevent_help_big", big ? "1" : "0");
+  applySize();
+  scrollDown();
+}
+
 function openPanel() {
   const panel = q("#help-panel");
   if (!panel.hidden) return;
   panel.hidden = false;
-  q("#help-backdrop").hidden = false;
-  document.documentElement.classList.add("help-open");
   root.classList.add("is-open");
+  applySize();
   q("#help-fab").setAttribute("aria-expanded", "true");
   q("#help-bubble").hidden = true;
   sessionStorage.setItem("sixevent_help_greeted", "1");
 }
 function closePanel() {
   q("#help-panel").hidden = true;
-  q("#help-backdrop").hidden = true;
-  document.documentElement.classList.remove("help-open");
   root.classList.remove("is-open");
+  applySize();
   q("#help-fab").setAttribute("aria-expanded", "false");
 }
 
@@ -217,7 +237,8 @@ export function mountHelp() {
     <div class="help__backdrop" id="help-backdrop" hidden></div>
     <section class="help__panel" id="help-panel" role="dialog" aria-label="Centro de ayuda de SIX EVENT" hidden>
       <header class="help__head"><img src="${robot}" alt="" class="help__av"><div><b>Asistente SIX EVENT</b><small><i class="dot"></i> En línea</small></div>
-        <button type="button" class="help__x" data-close aria-label="Cerrar ayuda">${ico(I.close, 20)}</button></header>
+        <div class="help__btns"><button type="button" class="help__x" id="help-size" data-size aria-pressed="false"></button>
+        <button type="button" class="help__x" data-close aria-label="Cerrar ayuda">${ico(I.close, 20)}</button></div></header>
       <div class="help__tabs" role="tablist">
         <button type="button" role="tab" class="is-on" aria-selected="true" data-tab="chat">${ico(I.chat, 16)} Chat</button>
         <button type="button" role="tab" aria-selected="false" data-tab="manual">${ico(I.book, 16)} Manual de usuario</button></div>
@@ -241,7 +262,7 @@ export function mountHelp() {
     <button type="button" class="help__fab" id="help-fab" aria-label="Abrir ayuda" aria-expanded="false" aria-controls="help-panel"><img src="${robot}" alt=""></button>`;
   document.body.append(root);
 
-  renderManual(); renderChips();
+  renderManual(); renderChips(); applySize();
   addBot({ html: `<p>¡Hola! Soy el asistente de <b>SIX EVENT</b>. 👋 ¿En qué te puedo ayudar?</p><p id="help-greet-p">Por ahora puedo contarte qué es la página y qué ventajas tiene ser agente. También tienes el manual de usuario en la otra pestaña.</p>` });
 
   // ¿El servidor tiene la IA configurada? Si sí, el texto libre lo responde la IA.
@@ -258,6 +279,7 @@ export function mountHelp() {
   root.addEventListener("click", e => {
     const t = e.target as HTMLElement;
     if (t.closest("#help-fab")) return root.classList.contains("is-open") ? closePanel() : showTab("chat");
+    if (t.closest("[data-size]")) return toggleSize();
     if (t.closest("[data-close]") || t.closest("#help-backdrop")) { closePanel(); q("#help-fab").focus(); return; }
     const go = t.closest<HTMLElement>("[data-man-go]");
     if (go) { const sec = q("#help-manual-list").children[Number(go.dataset.manGo)] as HTMLElement | undefined; sec?.scrollIntoView({ behavior: "smooth", block: "start" }); return; }
