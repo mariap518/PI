@@ -1,6 +1,7 @@
 import express from "express";
 import { pool } from "./db.mjs";
 import { registerEvents } from "./events.mjs";
+import { registerRatings } from "./ratings.mjs";
 import { registerChat } from "./chat.mjs";
 
 const app = express();
@@ -16,6 +17,7 @@ app.get("/api/health", async (_req, res) => {
 });
 
 registerEvents(app, pool);
+await registerRatings(app, pool);   // crea la tabla event_ratings si no existe
 registerChat(app);
 
 app.listen(3001, () => console.log("API en http://localhost:3001"));

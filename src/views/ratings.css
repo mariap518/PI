@@ -1,0 +1,204 @@
+/* ── Calificaciones de eventos ── */
+.rbox {
+  --r-gold: #F5B301;
+  --r-off: rgba(255, 255, 255, .28);
+}
+.rbox .rsum {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px 36px;
+  align-items: center;
+  padding: 18px 20px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .08);
+}
+.rsum__big {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+.rsum__big b {
+  font-size: 44px;
+  line-height: 1;
+  letter-spacing: -1px;
+}
+.rsum__big small {
+  font-size: 13px;
+  opacity: .85;
+}
+.rstars {
+  position: relative;
+  display: inline-block;
+  font-size: 22px;
+  letter-spacing: 3px;
+  line-height: 1.2;
+  color: var(--r-off);
+}
+.rstars::before {
+  content: "★★★★★";
+}
+.rstars__fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  overflow: hidden;
+  white-space: nowrap;
+  color: var(--r-gold);
+}
+.rsum__dist {
+  flex: 1;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.rdist {
+  display: grid;
+  grid-template-columns: 34px 1fr 28px;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+.rdist__bar {
+  height: 8px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, .18);
+  overflow: hidden;
+}
+.rdist__bar i {
+  display: block;
+  height: 100%;
+  background: var(--r-gold);
+  border-radius: 8px;
+}
+.rmine {
+  margin-top: 16px;
+}
+.rnote {
+  margin: 0 0 10px;
+  font-size: 14px;
+}
+.rpick {
+  display: inline-flex;
+  flex-direction: row-reverse;
+  gap: 4px;
+}
+.rpick__s {
+  padding: 0 2px;
+  border: 0;
+  background: transparent;
+  font-size: 38px;
+  line-height: 1;
+  color: var(--r-off);
+  cursor: pointer;
+  transition: transform .15s, color .15s;
+}
+.rpick__s.is-on,
+.rpick__s:hover,
+.rpick__s:hover ~ .rpick__s {
+  color: var(--r-gold);
+}
+.rpick__s:hover {
+  transform: scale(1.15);
+}
+.rpick__s:focus-visible {
+  outline: 3px solid #F7ECC7;
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+.rpick__s:disabled {
+  cursor: wait;
+  opacity: .7;
+}
+.rlink {
+  display: block;
+  margin-top: 8px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: 13px;
+  text-decoration: underline;
+  cursor: pointer;
+  opacity: .85;
+}
+.rlink:hover {
+  opacity: 1;
+}
+.rlink:disabled {
+  opacity: .4;
+  cursor: not-allowed;
+  text-decoration: none;
+}
+.rlink--danger {
+  color: #FFB4B4;
+}
+.rmsg,
+.rerr {
+  margin: 10px 0 0;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+.rmsg {
+  background: rgba(74, 222, 128, .18);
+}
+.rerr {
+  background: rgba(239, 68, 68, .25);
+}
+.radmin {
+  margin-top: 18px;
+  padding: 16px 18px;
+  border-radius: 12px;
+  border: 1px dashed rgba(255, 255, 255, .4);
+  background: rgba(0, 0, 0, .16);
+}
+.radmin h3 {
+  margin: 0 0 8px;
+  font-size: 15px;
+}
+.radmin h3 small {
+  font-weight: 400;
+  opacity: .75;
+}
+.radmin__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 10px;
+  margin: 10px 0 6px;
+}
+.radmin__row label {
+  flex-basis: 100%;
+  font-size: 13px;
+}
+.radmin__row input {
+  width: 110px;
+  height: 42px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, .4);
+  background: #fff;
+  color: #111;
+  font: inherit;
+}
+.rfoot {
+  margin: 14px 0 0;
+  font-size: 12px;
+  opacity: .7;
+}
+html[data-theme="secret"] .rbox .rsum,
+html[data-theme="secret"] .radmin {
+  background: rgba(20, 0, 46, .8);
+  color: #fff;
+  text-shadow: none;
+}
+html[data-theme="secret"] .rbox .rnote,
+html[data-theme="secret"] .rbox .rmine {
+  background: rgba(20, 0, 46, .8);
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 8px;
+  text-shadow: none;
+}

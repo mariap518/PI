@@ -2,6 +2,7 @@ import logo from "../assets/logo-new.png";
 import { catStyle } from "../services/categories";
 import { getCurrentUser, updateUser } from "../services/auth";
 import { consumeTickets, formatDateString, placeLabel, type EventItem } from "../services/db";
+import { ratingSection, newRatingState, getRatingStats, rateEvent, removeMyRating, setDefaultRating, resetUserRatings } from "./ratings";
 
 const esc = (s: string) => s.replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
 const cop = (n: number) => "$ " + n.toLocaleString("es-CO");
@@ -23,6 +24,7 @@ export function renderEventDetail(root: HTMLElement, e: EventItem, onBack: () =>
   const agenda = (e.agenda || "09:00 - Inicio del evento").split("\n").filter(Boolean);
   const saved = () => !!getCurrentUser()?.favorites?.includes(e.id);
   let toast = false;
+  const rs = newRatingState();   // estado de la sección de calificaciones
 
   function draw() {
     const rows: [string, string][] = [["Teatro / Auditorio", venue], ["Ciudad", `${placeLabel(e, true)}`], ["Hora de inicio", t1], ["Hora de fin", t2], ["Capacidad total", `${cap.toLocaleString()} personas`], ["Disponibilidad", `${av} entradas restantes`]];
@@ -37,15 +39,40 @@ export function renderEventDetail(root: HTMLElement, e: EventItem, onBack: () =>
       <section class="dsec"><h2>Recinto</h2><div class="vgrid">${rows.map(([l, v]) => `<div><small>${l}</small><b>${esc(v)}</b></div>`).join("")}</div></section>
       <section class="dsec"><h2>Agenda del día</h2><ol class="agenda">${agenda.map(l => { const [h, ...r] = l.split(" - "); return `<li><b>${esc(h)}</b><span>${esc(r.join(" - ") || h)}</span></li>`; }).join("")}</ol></section>
       <section class="dsec"><h2>Categorías de entrada</h2>${cats.map(c => `<div class="catrow"><span>${esc(c.name)}</span><span>${c.available !== undefined ? `${c.available} disp.` : ""}</span><b>${cop(c.price)}</b></div>`).join("")}</section>
+      ${ratingSection(e, rs)}
     </div><aside class="dside"><small>Precio desde</small><div class="dprice">${cop((cats.length ? Math.min(...cats.map(c => c.price)) : e.price))}</div>
       <div class="bar"><i style="width:${pct}%"></i></div><p class="dav">${av} de ${cap} entradas disponibles</p>
       <button class="btn btn--navy full" id="d-res"${av === 0 ? " disabled" : ""}>${av === 0 ? "Agotado" : "Reservar entradas"}</button>
       <p class="dnote">${svg(P.shield, 13)} Pago 100% seguro</p></aside></div>`;
   }
 
+  /** Vuelve a dibujar sin perder el punto de la página en el que está la persona */
+  const redraw = () => { const y = window.scrollY; draw(); window.scrollTo(0, y); };
+  const loadRatings = async () => { try { rs.stats = await getRatingStats(e.id); rs.error = ""; } catch (err) { rs.error = (err as Error).message; } redraw(); };
+  /** Ejecuta una acción de calificación, actualiza el evento y el resumen, y muestra el resultado */
+  const rateAct = async (fn: () => Promise<EventItem>, okMsg: string) => {
+    rs.busy = true; rs.error = ""; rs.msg = ""; redraw();
+    try { e = await fn(); rs.stats = await getRatingStats(e.id); rs.msg = okMsg; rs.adminDraft = ""; }
+    catch (err) { rs.error = (err as Error).message; }
+    rs.busy = false; redraw();
+  };
+
   root.onclick = ev => {
     const t = ev.target as HTMLElement;
     if (t.closest("#d-back")) return onBack();
+    const star = t.closest<HTMLElement>("[data-rate]");
+    if (star && !rs.busy) return void rateAct(() => rateEvent(e.id, Number(star.dataset.rate)), "¡Gracias por tu calificación!");
+    if (t.closest("[data-rate-remove]") && !rs.busy) return void rateAct(() => removeMyRating(e.id), "Quitaste tu calificación.");
+    if (t.closest("[data-rate-login]")) return onLogin();
+    if (t.closest("[data-rate-default]") && !rs.busy) {
+      const v = Number((rs.adminDraft || String(rs.stats?.base ?? "")).replace(",", "."));
+      if (!Number.isFinite(v) || v < 0 || v > 5) { rs.error = "Escribe un número entre 0 y 5."; rs.msg = ""; return redraw(); }
+      return void rateAct(() => setDefaultRating(e.id, v), "Calificación por defecto actualizada.");
+    }
+    if (t.closest("[data-rate-reset]") && !rs.busy) {
+      if (!confirm("¿Borrar todos los votos de usuarios de este evento? Esta acción no se puede deshacer.")) return;
+      return void rateAct(() => resetUserRatings(e.id), "Se borraron los votos de usuarios.");
+    }
     if (t.closest("#d-res")) return getCurrentUser() ? onCheckout() : onLogin();
     if (t.closest("#d-save")) {
       const u = getCurrentUser(); if (!u) return onLogin();
@@ -61,8 +88,10 @@ export function renderEventDetail(root: HTMLElement, e: EventItem, onBack: () =>
       })();
     }
   };
-  root.oninput = null; root.onsubmit = null;
+  root.oninput = ev => { const t = ev.target as HTMLInputElement; if (t.id === "rate-default") rs.adminDraft = t.value; };
+  root.onsubmit = null;
   draw();
+  void loadRatings();
 }
 
 /* ───────── Checkout ───────── */

@@ -16,6 +16,8 @@ export const MANUAL: Seccion[] = [
     { id: "destacados", q: "Eventos destacados y próximos", html: `<p>El carrusel de arriba y la sección <b>Eventos destacados</b> muestran la selección especial. En <b>Próximos eventos</b> aparece el resto, ordenado por fecha; usa <b>Ver más eventos</b> para cargar más.</p>` },
     { id: "categorias", q: "Categorías", html: `<p>Al final del inicio está la sección <b>Categorías</b>: cada recuadro lleva a una página con todos los eventos de esa categoría (conferencias, congresos, foros, galas, conciertos, deportes y más).</p>` },
     { id: "favoritos", q: "Guardar favoritos", html: `<p>Toca el <b>corazón</b> de una tarjeta para guardar el evento. Necesitas haber iniciado sesión.</p>` },
+    { id: "calificar", q: "Calificar un evento", html: `<p>Abre el evento y baja hasta <b>Calificaciones</b>. Toca de 1 a 5 estrellas para dejar tu opinión (necesitas haber iniciado sesión). Puedes <b>cambiar</b> tu calificación cuando quieras o usar <b>Quitar mi calificación</b>. No es posible calificar un evento que tú creaste.</p>` },
+    { id: "calificacion-mostrada", q: "¿Cómo se calcula la calificación que veo?", html: `<p>Cada evento parte de una <b>calificación inicial</b> (la define un administrador). La que ves combina esa calificación inicial con las <b>opiniones de las personas</b>: con pocas opiniones pesa más la inicial, y con muchas pesan más las opiniones. En el detalle del evento ves el promedio, cuántas opiniones hay y cuántas estrellas recibió cada puntaje.</p>` },
     { id: "compartir", q: "Compartir un evento", html: `<p>Dentro del evento pulsa <b>Compartir</b>: se copia el enlace para que lo envíes a quien quieras.</p>` },
   ] },
   { titulo: "Comprar boletas", temas: [
@@ -43,6 +45,7 @@ export const MANUAL: Seccion[] = [
     { id: "crear-evento", q: "Crear un evento", html: `<ol><li>En el inicio pulsa <b>Crear nuevo evento</b>.</li><li>Completa título, descripción, categoría, ubicación, fecha, horario, recinto y aforo.</li><li>Agrega tus <b>tipos de boleta</b> con su precio, la agenda y la imagen.</li><li>Pulsa <b>Crear Evento</b> <b>una sola vez</b> y espera a que termine de guardar.</li></ol>` },
     { id: "editar", q: "Editar o eliminar mis eventos", html: `<p>En las tarjetas de tus eventos aparecen los botones de <b>editar</b> (lápiz) y <b>eliminar</b> (X). Solo puedes modificar los eventos que creaste.</p>` },
     { id: "panel", q: "Panel de ventas", html: `<p>Entra a <b>Panel</b> (menú superior) para ver los <b>ingresos estimados</b>, las boletas vendidas, la ocupación, los ingresos por evento, por categoría y por ciudad, y una tabla con el detalle de cada evento de tu empresa.</p>` },
+    { id: "calif-agente", q: "Calificación de mis eventos", html: `<p>Tus eventos reciben las calificaciones de las personas que los califican (tú no puedes calificar los tuyos). La calificación inicial de cada evento la ajusta un administrador; si crees que una está mal, escríbenos a contacto@sixevent.co.</p>` },
     { id: "tarifas", q: "Tarifas", html: `<p>La cuenta de agente funciona por comisión: desde <b>3,5 % por boleta vendida + $500 COP fijos</b>.</p><p>${L("#/info/Precios", "Ver precios y tarifas")}</p>` },
   ] },
   { titulo: "Contacto y soporte", temas: [

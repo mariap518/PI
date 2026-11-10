@@ -11,7 +11,9 @@ export interface EventItem {
   date: string; // Stored as YYYY-MM-DD
   price: number; // Base price
   img: string;
-  rating: number;
+  rating: number;           // la que se muestra (calificación inicial mezclada con los votos)
+  ratingBase?: number;      // calificación inicial/por defecto (la cambia un admin)
+  ratingCount?: number;     // votos reales de usuarios
   createdBy: string;
   company?: string;
   description?: string;
@@ -153,6 +155,13 @@ export async function addEvent(event: Omit<EventItem, "id" | "rating">) {
 export async function updateEvent(id: number, patch: Partial<EventItem>) {
   const updated = normalize(await api<EventItem>(`/events/${id}`, { method: "PUT", body: JSON.stringify(patch) }));
   eventsDB = eventsDB.map(e => (e.id === id ? updated : e));
+}
+
+/** Reemplaza un evento ya cargado por la versión que devolvió el servidor (por ejemplo, tras calificarlo). */
+export function applyEventUpdate(item: EventItem) {
+  const fresh = normalize(item);
+  eventsDB = eventsDB.map(e => (e.id === fresh.id ? fresh : e));
+  return fresh;
 }
 
 export async function deleteEvent(id: number) {

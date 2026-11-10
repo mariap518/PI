@@ -156,7 +156,7 @@ function card(e: EventItem) {
     <article class="card" style="${catStyle(e.category)}" tabindex="0" role="button" data-event="${e.id}" aria-label="Ver detalles de ${esc(e.title)}">
       <div class="card__img"><img src="${esc(e.img)}" alt="${esc(e.title)}" loading="lazy" onerror="this.style.display='none'"><span class="badge">${esc(e.category)}</span>
         <div class="card__tr"><button class="fav${fav ? " is-on" : ""}" data-fav="${e.id}" aria-pressed="${fav}" aria-label="${fav ? "Quitar de favoritos" : "Agregar a favoritos"}">${icon(ic.heart, 16, fav ? "currentColor" : "none")}</button>
-        <span class="rating">${icon(ic.star, 12)}${e.rating}</span></div></div>
+        <span class="rating">${icon(ic.star, 12)}${String(e.rating).replace(".", ",")}</span></div></div>
       <div class="card__body"><h3>${esc(e.title)}</h3>
         <p class="meta">${icon(ic.location, 14)}${esc(placeLabel(e))}</p><p class="meta">${icon(ic.calendar, 14)}${formatDateString(e.date)}</p></div></article></div>`;
 }
@@ -246,6 +246,7 @@ function paintCategory() {
 const repaint = () => (catPage && $("#cat-root") ? paintCategory() : paintGrid());
 
 function renderCategory(slug: string) {
+  state.all = getEvents();
   const c = catBySlug(slug);
   if (!c) return go("home");
   catPage = c; state.visible = PAGE_SIZE;
@@ -337,6 +338,7 @@ function route() {
 }
 
 function renderHome() {
+  state.all = getEvents();   // por si cambió algo (por ejemplo, una calificación nueva)
   app.innerHTML = `${navbar()}<main>${hero()}${eventsSection()}</main>${footer()}`;
   paintChips(); paintGrid(); startHero();
 }
